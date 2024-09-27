@@ -1,0 +1,25 @@
+name: C++ Style Check (Проверка стиля кода)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  style-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code (Получение кода)
+        uses: actions/checkout@v2
+
+      - name: Set up Python (Установка Python)
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install cpplint (Установка cpplint)
+        run: pip install cpplint
+
+      - name: Run cpplint (Запуск cpplint)
+        run: cpplint --extensions=h,hpp,cpp,c --exclude=build --exclude=cmake-build-debug --recursive --linelength=120 --filter=-build/include_subdir,-legal/copyright --output=vs7 .

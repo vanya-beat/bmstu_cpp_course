@@ -59,4 +59,5 @@ pip3 install \
 	gitpython \
 	python-gitlab \
 	termcolor \
-	virtualenv
+	virtualenv \
+	cpplint
