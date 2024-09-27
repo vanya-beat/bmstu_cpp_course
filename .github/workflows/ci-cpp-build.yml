@@ -1,4 +1,4 @@
-name: CI
+name: C++ Build (Сборка проекта)
 
 on:
   push:
