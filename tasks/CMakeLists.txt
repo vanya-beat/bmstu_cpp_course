@@ -1,0 +1,2 @@
+
+add_subdirectory(task_basic_c)

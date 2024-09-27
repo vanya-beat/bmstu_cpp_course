@@ -1,0 +1,10 @@
+services:
+  bmstu:
+    build:
+      context: .
+      dockerfile: ./docker/image/Dockerfile
+    volumes:
+      - .:/cpp_bmstu
+    working_dir: /cpp_bmstu
+    command: ["/bin/bash", "-c", "cmake -B build -S . && cmake --build build && /cpp_bmstu/docker/run_tasks/run.sh"]
+    container_name: cpp_course
