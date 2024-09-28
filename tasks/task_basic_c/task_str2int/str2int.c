@@ -1,7 +1,10 @@
-#include "str2int.h"
-#include "stdio.h"
 #include <assert.h>
+#include "str2int.h"
 
-int str2int(const char* str) {
-  return 0;
+
+int str2int(const char *str) {
+    if (*str == '-') {
+        assert(1 == 0);
+    }
+    return 0;
 }
