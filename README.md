@@ -73,7 +73,7 @@ sudo apt-get update
 ```
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
-8. Теперь, находясь в папке репозитория, запускаем тесты (в первый раз будет установка всех компонентов, что займёт время), по окончанию дол:
+8. Теперь, находясь в папке репозитория, запускаем тесты (в первый раз будет установка всех компонентов, что займёт время), по окончанию должно получиться:
 ```
 sudo docker compose up --build
 ```
@@ -91,3 +91,5 @@ git add -A
 git commit -m "Программа проходит все тесты"
 git push
 ```
+13. Либо используем боковую панель vs code:  
+![](README_media/vscode_git.png)
