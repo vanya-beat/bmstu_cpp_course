@@ -17,6 +17,11 @@ int str2int(const char *str) {
     assert(1 == 0);
 
   }
+  if (*str == '\0') {
+    assert(1==0);
+  }
+
+
 
   int result = 0;
   int sign = 1;
@@ -35,5 +40,10 @@ int str2int(const char *str) {
     result = result * 10 + digit;
     str++;
   }
+  if (result * sign > 2147483647 || result * sign < -2147483648) {
+    assert(1 == 0);
+
+  }
   return result * sign;
+
 }
