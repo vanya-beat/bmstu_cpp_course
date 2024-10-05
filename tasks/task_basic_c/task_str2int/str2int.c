@@ -1,10 +1,25 @@
 #include <assert.h>
 #include "str2int.h"
-
+#include "stdio.h"
 
 int str2int(const char *str) {
-    if (*str == '-') {
-        assert(1 == 0);
+    int znak = 1;
+    int result = 0;
+
+    if (*str == '-'){
+        znak = -1;
+        str++;
+    } else if (*str == '+') {
+        str++;
     }
-    return 0;
+
+    int count = 0;
+    while (*str != '\0') {
+        result = result * 10 + (*str - '0');
+        count += 1;
+        str++;
+        assert(znak == -1 && result == -2147483648 || znak == -1 && result >= 0 && count <= 9 || znak == 1 && result >= 0);
+    }
+    assert(count > 0);
+    return result * znak;
 }
