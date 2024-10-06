@@ -1,4 +1,4 @@
-name: C++ Build (Сборка проекта)
+name: C++ Build and Run (Сборка и запуск проекта)
 
 on:
   push:
@@ -10,16 +10,78 @@ on:
 
 jobs:
   build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # 1. Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Run docker-compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
+      # 2. Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Cache Docker layers
+      - name: Cache Docker layers
+        id: cache-docker-layers
+        uses: actions/cache@v3
         with:
-          compose-file: "docker-compose.yml"
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
-      - name:
+      # 4. Build Docker image using Docker Compose
+      - name: Build Docker image with Docker Compose
         run: |
-          docker compose up --build --abort-on-container-exit --exit-code-from bmstu
+          docker compose build bmstu
+          docker compose up bmstu
+          # Save the image as a tarball
+          docker save bmstu_cpp_course-bmstu:latest -o cpp_course_image.tar
+
+      # 5. Upload Docker image tarball as artifact
+      - name: Upload Docker image tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: cpp_course-image
+          path: cpp_course_image.tar
+
+      # 6. Save Docker layer cache
+      - name: Save Docker layer cache
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-layer-cache
+          path: /tmp/.buildx-cache
+
+  run-script:
+    name: Run run.sh Script
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      # 1. Download the Docker image tarball artifact
+      - name: Download Docker image tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: cpp_course-image
+          path: ./artifacts
+
+      # 2. Load the Docker image into Docker daemon
+      - name: Load Docker image
+        run: |
+          docker load -i ./artifacts/cpp_course_image.tar
+
+      # 3. Create a Docker network (optional, if needed)
+      #- name: Create Docker network
+      #  run: docker network create my-network || echo "Network already exists"
+
+      # 4. Run the Docker container and execute the script
+      - name: Run run.sh Script inside Docker Container
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/cppcourse bmstu_cpp_course-bmstu:latest bash -c "/cppcourse/docker/runtasks/run.sh"
+
+      # 5. (Optional) Bring down any Docker Compose services if previously started
+      #- name: Tear Down Docker Compose (if applicable)
+      #  run: docker compose down
