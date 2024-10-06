@@ -1,25 +1,39 @@
-name: C++ Style Check (Проверка стиля кода)
+name: Clang Format Check
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'tasks/**/*.c'
+      - 'tasks/**/*.cpp'
+      - 'tasks/**/*.h'
+      - 'tasks/**/*.hpp'
+  pull_request:
+    paths:
+      - 'tasks/**/*.c'
+      - 'tasks/**/*.cpp'
+      - 'tasks/**/*.h'
+      - 'tasks/**/*.hpp'
 
 jobs:
-  style-check:
+  formatting-check:
+    name: Formatting Check
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code (Получение кода)
-        uses: actions/checkout@v2
-
-      - name: Set up Python (Установка Python)
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-
-      - name: Install cpplint (Установка cpplint)
-        run: pip install cpplint
-
-      - name: Run cpplint (Запуск cpplint)
-        run: cpplint --extensions=h,hpp,cpp,c --exclude=build --exclude=cmake-build-debug --recursive --linelength=120 --filter=-build/include_subdir,-legal/copyright --output=vs7 .
+    - uses: actions/checkout@v4
+    
+    - name: Install clang-format
+      run: sudo apt-get install -y clang-format
+    
+    - name: Check clang-format
+      run: |
+        find tasks -iname '*.c' -o -iname '*.cpp' -o -iname '*.h' -o -iname '*.hpp' | while read -r file
+        do
+          if ! clang-format --dry-run --Werror "$file" >/dev/null 2>&1
+          then
+            echo "❌ Code style issues found in: $file"
+            clang-format --dry-run --Werror "$file"
+            exit 1
+          fi
+        done
+        echo "✅ All files are properly formatted"

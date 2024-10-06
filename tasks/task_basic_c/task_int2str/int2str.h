@@ -5,7 +5,7 @@ extern "C"
 {
 #endif
 
-	int str2int(const char* str);
+	char* int2str(int number);
 
 #ifdef __cplusplus
 }

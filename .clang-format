@@ -1,12 +1,8 @@
-BasedOnStyle: LLVM
+BasedOnStyle: Chromium
 ---
 Language: Cpp
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLambdasOnASingleLine: Empty
-DerivePointerAlignment: false
-PointerAlignment: Left
-SortIncludes: false
-PackConstructorInitializers: Never
-BreakConstructorInitializers: BeforeColon
-BreakInheritanceList: AfterComma
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+BreakBeforeBraces: Allman
+Standard: c++20
