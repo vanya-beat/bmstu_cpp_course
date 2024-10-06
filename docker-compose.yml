@@ -6,5 +6,5 @@ services:
     volumes:
       - .:/cpp_bmstu
     working_dir: /cpp_bmstu
-    command: ["/bin/bash", "-c", "cmake -B build -S . && cmake --build build && /cpp_bmstu/docker/run_tasks/run.sh"]
+    command: ["/bin/bash", "-c", "cmake -B build -S . && cmake --build build"]
     container_name: cpp_course
