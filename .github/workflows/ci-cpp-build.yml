@@ -80,7 +80,7 @@ jobs:
       # 4. Run the Docker container and execute the script
       - name: Run run.sh Script inside Docker Container
         run: |
-          docker run --rm -v ${{ github.workspace }}:/cppcourse bmstu_cpp_course-bmstu:latest bash -c "/cppcourse/docker/runtasks/run.sh"
+          docker run --rm -v ${{ github.workspace }}:/cppcourse bmstu_cpp_course-bmstu:latest bash -c "/cppcourse/docker/run_tasks/run.sh"
 
       # 5. (Optional) Bring down any Docker Compose services if previously started
       #- name: Tear Down Docker Compose (if applicable)
