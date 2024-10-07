@@ -67,4 +67,4 @@ jobs:
 
       - name: Run run.sh Script inside Docker Container
         run: |
-          docker run --rm -v ${{ github.workspace }}:/cppcourse bmstu_cpp_course-bmstu:latest bash -c "ls -la && /cppcourse/docker/run_tasks/run.sh"
+          docker run --rm -v ${{ github.workspace }}:/cppcourse bmstu_cpp_course-bmstu:latest bash -c "cd /cppcourse && ls -la && cd .. && ./cppcourse/docker/run_tasks/run.sh"
