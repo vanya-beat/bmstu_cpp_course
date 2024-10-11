@@ -87,9 +87,8 @@ jobs:
             cd build
             cmake ..
             cmake --build .
-
-
-            GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
+            cd ..
+            bash docker/run_tasks/run.sh
           "
 
           # Optionally, retrieve test results
@@ -99,9 +98,9 @@ jobs:
           docker stop cpp_course_container
           docker rm cpp_course_container
 
-      - name: Upload test results (Загрузка результатов тестов)
-        if: failure() || always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test_results_xml
-          path: ./test-results/**/*.xml
+      # - name: Upload test results (Загрузка результатов тестов)
+      #   if: failure() || always()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test_results_xml
+      #     path: ./test-results/**/*.xml
