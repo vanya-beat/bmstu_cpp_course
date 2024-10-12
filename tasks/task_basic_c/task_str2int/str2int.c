@@ -4,6 +4,7 @@
 
 int str2int(const char *str) {
     int znak = 1;
+
     int result = 0;
 
     if (*str == '-'){
