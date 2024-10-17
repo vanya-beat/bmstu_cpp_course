@@ -3,7 +3,6 @@
 #include "stdio.h"
 
 int str2int(const char *str) {
-<<<<<<< HEAD
     int znak = 1;
 
     int result = 0;
@@ -24,7 +23,4 @@ int str2int(const char *str) {
     }
     assert(count > 0);
     return result * znak;
-=======
-    return 0;
->>>>>>> main
 }
