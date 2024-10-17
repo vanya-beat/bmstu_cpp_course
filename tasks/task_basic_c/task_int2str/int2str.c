@@ -17,11 +17,29 @@ char* int2str(int num) {
     }
 
     int n_len = 0;
-    long long n_cp = number;
-    while (n_cp > 0) {
-        n_cp /= 10;
+
+    if (number > 0)
         n_len++;
-    }
+    if (number > 10)
+        n_len++;
+    if (number > 100)
+        n_len++;
+    if (number > 1000)
+        n_len++;
+    if (number > 10000)
+        n_len++;
+    if (number > 100000)
+        n_len++;
+    if (number > 1000000)
+        n_len++;
+    if (number > 10000000)
+        n_len++;
+    if (number > 100000000)
+        n_len++;
+    if (number > 1000000000)
+        n_len++;
+    if (number > 10000000000)
+        n_len++;
 
     if (znak == -1) {
         n_len++;
