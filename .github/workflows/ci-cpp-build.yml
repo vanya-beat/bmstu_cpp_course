@@ -1,4 +1,4 @@
-name: C++ Build (Сборка проекта)
+name: C++ Build and Run (Сборка и запуск проекта)
 
 on:
   push:
@@ -10,16 +10,97 @@ on:
 
 jobs:
   build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Run docker-compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        id: cache-docker-layers
+        uses: actions/cache@v3
         with:
-          compose-file: "docker-compose.yml"
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
-      - name:
+      - name: Build Docker image with Docker Compose
         run: |
-          docker compose up --build --abort-on-container-exit --exit-code-from bmstu
+          docker compose build bmstu
+          docker compose up bmstu
+          # Save the image as a tarball
+          docker save bmstu_cpp_course-bmstu:latest -o cpp_course_image.tar
+
+      - name: Upload Docker image tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: cpp_course-image
+          path: cpp_course_image.tar
+
+      - name: Save Docker layer cache
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-layer-cache
+          path: /tmp/.buildx-cache
+
+  test:
+    name: Build and Test Inside Docker Container (Сборка и тестирование внутри контейнера Docker)
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Docker image tarball (Загрузка tarball образа Docker)
+        uses: actions/download-artifact@v3
+        with:
+          name: cpp_course-image
+          path: .
+
+      - name: Load Docker image (Загрузка образа Docker)
+        run: docker load -i cpp_course_image.tar
+
+      - name: Checkout repository (Клонирование репозитория)
+        uses: actions/checkout@v4
+
+      - name: Run Build and Tests Inside Container (Запуск сборки и тестов внутри контейнера)
+        run: |
+          # Run a container from the loaded image in detached mode
+          docker run -d --name cpp_course_container bmstu_cpp_course-bmstu:latest tail -f /dev/null
+
+          # Install dependencies inside the container if necessary
+          # Example:
+          # docker exec cpp_course_container apt-get update
+          # docker exec cpp_course_container apt-get install -y your-dependencies
+
+          # Copy the repository code into the container
+          docker cp . cpp_course_container:/workspace
+
+          # Execute build steps inside the container
+          docker exec cpp_course_container bash -c "
+            cd /workspace
+            mkdir -p build
+            cd build
+            cmake ..
+            cmake --build .
+            cd ..
+            bash docker/run_tasks/run.sh
+          "
+
+          # Optionally, retrieve test results
+          docker cp cpp_course_container:/workspace/build/test-results ./test-results
+
+          # Stop and remove the container
+          docker stop cpp_course_container
+          docker rm cpp_course_container
+
+      # - name: Upload test results (Загрузка результатов тестов)
+      #   if: failure() || always()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test_results_xml
+      #     path: ./test-results/**/*.xml
