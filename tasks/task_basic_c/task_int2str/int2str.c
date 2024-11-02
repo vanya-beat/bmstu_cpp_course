@@ -1,21 +1,21 @@
 #include "int2str.h"
-
 #include <stdlib.h>
 
 
 char* int2str(int num) {
-    long long number = num;
-
     char* str = (char*)calloc(13, sizeof(char));
     int number_len = 0;
 
-    if (number < 0) {
+    unsigned int number = 0;
+    if (num < 0) {
         number_len++;
         str[0] = '-';
-        number *= -1;
+        number = num * -1;
+    } else {
+        number = num;
     }
 
-    long long number_copy = number;
+    unsigned int number_copy = number;
     int count = 0;
     while ((number_copy == 0 && count < 1) || number_copy > 0) {
         number_copy /= 10;
