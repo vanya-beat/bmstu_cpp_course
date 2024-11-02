@@ -1,25 +1,26 @@
 #include <assert.h>
 #include "int2str.h"
 #include "stdio.h"
+#include <stdbool.h>
 #include <malloc.h>
 
 char* int2str(int number) {
     int i = 0; //объявил переменную счета в начале, для удобства при реверсе массива 
-    int isNegative = 0; //флажок для знака 
-    char *str = "0"; //переменная строки
-    str = (char*)malloc(1000000 * sizeof(char)); //выделяем память, чтобы точно хватило
-    unsigned int num = (unsigned int)((number < 0) * -number) + (number >= 0) * number; //с костылями избегаем переполнения number
-
+    bool isNegative = false; //флажок для знака 
+    char *str = (char*)malloc(13 * sizeof(char)); //выделяем память, чтобы точно хватило
+    unsigned int num = (unsigned int)((number < 0) * -number) + (number >= 0) * number;
+    
     if (number < 0) { //определят +/-
-        isNegative = 1;
+        isNegative = true;
+    }
+    str[i++] = (num % 10) + '0';  //разбираем число о добавляем в массив 
+    num /= 10;        
+    while (num > 0) {
+        str[i++] = (num % 10) + '0';  //разбираем число о добавляем в массив 
+        num /= 10; 
     }
 
-    do {
-        str[i++] = (num % 10) + '0';  //разбираем число о добавляем в массив 
-        num /= 10;                       
-    } while (num > 0);
-
-    if (isNegative==1) {
+    if (isNegative) {
         str[i++] = '-';                     
     }
 
