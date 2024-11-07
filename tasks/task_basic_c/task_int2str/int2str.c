@@ -33,4 +33,9 @@ char* int2str(int number) {
     
     return str;
 }
-int main (int argc, )
+
+int main (int argc, char *argv[]) {
+
+    printf("%s\n",int2str(8679));
+
+}
