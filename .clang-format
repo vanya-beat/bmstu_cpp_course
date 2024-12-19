@@ -6,7 +6,8 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLambdasOnASingleLine: Empty
 DerivePointerAlignment: false
 PointerAlignment: Left
-SortIncludes: false
+SortIncludes: true
 PackConstructorInitializers: Never
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: AfterComma
+TabWidth: 4

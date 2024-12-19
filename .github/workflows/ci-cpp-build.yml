@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - main
+      - hw
   pull_request:
     branches:
       - main
+      - hw
+  fork:
+    branches:
+      - main
+      - hw
 
 jobs:
   build:
