@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - main
-
+      - hw
+  pull_request:
+    branches:
+      - main
+      - hw
+  fork:
+    branches:
+      - main
+      - hw
 jobs:
   style-check:
     runs-on: ubuntu-latest
@@ -13,13 +21,70 @@ jobs:
       - name: Checkout code (Получение кода)
         uses: actions/checkout@v2
 
-      - name: Set up Python (Установка Python)
-        uses: actions/setup-python@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        id: cache-docker-layers
+        uses: actions/cache@v3
         with:
-          python-version: 3.x
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
-      - name: Install cpplint (Установка cpplint)
-        run: pip install cpplint
+      - name: Build Docker image with Docker Compose
+        run: |
+          docker compose build bmstu
+          docker compose up bmstu
+          # Save the image as a tarball
+          docker save bmstu_cpp_course-bmstu:latest -o cpp_course_image.tar
 
-      - name: Run cpplint (Запуск cpplint)
-        run: cpplint --extensions=h,hpp,cpp,c --exclude=build --exclude=cmake-build-debug --recursive --linelength=120 --filter=-build/include_subdir,-legal/copyright --output=vs7 .
+      - name: Upload Docker image tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: cpp_course-image
+          path: cpp_course_image.tar
+
+      - name: Save Docker layer cache
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-layer-cache
+          path: /tmp/.buildx-cache
+
+  run-style-check:
+    name: Run Style Check Inside Docker Container (Запуск проверки стиля внутри контейнера Docker)
+    needs: style-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Docker image tarball (Загрузка tarball образа Docker)
+        uses: actions/download-artifact@v3
+        with:
+          name: cpp_course-image
+          path: .
+
+      - name: Load Docker image (Загрузка образа Docker)
+        run: docker load -i cpp_course_image.tar
+
+      - name: Checkout repository (Клонирование репозитория)
+        uses: actions/checkout@v4
+
+      - name: Run Style Check Inside Container (Запуск проверки стиля внутри контейнера)
+        run: |
+          # Run a container from the loaded image in detached mode
+          docker run -d --name cpp_course_container bmstu_cpp_course-bmstu:latest tail -f /dev/null
+
+          # Copy the repository code into the container
+          docker cp . cpp_course_container:/workspace
+
+          # Execute style check inside the container
+          docker exec cpp_course_container bash -c "
+            cd /workspace
+            bash docker/run_tasks/run_style_check.sh
+          "
+
+          # Stop and remove the container
+          docker stop cpp_course_container
+          docker rm cpp_course_container
