@@ -1,0 +1,268 @@
+#include <iostream>
+#include <cstring>
+#include <utility>
+#include <cassert>
+#include <sstream>
+
+namespace bmstu {
+template <typename T>
+class string {
+public:
+    // Конструктор по умолчанию
+    string() : ptr_(nullptr), size_(0) {}
+
+    // Конструктор с параметром "си строкой"
+    string(const char *c_str) {
+        size_ = strlen_(c_str);
+        ptr_ = new char[size_ + 1];
+        std::strcpy(ptr_, c_str);
+    }
+
+    // Копирующий конструктор
+    string(const string &other) {
+        size_ = other.size_;
+        ptr_ = new char[size_ + 1];
+        std::strcpy(ptr_, other.ptr_);
+    }
+
+    // Конструктор перемещения
+    string(string &&other) noexcept : ptr_(other.ptr_), size_(other.size_) {
+        other.ptr_ = nullptr;
+        other.size_ = 0;
+    }
+
+    // Деструктор
+    ~string() {
+        clean_();
+    }
+
+    // Геттер на си-строку
+    const char *c_str() const {
+        return ptr_;
+    }
+
+    // Геттер на размер
+    size_t size() const {
+        return size_;
+    }
+
+    // Оператор копирующего присваивания
+    string &operator=(const string &other) {
+        if (this != &other) {
+            clean_();
+            size_ = other.size_;
+            ptr_ = new char[size_ + 1];
+            std::strcpy(ptr_, other.ptr_);
+        }
+        return *this;
+    }
+
+    // Оператор перемещающего присваивания
+    string &operator=(string &&other) noexcept {
+        if (this != &other) {
+            clean_();
+            ptr_ = other.ptr_;
+            size_ = other.size_;
+            other.ptr_ = nullptr;
+            other.size_ = 0;
+        }
+        return *this;
+    }
+
+    // Оператор присваивания си строки
+    string &operator=(const char *c_str) {
+        clean_();
+        size_ = strlen_(c_str);
+        ptr_ = new char[size_ + 1];
+        std::strcpy(ptr_, c_str);
+        return *this;
+    }
+
+    // Оператор сложения
+    friend string operator+(const string &left, const string &right) {
+        string result;
+        result.size_ = left.size_ + right.size_;
+        result.ptr_ = new char[result.size_ + 1];
+        std::strcpy(result.ptr_, left.ptr_);
+        std::strcat(result.ptr_, right.ptr_);
+        return result;
+    }
+
+    // Оператор вывода
+    friend std::ostream &operator<<(std::ostream &os, const string &obj) {
+        os << obj.c_str();
+        return os;
+    }
+
+    // Оператор ввода
+    friend std::istream &operator>>(std::istream &is, string &obj) {
+        char buffer[1024];
+        is >> buffer;
+        obj = buffer;
+        return is;
+    }
+
+    // Оператор +=
+    string &operator+=(const string &other) {
+        *this = *this + other;
+        return *this;
+    }
+
+    // Оператор += для символа
+    string &operator+=(char symbol) {
+        string temp;
+        temp.size_ = size_ + 1;
+        temp.ptr_ = new char[temp.size_ + 1];
+        std::strcpy(temp.ptr_, ptr_);
+        temp.ptr_[size_] = symbol;
+        temp.ptr_[temp.size_] = '\0';
+        *this = temp;
+        return *this;
+    }
+
+    // Оператор []
+    char operator[](size_t index) {
+        return ptr_[index];
+    }
+
+private:
+    // Приватные хелперы
+    static size_t strlen_(const char *str) {
+        return std::strlen(str);
+    }
+
+    void clean_() {
+        delete[] ptr_;
+        ptr_ = nullptr;
+        size_ = 0;
+    }
+
+    // Поля класса
+    char *ptr_;
+    size_t size_;
+};
+} // namespace bmstu
+
+
+
+void run_tests() {
+    using bmstu::string;
+
+    // Тест конструктора по умолчанию
+    {
+        string<char> s1;
+        assert(s1.size() == 0);
+        assert(s1.c_str() == nullptr);
+    }
+
+    // Тест конструктора из C-строки
+    {
+        string<char> s2("hello");
+        assert(s2.size() == 5);
+        assert(std::strcmp(s2.c_str(), "hello") == 0);
+    }
+
+    // Тест конструктора копирования
+    {
+        string<char> s2("hello");
+        string<char> s3(s2);
+        assert(s3.size() == s2.size());
+        assert(std::strcmp(s3.c_str(), s2.c_str()) == 0);
+    }
+
+    // Тест конструктора перемещения
+    {
+        string<char> s4("temporary");
+        string<char> s5(std::move(s4));
+        assert(s5.size() == 9);
+        assert(std::strcmp(s5.c_str(), "temporary") == 0);
+        assert(s4.size() == 0);
+        assert(s4.c_str() == nullptr);
+    }
+
+    // Тест оператора присваивания (копирования)
+    {
+        string<char> s6("original");
+        string<char> s7;
+        s7 = s6;
+        assert(s7.size() == s6.size());
+        assert(std::strcmp(s7.c_str(), s6.c_str()) == 0);
+    }
+
+    // Тест оператора присваивания (перемещения)
+    {
+        string<char> s8("move me");
+        string<char> s9;
+        s9 = std::move(s8);
+        assert(s9.size() == 7);
+        assert(std::strcmp(s9.c_str(), "move me") == 0);
+        assert(s8.size() == 0);
+        assert(s8.c_str() == nullptr);
+    }
+
+    // Тест оператора присваивания C-строки
+    {
+        string<char> s10;
+        s10 = "assign me";
+        assert(s10.size() == 9);
+        assert(std::strcmp(s10.c_str(), "assign me") == 0);
+    }
+
+    // Тест оператора сложения
+    {
+        string<char> s11("hello");
+        string<char> s12(" world");
+        string<char> s13 = s11 + s12;
+        assert(s13.size() == 11);
+        assert(std::strcmp(s13.c_str(), "hello world") == 0);
+    }
+
+    // Тест оператора += (строка)
+    {
+        string<char> s14("hello");
+        s14 += " world";
+        assert(s14.size() == 11);
+        assert(std::strcmp(s14.c_str(), "hello world") == 0);
+    }
+
+    // Тест оператора += (символ)
+    {
+        string<char> s15("hello");
+        s15 += '!';
+        assert(s15.size() == 6);
+        assert(std::strcmp(s15.c_str(), "hello!") == 0);
+    }
+
+    // Тест оператора []
+    {
+        string<char> s16("abcdef");
+        assert(s16[0] == 'a');
+        assert(s16[1] == 'b');
+        assert(s16[5] == 'f');
+    }
+    // Тест ввода
+        {
+            string<char> s17;
+            std::istringstream input("test_input");
+            input >> s17;
+            assert(s17.size() == 10);
+            assert(std::strcmp(s17.c_str(), "test_input") == 0);
+        }
+
+        // Тест вывода
+        {
+            string<char> s18("output_test");
+            std::ostringstream output;
+            output << s18;
+            assert(output.str() == "output_test");
+        }
+    
+    
+    std::cout << "All tests passed successfully!\n";
+    
+}
+
+int main() {
+    run_tests();
+    return 0;
+}
