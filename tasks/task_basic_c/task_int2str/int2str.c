@@ -7,7 +7,7 @@ char* int2str(int number) {
     int i = 0;
     int isNegative = 0;
     char* str = "0";
-    str = (char*)malloc(1000000 * sizeof(char));
+    str = (char*)malloc(12 * sizeof(char));
     unsigned int num = (unsigned int)((number < 0) * -number) + (number >= 0) * number;
 
     if (number < 0) {
@@ -34,7 +34,7 @@ char* int2str(int number) {
     return str;
 }
 
-int main (int argc, char *argv[]) {
+ {
 
     printf("%s\n",int2str(8679));
 
