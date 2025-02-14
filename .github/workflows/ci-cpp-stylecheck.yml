@@ -41,14 +41,14 @@ jobs:
           docker save bmstu_cpp_course-bmstu:latest -o cpp_course_image.tar
 
       - name: Upload Docker image tarball
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: cpp_course-image
           path: cpp_course_image.tar
 
       - name: Save Docker layer cache
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: docker-layer-cache
           path: /tmp/.buildx-cache
