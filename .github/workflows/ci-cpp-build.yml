@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - main
+      - hw
   pull_request:
     branches:
       - main
+      - hw
+  fork:
+    branches:
+      - main
+      - hw
 
 jobs:
   build:
@@ -37,14 +43,14 @@ jobs:
           docker save bmstu_cpp_course-bmstu:latest -o cpp_course_image.tar
 
       - name: Upload Docker image tarball
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4
         with:
           name: cpp_course-image
           path: cpp_course_image.tar
 
       - name: Save Docker layer cache
         if: always()
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4
         with:
           name: docker-layer-cache
           path: /tmp/.buildx-cache
@@ -72,11 +78,6 @@ jobs:
           # Run a container from the loaded image in detached mode
           docker run -d --name cpp_course_container bmstu_cpp_course-bmstu:latest tail -f /dev/null
 
-          # Install dependencies inside the container if necessary
-          # Example:
-          # docker exec cpp_course_container apt-get update
-          # docker exec cpp_course_container apt-get install -y your-dependencies
-
           # Copy the repository code into the container
           docker cp . cpp_course_container:/workspace
 
@@ -87,9 +88,8 @@ jobs:
             cd build
             cmake ..
             cmake --build .
-
-
-            GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
+            cd ..
+            bash docker/run_tasks/run.sh
           "
 
           # Optionally, retrieve test results
@@ -101,7 +101,7 @@ jobs:
 
       - name: Upload test results (Загрузка результатов тестов)
         if: failure() || always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test_results_xml
           path: ./test-results/**/*.xml
