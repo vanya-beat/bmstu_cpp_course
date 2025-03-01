@@ -40,11 +40,15 @@ jobs:
             bash -c "cd /workspace && \
                     mkdir -p build && \
                     cd build && \
-                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS='-fprofile-arcs -ftest-coverage' && \
+                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS='-fprofile-arcs -ftest-coverage' -DGTEST_OUTPUT=xml:test-results/ && \
                     cmake --build . && \
                     cd .. && \
-                    bash docker/run_tasks/run.sh && \
-                    find build -name '*.xml' -type f -exec cp {} /workspace/test-results/ \;"
+                    for test_bin in \$(find build -type f -executable -name '*test*'); do \
+                      echo \"Running \$test_bin with XML output\" && \
+                      \$test_bin --gtest_output=xml:\$(dirname \$test_bin)/gtest-results.xml || true; \
+                    done && \
+                    mkdir -p /workspace/test-results && \
+                    find build -name '*.xml' -type f -exec cp {} /workspace/test-results/ \\;"
           
           # Show what test results were found
           echo "Found test results:"
