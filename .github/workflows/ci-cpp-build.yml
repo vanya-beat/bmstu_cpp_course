@@ -56,12 +56,41 @@ jobs:
           echo "Found test results:"
           ls -la test-results/
 
-      - name: Upload test results
+      - name: Upload XML test results
         if: always()
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: test_results_xml
           path: test-results/
+          if-no-files-found: warn
+          retention-days: 5
+          
+      - name: Publish Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: test-results/**/*.xml
+          check_name: "Test Results"
+          comment_title: "Test Results"
+          check_run_annotations: all tests, skipped tests
+          
+      - name: Generate HTML report
+        if: always()
+        run: |
+          pip install junit2html
+          mkdir -p html-reports
+          for xml_file in $(find test-results -name "*.xml"); do
+            output_file="html-reports/$(basename ${xml_file%.xml}).html"
+            junit2html $xml_file $output_file || true
+          done
+          
+      - name: Upload HTML test report
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: test_results_html
+          path: html-reports/
           if-no-files-found: warn
           retention-days: 5
