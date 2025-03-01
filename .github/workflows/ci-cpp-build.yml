@@ -56,7 +56,7 @@ jobs:
           echo "Found test results:"
           ls -la test-results/
 
-      - name: Upload XML test results
+      - name: Upload test results
         if: always()
         continue-on-error: true
         uses: actions/upload-artifact@v4
@@ -82,11 +82,17 @@ jobs:
             echo "<testsuites></testsuites>" > merged_results.xml
           fi
 
-      - name: Create HTML test report viewer
+      - name: Generate HTML report with embedded XML data
         if: always()
         run: |
+          # Read the XML content into a variable
+          XML_CONTENT=$(cat merged_results.xml)
+          
+          # Create directory for HTML report
           mkdir -p html-report
-          cat > html-report/index.html << 'EOF'
+          
+          # Create HTML file with embedded XML data
+          cat > html-report/index.html << EOF
           <!DOCTYPE html>
           <html lang="ru">
           <head>
@@ -172,20 +178,28 @@ jobs:
               </div>
 
               <script>
+                  // Встроенные XML данные
+                  const xmlString = `${XML_CONTENT}`;
+                  
                   document.addEventListener('DOMContentLoaded', function() {
-                      // Load XML data
-                      fetch('merged_results.xml')
-                          .then(response => response.text())
-                          .then(xml => {
-                              const parser = new DOMParser();
-                              const xmlDoc = parser.parseFromString(xml, 'text/xml');
-                              processTestResults(xmlDoc);
-                          })
-                          .catch(error => {
+                      try {
+                          const parser = new DOMParser();
+                          const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+                          
+                          if (xmlDoc.getElementsByTagName('parsererror').length > 0) {
                               document.getElementById('loading').innerHTML = 
-                                  '<p style="color: red;">Ошибка загрузки результатов тестов: ' + error.message + '</p>';
-                          });
-
+                                  '<p style="color: red;">Ошибка при разборе XML данных. Формат данных некорректен.</p>';
+                              console.error('XML parse error:', xmlDoc.getElementsByTagName('parsererror')[0].textContent);
+                              return;
+                          }
+                          
+                          processTestResults(xmlDoc);
+                      } catch (error) {
+                          document.getElementById('loading').innerHTML = 
+                              '<p style="color: red;">Ошибка при обработке результатов тестов: ' + error.message + '</p>';
+                          console.error('Error processing test results:', error);
+                      }
+                      
                       function processTestResults(xmlDoc) {
                           const testSuites = xmlDoc.getElementsByTagName('testsuite');
                           if (testSuites.length === 0) {
@@ -210,17 +224,17 @@ jobs:
                               
                               const hasFailures = failures > 0 || errors > 0;
                               
-                              html += `
-                              <div class="testsuite" data-index="${i}">
+                              html += \`
+                              <div class="testsuite" data-index="\${i}">
                                   <div class="testsuite-header">
                                       <h3 class="testsuite-name">
-                                          <span class="status-dot ${hasFailures ? 'failure' : 'success'}"></span>
-                                          ${suiteName}
+                                          <span class="status-dot \${hasFailures ? 'failure' : 'success'}"></span>
+                                          \${suiteName}
                                       </h3>
-                                      <span>${testCount} тестов, ${failures + errors} ошибок, ${time}с</span>
+                                      <span>\${testCount} тестов, \${failures + errors} ошибок, \${time}с</span>
                                   </div>
                                   <div class="testsuite-details">
-                              `;
+                              \`;
                               
                               // Process each test case
                               const testCases = suite.getElementsByTagName('testcase');
@@ -236,17 +250,17 @@ jobs:
                                   totalTests++;
                                   if (!hasError) passedTests++;
                                   
-                                  html += `
-                                  <div class="testcase" data-status="${hasError ? 'failed' : 'passed'}">
+                                  html += \`
+                                  <div class="testcase" data-status="\${hasError ? 'failed' : 'passed'}">
                                       <h4 class="testcase-header">
-                                          <span class="testcase-icon ${hasError ? 'failure' : 'success'}" 
-                                                style="background: ${hasError ? '#f44336' : '#4caf50'}">
-                                              ${hasError ? '✗' : '✓'}
+                                          <span class="testcase-icon \${hasError ? 'failure' : 'success'}" 
+                                                style="background: \${hasError ? '#f44336' : '#4caf50'}">
+                                              \${hasError ? '✗' : '✓'}
                                           </span>
-                                          ${tcName}
+                                          \${tcName}
                                       </h4>
-                                      <div>Время выполнения: ${tcTime}с</div>
-                                  `;
+                                      <div>Время выполнения: \${tcTime}с</div>
+                                  \`;
                                   
                                   // Add error details if any
                                   if (hasError) {
@@ -254,21 +268,21 @@ jobs:
                                       const message = errorElement.getAttribute('message') || '';
                                       const details = errorElement.textContent || '';
                                       
-                                      html += `
+                                      html += \`
                                       <div class="error-details">
-                                          <strong>Ошибка:</strong> ${message}
-                                          <pre>${details}</pre>
+                                          <strong>Ошибка:</strong> \${message}
+                                          <pre>\${details}</pre>
                                       </div>
-                                      `;
+                                      \`;
                                   }
                                   
-                                  html += `</div>`;
+                                  html += \`</div>\`;
                               }
                               
-                              html += `
+                              html += \`
                                   </div>
                               </div>
-                              `;
+                              \`;
                           }
                           
                           document.getElementById('testsuites-container').innerHTML = html;
@@ -281,7 +295,7 @@ jobs:
                           // Set progress bar
                           const percentage = totalTests > 0 ? (passedTests / totalTests) * 100 : 0;
                           setTimeout(() => {
-                              document.getElementById('progress-bar').style.width = `${percentage}%`;
+                              document.getElementById('progress-bar').style.width = \`\${percentage}%\`;
                           }, 300);
                           
                           // Attach event listeners
@@ -360,7 +374,6 @@ jobs:
           </body>
           </html>
           EOF
-          cp merged_results.xml html-report/
 
       - name: Upload HTML test report
         if: always()
@@ -369,11 +382,3 @@ jobs:
           name: test_results_html
           path: html-report/
           retention-days: 5
-
-      - name: Publish test report (if main branch)
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: actions/upload-artifact@v4
-        with:
-          name: test_reports_latest
-          path: html-report/
-          retention-days: 30
