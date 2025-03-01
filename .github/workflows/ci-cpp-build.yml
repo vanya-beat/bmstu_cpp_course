@@ -15,7 +15,7 @@ on:
       - hw
 
 jobs:
-  build:
+  uses: actions/upload-artifact@v4build:
     name: Build Docker Image
     runs-on: ubuntu-latest
 
@@ -43,14 +43,14 @@ jobs:
           docker save bmstu_cpp_course-bmstu:latest -o cpp_course_image.tar
 
       - name: Upload Docker image tarball
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cpp_course-image
           path: cpp_course_image.tar
 
       - name: Save Docker layer cache
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-layer-cache
           path: /tmp/.buildx-cache
@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: Download Docker image tarball (Загрузка tarball образа Docker)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cpp_course-image
           path: .
