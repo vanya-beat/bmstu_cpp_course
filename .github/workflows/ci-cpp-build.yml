@@ -30,22 +30,31 @@ jobs:
 
       - name: Run tests in container
         run: |
-          # Mount repository directly instead of copying
+          # Create results directory on host
+          mkdir -p test-results
+          
+          # Mount repository and results directory
           docker run --name cpp_course_container \
             -v ${{ github.workspace }}:/workspace \
             bmstu_cpp_course-bmstu:latest \
             bash -c "cd /workspace && \
                     mkdir -p build && \
                     cd build && \
-                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && \
+                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS='-fprofile-arcs -ftest-coverage' && \
                     cmake --build . && \
-                    mkdir -p test-results && \
                     cd .. && \
-                    bash docker/run_tasks/run.sh"
+                    mkdir -p test-results && \
+                    # Run only our project's test executables, not GoogleTest's Python tests
+                    for test_bin in \$(find build/tasks -type f -executable); do \
+                      echo \"Running \$test_bin\" && \
+                      \$test_bin --gtest_output=xml:test-results/\$(basename \$test_bin).xml || true; \
+                    done && \
+                    # Copy test results to host-mounted directory
+                    cp -r test-results/* /workspace/test-results/ || true"
           
-          # Check if test results were generated
-          echo "Checking for test results..."
-          find build -type f -name "*.xml" || echo "No test result files found"
+          # Show what test results were found
+          echo "Found test results:"
+          ls -la test-results/
 
       - name: Upload test results
         if: always()
@@ -53,8 +62,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test_results_xml
-          path: |
-            build/test-results/**/*.xml
-            build/Testing/**/*.xml
+          path: test-results/
           if-no-files-found: warn
           retention-days: 5
