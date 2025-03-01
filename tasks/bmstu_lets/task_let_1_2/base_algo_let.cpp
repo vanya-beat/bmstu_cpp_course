@@ -13,6 +13,7 @@ std::vector<int> positive_numbers(const std::vector<int>& v) {
     return positives;
 }
 
+
 void sort_positive_numbers(std::vector<int>& v) {
     std::vector<int> positives = positive_numbers(v);
     std::sort(positives.begin(), positives.end());
@@ -37,11 +38,13 @@ bool is_divisible_by_10(const std::vector<int>& v) {
     return sum % 10 == 0;
 }
 
+
 void replace_negative_numbers(std::vector<int>& v) {
     std::replace_if(v.begin(), v.end(), [](int num) {
         return num < 0;
     }, 0);
 }
+
 
 void double_values(std::vector<int>& v) {
     std::transform(v.begin(), v.end(), v.begin(), [](int num) {
