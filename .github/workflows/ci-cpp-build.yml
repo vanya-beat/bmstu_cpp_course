@@ -78,11 +78,6 @@ jobs:
           # Run a container from the loaded image in detached mode
           docker run -d --name cpp_course_container bmstu_cpp_course-bmstu:latest tail -f /dev/null
 
-          # Install dependencies inside the container if necessary
-          # Example:
-          # docker exec cpp_course_container apt-get update
-          # docker exec cpp_course_container apt-get install -y your-dependencies
-
           # Copy the repository code into the container
           docker cp . cpp_course_container:/workspace
 
@@ -104,9 +99,9 @@ jobs:
           docker stop cpp_course_container
           docker rm cpp_course_container
 
-      # - name: Upload test results (Загрузка результатов тестов)
-      #   if: failure() || always()
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: test_results_xml
-      #     path: ./test-results/**/*.xml
+      - name: Upload test results (Загрузка результатов тестов)
+        if: failure() || always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test_results_xml
+          path: ./test-results/**/*.xml
