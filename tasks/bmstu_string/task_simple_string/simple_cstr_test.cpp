@@ -254,3 +254,61 @@ TEST(StringTest, Item) {
   ASSERT_EQ(a_str[1], L'Т');
   ASSERT_EQ(a_str[a_str.size() - 1], L'Г');
 }
+
+TEST(StringTest, size) {
+  bmstu::wstring a_str(L"СЛОВОСЛОВОСЛОВОСЛОВОблинчик");
+  a_str = a_str | 4;
+  ASSERT_STREQ(a_str.c_str(), L"(СЛОВ)(ОСЛО)(ВОСЛ)(ОВОС)(ЛОВО)(блин)(чик)");
+}
+
+TEST(StringTest, size2) {
+  bmstu::wstring a_str(L"=");
+  a_str = a_str | 4;
+  ASSERT_STREQ(a_str.c_str(), L"(=)");
+}
+
+
+TEST(StringTest, DummyOp1) {
+  bmstu::wstring a_str(L"STRING");
+  a_str = a_str | 1;
+  ASSERT_STREQ(a_str.c_str(), L"(S)(T)(R)(I)(N)(G)");
+}
+
+TEST(StringTest, DummyOp2) {
+  bmstu::wstring a_str(L"STRINGZ");
+  a_str = a_str | 2;
+  ASSERT_STREQ(a_str.c_str(), L"(ST)(RI)(NG)(Z)");
+}
+
+
+TEST(StringTest, DummyOp3) {
+  bmstu::wstring a_str(L"");
+  a_str = a_str | 2;
+  ASSERT_STREQ(a_str.c_str(), L"()");
+}
+
+
+TEST(StringTest, DummyOp4) {
+  bmstu::wstring a_str(L" ");
+  a_str = a_str | 1;
+  ASSERT_STREQ(a_str.c_str(), L"( )");
+}
+
+
+TEST(StringTest, DummyOp5) {
+  bmstu::wstring a_str(L"12345");
+  a_str = a_str | 6;
+  ASSERT_STREQ(a_str.c_str(), L"(12345)");
+}
+
+TEST(StringTest, DummyOp6) {
+  bmstu::wstring a_str(L"123456");
+  a_str = a_str | 6;
+  ASSERT_STREQ(a_str.c_str(), L"(123456)");
+}
+
+TEST(StringTest, DummyOp7) {
+  bmstu::wstring a_str(L"1234567");
+  a_str = a_str | 6;
+  ASSERT_STREQ(a_str.c_str(), L"(123456)(7)");
+}
