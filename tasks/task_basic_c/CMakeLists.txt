@@ -15,7 +15,8 @@ foreach (TASK ${TASKS})
     list(APPEND SOURCES ${FILES})
 endforeach ()
 message(STATUS "SOURCES: ${SOURCES}")
-add_executable(${NAME_EXECUTABLE} ${SOURCES})
+add_executable(${NAME_EXECUTABLE} ${SOURCES}
+        ../bmstu_string/task_simple_string/bmstu_string.h)
 target_link_libraries(
         ${NAME_EXECUTABLE}
         GTest::gtest_main

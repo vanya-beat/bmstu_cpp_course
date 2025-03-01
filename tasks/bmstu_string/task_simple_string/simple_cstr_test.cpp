@@ -254,3 +254,59 @@ TEST(StringTest, Item) {
   ASSERT_EQ(a_str[1], L'Т');
   ASSERT_EQ(a_str[a_str.size() - 1], L'Г');
 }
+
+TEST(StringTest, DummyItem) {
+  bmstu::wstring a_str(L"словоа");
+  bmstu::wstring b_str(L"слово");
+
+  auto c_str = a_str / b_str;
+  ASSERT_STREQ(c_str.c_str(), L"слово");
+}
+
+TEST(StringTest, DummyItem2) {
+  bmstu::wstring a_str(L"10101010101010");
+  bmstu::wstring b_str(L"01010101010101");
+
+  auto c_str = a_str / b_str;
+  ASSERT_STREQ(c_str.c_str(), L"");
+}
+
+TEST(StringTest, DummyItem3) {
+  bmstu::wstring a_str(L"123321");
+  bmstu::wstring b_str(L"123321");
+
+  auto c_str = a_str / b_str;
+  ASSERT_STREQ(c_str.c_str(), L"123321");
+}
+
+TEST(StringTest, DummyItem33) {
+  bmstu::wstring a_str(L"12341");
+  bmstu::wstring b_str(L"14321");
+
+  auto c_str = a_str / b_str;
+  ASSERT_STREQ(c_str.c_str(), L"131");
+}
+
+TEST(StringTest, DummyItem4) {
+  bmstu::wstring a_str(L"");
+  bmstu::wstring b_str(L"14321");
+
+  auto c_str = a_str / b_str;
+  ASSERT_STREQ(c_str.c_str(), L"");
+}
+
+TEST(StringTest, DummyItem5) {
+  bmstu::wstring a_str(L"123456");
+  bmstu::wstring b_str(L"");
+
+  auto c_str = a_str / b_str;
+  ASSERT_STREQ(c_str.c_str(), L"");
+}
+
+TEST(StringTest, DummyItem6) {
+  bmstu::wstring a_str(L"aaabaaa");
+  bmstu::wstring b_str(L"zzzbzzz");
+
+  auto c_str = a_str / b_str;
+  ASSERT_STREQ(c_str.c_str(), L"b");
+}
