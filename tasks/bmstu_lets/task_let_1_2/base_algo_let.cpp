@@ -2,7 +2,9 @@
 #include "base_algo_let.h"
 
 std::vector<int> positive_numbers(const std::vector<int>& v) {
-  return {};
+  std::vector<int> positives;
+    std::copy_if(v.begin(), v.end(), std::back_inserter(positives), [](int x) { return x > 0; });
+    return positives;
 }
 void sort_positive_numbers(std::vector<int>& v) {
 }
