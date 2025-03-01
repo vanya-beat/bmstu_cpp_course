@@ -1,90 +1,37 @@
-name: C++ Style Check (Проверка стиля кода)
+name: C++ Style Check
 
 on:
   push:
-    branches:
-      - main
-      - hw
+    branches: [main, hw]
   pull_request:
-    branches:
-      - main
-      - hw
-  fork:
-    branches:
-      - main
-      - hw
+    branches: [main, hw]
+
 jobs:
+  build-docker:
+    uses: ./.github/workflows/docker-build.yml
+
   style-check:
+    name: Run Style Check
+    needs: build-docker
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout code (Получение кода)
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        id: cache-docker-layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
-
-      - name: Build Docker image with Docker Compose
-        run: |
-          docker compose build bmstu
-          docker compose up bmstu
-          # Save the image as a tarball
-          docker save bmstu_cpp_course-bmstu:latest -o cpp_course_image.tar
-
-      - name: Upload Docker image tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: cpp_course-image
-          path: cpp_course_image.tar
-
-      - name: Save Docker layer cache
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: docker-layer-cache
-          path: /tmp/.buildx-cache
-
-  run-style-check:
-    name: Run Style Check Inside Docker Container (Запуск проверки стиля внутри контейнера Docker)
-    needs: style-check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download Docker image tarball (Загрузка tarball образа Docker)
-        uses: actions/download-artifact@v3
-        with:
-          name: cpp_course-image
-          path: .
-
-      - name: Load Docker image (Загрузка образа Docker)
-        run: docker load -i cpp_course_image.tar
-
-      - name: Checkout repository (Клонирование репозитория)
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run Style Check Inside Container (Запуск проверки стиля внутри контейнера)
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: cpp_course-image
+
+      - name: Load Docker image
+        run: docker load -i cpp_course_image.tar
+
+      - name: Run style check
         run: |
-          # Run a container from the loaded image in detached mode
-          docker run -d --name cpp_course_container bmstu_cpp_course-bmstu:latest tail -f /dev/null
-
-          # Copy the repository code into the container
-          docker cp . cpp_course_container:/workspace
-
-          # Execute style check inside the container
-          docker exec cpp_course_container bash -c "
-            cd /workspace
-            bash docker/run_tasks/run_style_check.sh
-          "
-
-          # Stop and remove the container
-          docker stop cpp_course_container
-          docker rm cpp_course_container
+          # Mount repository directly instead of copying
+          docker run --name style_check_container \
+            -v ${{ github.workspace }}:/workspace \
+            bmstu_cpp_course-bmstu:latest \
+            bash -c "cd /workspace && bash docker/run_tasks/run_style_check.sh"
