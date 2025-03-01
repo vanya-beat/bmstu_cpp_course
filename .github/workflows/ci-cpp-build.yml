@@ -37,11 +37,15 @@ jobs:
             bash -c "cd /workspace && \
                     mkdir -p build && \
                     cd build && \
-                    cmake .. && \
+                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && \
                     cmake --build . && \
                     mkdir -p test-results && \
                     cd .. && \
                     bash docker/run_tasks/run.sh"
+          
+          # Check if test results were generated
+          echo "Checking for test results..."
+          find build -type f -name "*.xml" || echo "No test result files found"
 
       - name: Upload test results
         if: always()
@@ -49,5 +53,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test_results_xml
-          path: build/test-results/**/*.xml
+          path: |
+            build/test-results/**/*.xml
+            build/Testing/**/*.xml
+          if-no-files-found: warn
           retention-days: 5
