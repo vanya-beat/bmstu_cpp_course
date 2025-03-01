@@ -19,7 +19,6 @@ struct Student {
       : age(age_),
         name(name_) {
   }
-  /// operator ==
   bool operator==(const Student& other) const {
     return other.age == age && other.name == name;
   }
