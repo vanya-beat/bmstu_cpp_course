@@ -66,424 +66,228 @@ jobs:
           if-no-files-found: warn
           retention-days: 5
 
-      - name: Create merged XML file for combined report
+      - name: Create merged XML file
         if: always()
         run: |
           echo "<testsuites>" > merged_results.xml
           for xml_file in test-results/*.xml; do
             if [ -f "$xml_file" ]; then
-              # Remove xml declaration and root elements, keep only inner content
-              content=$(sed -n '/<testsuite/,/<\/testsuite>/p' "$xml_file")
-              echo "$content" >> merged_results.xml
+              # Extract testsuite content
+              sed -n '/<testsuite/,/<\/testsuite>/p' "$xml_file" >> merged_results.xml
             fi
           done
           echo "</testsuites>" >> merged_results.xml
-          # Check if the merged file is valid
-          if [ -s merged_results.xml ]; then
-            echo "Successfully created merged XML report"
-          else
-            echo "Failed to create merged report or no test results found"
+          # Make sure we have a valid XML even if no tests were found
+          if [ ! -s merged_results.xml ]; then
             echo "<testsuites></testsuites>" > merged_results.xml
           fi
 
-      - name: Prepare HTML test report viewer
+      - name: Create HTML test report viewer
         if: always()
         run: |
-          # Create a directory for the HTML reports
           mkdir -p html-report
-          
-          # Copy the test viewer HTML template
           cat > html-report/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="ru">
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>BMSTU C++ Test Results</title>
+              <title>BMSTU C++ Tests Results</title>
               <style>
-                  body {
-                      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                      line-height: 1.6;
-                      color: #333;
-                      margin: 0;
-                      padding: 0;
-                      background-color: #f8f9fa;
-                  }
-                  .container {
-                      max-width: 1200px;
-                      margin: 0 auto;
-                      padding: 20px;
-                  }
-                  header {
-                      background-color: #0066cc;
-                      color: white;
-                      padding: 20px;
-                      border-radius: 8px 8px 0 0;
-                      margin-bottom: 20px;
-                  }
-                  h1 {
-                      margin: 0;
-                      font-size: 24px;
-                  }
-                  .summary {
-                      display: flex;
-                      flex-wrap: wrap;
-                      gap: 20px;
-                      margin-bottom: 20px;
-                      padding: 15px;
-                      background-color: #fff;
-                      border-radius: 8px;
-                      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                  }
-                  .summary-item {
-                      flex: 1;
-                      min-width: 150px;
-                      padding: 15px;
-                      border-radius: 8px;
-                      text-align: center;
-                      transition: all 0.3s ease;
-                  }
-                  .summary-item:hover {
-                      transform: translateY(-5px);
-                  }
-                  .total-tests {
-                      background-color: #e3f2fd;
-                      border: 1px solid #bbdefb;
-                  }
-                  .passed-tests {
-                      background-color: #e8f5e9;
-                      border: 1px solid #c8e6c9;
-                  }
-                  .failed-tests {
-                      background-color: #ffebee;
-                      border: 1px solid #ffcdd2;
-                  }
-                  .testsuite {
-                      background-color: #fff;
-                      margin-bottom: 20px;
-                      border-radius: 8px;
-                      overflow: hidden;
-                      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                      opacity: 0;
-                      transform: translateY(20px);
-                      transition: all 0.5s ease;
-                  }
-                  .testsuite.visible {
-                      opacity: 1;
-                      transform: translateY(0);
-                  }
-                  .testsuite-header {
-                      background-color: #f1f1f1;
-                      padding: 15px;
-                      cursor: pointer;
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                  }
-                  .testsuite-header h3 {
-                      margin: 0;
-                      font-size: 18px;
-                      display: flex;
-                      align-items: center;
-                  }
-                  .testsuite-content {
-                      max-height: 0;
-                      overflow: hidden;
-                      transition: max-height 0.3s ease;
-                  }
-                  .testsuite.active .testsuite-content {
-                      max-height: 2000px;
-                  }
-                  .testcase {
-                      padding: 15px;
-                      border-top: 1px solid #eee;
-                      transition: background-color 0.3s ease;
-                  }
-                  .testcase:hover {
-                      background-color: #f9f9f9;
-                  }
-                  .testcase h4 {
-                      margin: 0;
-                      font-size: 16px;
-                      margin-bottom: 10px;
-                  }
-                  .success-icon, .failure-icon {
-                      display: inline-block;
-                      width: 20px;
-                      height: 20px;
-                      border-radius: 50%;
-                      margin-right: 10px;
-                      text-align: center;
-                      line-height: 20px;
-                      font-weight: bold;
-                  }
-                  .success-icon {
-                      background-color: #4caf50;
-                      color: white;
-                  }
-                  .failure-icon {
-                      background-color: #f44336;
-                      color: white;
-                  }
-                  .failure-detail {
-                      background-color: #fff0f0;
-                      padding: 15px;
-                      margin-top: 10px;
-                      border-left: 4px solid #f44336;
-                      border-radius: 4px;
-                      overflow-x: auto;
-                  }
-                  pre {
-                      white-space: pre-wrap;
-                      font-family: 'Consolas', monospace;
-                      font-size: 14px;
-                      margin: 0;
-                  }
-                  .status-dot {
-                      display: inline-block;
-                      width: 12px;
-                      height: 12px;
-                      border-radius: 50%;
-                      margin-right: 8px;
-                  }
-                  .status-success {
-                      background-color: #4caf50;
-                  }
-                  .status-failure {
-                      background-color: #f44336;
-                  }
-                  .suite-summary {
-                      font-size: 14px;
-                      color: #666;
-                  }
-                  .progress-bar-container {
-                      width: 100%;
-                      background-color: #e0e0e0;
-                      border-radius: 4px;
-                      margin-top: 20px;
-                      overflow: hidden;
-                  }
-                  .progress-bar {
-                      height: 10px;
-                      background-color: #4caf50;
-                      width: 0%;
-                      transition: width 1s ease;
-                  }
-                  .bmstu-logo {
-                      height: 40px;
-                      margin-right: 15px;
-                      vertical-align: middle;
-                  }
-                  .time-info {
-                      font-size: 14px;
-                      color: #666;
-                      margin-bottom: 5px;
-                  }
-                  .expand-all {
-                      background-color: #0066cc;
-                      color: white;
-                      border: none;
-                      padding: 8px 16px;
-                      border-radius: 4px;
-                      cursor: pointer;
-                      margin-bottom: 20px;
-                      transition: background-color 0.3s;
-                  }
-                  .expand-all:hover {
-                      background-color: #0055aa;
-                  }
-                  #search-box {
-                      width: 100%;
-                      padding: 10px;
-                      border: 1px solid #ddd;
-                      border-radius: 4px;
-                      margin-bottom: 20px;
-                      font-size: 16px;
-                  }
-                  .filter-controls {
-                      display: flex;
-                      gap: 10px;
-                      margin-bottom: 20px;
-                  }
-                  .filter-btn {
-                      background-color: #e0e0e0;
-                      border: none;
-                      padding: 8px 16px;
-                      border-radius: 4px;
-                      cursor: pointer;
-                      transition: all 0.3s;
-                  }
-                  .filter-btn.active {
-                      background-color: #0066cc;
-                      color: white;
-                  }
-                  .loading {
-                      text-align: center;
-                      padding: 50px;
-                  }
+                  body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f5f5f5; }
+                  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+                  header { background: #0066cc; color: white; padding: 20px; border-radius: 5px 5px 0 0; }
+                  h1 { margin: 0; }
+                  .summary { display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0; }
+                  .summary-item { flex: 1; min-width: 150px; text-align: center; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                  .total { background: #e3f2fd; }
+                  .passed { background: #e8f5e9; }
+                  .failed { background: #ffebee; }
+                  .progress-bar { height: 10px; background: #eee; border-radius: 5px; margin: 20px 0; overflow: hidden; }
+                  .progress-fill { height: 100%; background: #4caf50; width: 0; transition: width 1s; }
+                  .controls { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; }
+                  input[type="text"] { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+                  .btn { padding: 10px 15px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+                  .btn:hover { background: #0055aa; }
+                  .filter-btn { background: #f1f1f1; color: #333; }
+                  .filter-btn.active { background: #0066cc; color: white; }
+                  .testsuite { margin-bottom: 15px; background: white; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); opacity: 0; transform: translateY(20px); transition: all 0.5s; }
+                  .testsuite.visible { opacity: 1; transform: translateY(0); }
+                  .testsuite-header { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
+                  .testsuite-name { margin: 0; display: flex; align-items: center; }
+                  .status-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
+                  .success { background: #4caf50; }
+                  .failure { background: #f44336; }
+                  .testsuite-details { display: none; padding: 0 15px; }
+                  .testsuite.open .testsuite-details { display: block; }
+                  .testcase { padding: 15px; border-bottom: 1px solid #eee; }
+                  .testcase:last-child { border-bottom: none; }
+                  .testcase-header { margin: 0 0 10px; display: flex; align-items: center; }
+                  .testcase-icon { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-right: 10px; color: white; font-weight: bold; }
+                  .error-details { background: #fff0f0; padding: 10px; margin-top: 10px; border-left: 4px solid #f44336; }
+                  pre { white-space: pre-wrap; font-family: monospace; margin: 0; }
                   @media (max-width: 768px) {
-                      .summary {
-                          flex-direction: column;
-                      }
-                      .filter-controls {
-                          flex-direction: column;
-                      }
+                      .summary { flex-direction: column; }
+                      .controls { flex-direction: column; }
                   }
               </style>
           </head>
           <body>
               <div class="container">
                   <header>
-                      <h1><span style="font-size: 24px; margin-right: 10px;">🎓</span>BMSTU C++ Test Results</h1>
+                      <h1>BMSTU C++ Tests Results</h1>
                   </header>
-                  
-                  <div id="loading" class="loading">
-                      <p>Загрузка результатов тестов...</p>
+
+                  <div class="summary">
+                      <div class="summary-item total">
+                          <h2>Всего тестов</h2>
+                          <div id="total-count" style="font-size: 24px;">0</div>
+                      </div>
+                      <div class="summary-item passed">
+                          <h2>Пройдено</h2>
+                          <div id="passed-count" style="font-size: 24px; color: #4caf50;">0</div>
+                      </div>
+                      <div class="summary-item failed">
+                          <h2>Не пройдено</h2>
+                          <div id="failed-count" style="font-size: 24px; color: #f44336;">0</div>
+                      </div>
                   </div>
-          
-                  <div id="results-container" style="display: none;">
-                      <div class="summary">
-                          <div class="summary-item total-tests">
-                              <h2>Всего тестов</h2>
-                              <div id="total-count" style="font-size: 30px;">0</div>
-                          </div>
-                          <div class="summary-item passed-tests">
-                              <h2>Пройдено</h2>
-                              <div id="passed-count" style="font-size: 30px; color: #4caf50;">0</div>
-                          </div>
-                          <div class="summary-item failed-tests">
-                              <h2>Не пройдено</h2>
-                              <div id="failed-count" style="font-size: 30px; color: #f44336;">0</div>
-                          </div>
-                      </div>
-          
-                      <div class="progress-bar-container">
-                          <div class="progress-bar" id="progress-bar"></div>
-                      </div>
-          
+
+                  <div class="progress-bar">
+                      <div class="progress-fill" id="progress-bar"></div>
+                  </div>
+
+                  <div class="controls">
                       <input type="text" id="search-box" placeholder="Поиск по названию теста...">
-                      
-                      <div class="filter-controls">
-                          <button class="filter-btn active" data-filter="all">Все тесты</button>
-                          <button class="filter-btn" data-filter="passed">Пройденные</button>
-                          <button class="filter-btn" data-filter="failed">Не пройденные</button>
-                          <button class="expand-all" id="expand-all">Развернуть все</button>
-                      </div>
-                      
-                      <div id="testsuites-container">
-                          <!-- Test suites will be added here -->
-                      </div>
+                      <button class="btn filter-btn active" data-filter="all">Все тесты</button>
+                      <button class="btn filter-btn" data-filter="passed">Пройдено</button>
+                      <button class="btn filter-btn" data-filter="failed">Не пройдено</button>
+                      <button class="btn" id="expand-all">Развернуть все</button>
+                  </div>
+
+                  <div id="testsuites-container">
+                      <!-- Test suites will be added here -->
+                      <p id="loading">Загрузка результатов тестов...</p>
                   </div>
               </div>
-              
+
               <script>
-                  document.addEventListener('DOMContentLoaded', () => {
-                      // Загрузка XML данных
+                  document.addEventListener('DOMContentLoaded', function() {
+                      // Load XML data
                       fetch('merged_results.xml')
                           .then(response => response.text())
-                          .then(xmlString => {
+                          .then(xml => {
                               const parser = new DOMParser();
-                              const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
-                              
-                              if (xmlDoc.getElementsByTagName('parsererror').length > 0) {
-                                  document.getElementById('loading').innerHTML = 
-                                      '<p style="color: red;">Ошибка загрузки результатов тестов. Попробуйте скачать XML файл напрямую.</p>';
-                                  return;
-                              }
-                              
-                              displayTestResults(xmlDoc);
+                              const xmlDoc = parser.parseFromString(xml, 'text/xml');
+                              processTestResults(xmlDoc);
                           })
                           .catch(error => {
-                              console.error('Error loading test results:', error);
                               document.getElementById('loading').innerHTML = 
                                   '<p style="color: red;">Ошибка загрузки результатов тестов: ' + error.message + '</p>';
                           });
-                      
-                      function displayTestResults(xmlDoc) {
+
+                      function processTestResults(xmlDoc) {
                           const testSuites = xmlDoc.getElementsByTagName('testsuite');
-                          let testSuitesHTML = '';
-                          
                           if (testSuites.length === 0) {
-                              document.getElementById('loading').innerHTML = 
-                                  '<p>Нет доступных результатов тестов.</p>';
+                              document.getElementById('loading').textContent = 'Результаты тестов не найдены.';
                               return;
                           }
+
+                          document.getElementById('loading').style.display = 'none';
                           
-                          // Build HTML for each test suite
+                          let html = '';
+                          let totalTests = 0;
+                          let passedTests = 0;
+
+                          // Process each test suite
                           for (let i = 0; i < testSuites.length; i++) {
                               const suite = testSuites[i];
-                              const suiteName = suite.getAttribute('name') || 'Unknown';
+                              const suiteName = suite.getAttribute('name') || 'Unknown Suite';
                               const testCount = parseInt(suite.getAttribute('tests') || '0');
                               const failures = parseInt(suite.getAttribute('failures') || '0');
-                              const time = parseFloat(suite.getAttribute('time') || '0');
+                              const errors = parseInt(suite.getAttribute('errors') || '0');
+                              const time = parseFloat(suite.getAttribute('time') || '0').toFixed(3);
                               
-                              let suiteHTML = `
-                              <div class="testsuite" data-delay="${i * 100}">
+                              const hasFailures = failures > 0 || errors > 0;
+                              
+                              html += `
+                              <div class="testsuite" data-index="${i}">
                                   <div class="testsuite-header">
-                                      <h3>
-                                          <span class="status-dot ${failures === 0 ? 'status-success' : 'status-failure'}"></span>
+                                      <h3 class="testsuite-name">
+                                          <span class="status-dot ${hasFailures ? 'failure' : 'success'}"></span>
                                           ${suiteName}
                                       </h3>
-                                      <span class="suite-summary">${testCount} тестов, ${failures} ошибок, ${time.toFixed(2)}с</span>
+                                      <span>${testCount} тестов, ${failures + errors} ошибок, ${time}с</span>
                                   </div>
-                                  <div class="testsuite-content">
+                                  <div class="testsuite-details">
                               `;
                               
-                              // Add test cases
+                              // Process each test case
                               const testCases = suite.getElementsByTagName('testcase');
                               for (let j = 0; j < testCases.length; j++) {
-                                  const test = testCases[j];
-                                  const testName = test.getAttribute('name') || 'Unknown Test';
-                                  const testTime = parseFloat(test.getAttribute('time') || '0');
-                                  const failures = test.getElementsByTagName('failure');
-                                  const hasFailure = failures.length > 0;
+                                  const tc = testCases[j];
+                                  const tcName = tc.getAttribute('name') || 'Unknown Test';
+                                  const tcTime = parseFloat(tc.getAttribute('time') || '0').toFixed(4);
                                   
-                                  suiteHTML += `
-                                  <div class="testcase" data-status="${hasFailure ? 'failed' : 'passed'}">
-                                      <h4>
-                                          ${hasFailure 
-                                              ? '<span class="failure-icon">✗</span>' 
-                                              : '<span class="success-icon">✓</span>'}
-                                          ${testName}
+                                  const failures = tc.getElementsByTagName('failure');
+                                  const errors = tc.getElementsByTagName('error');
+                                  const hasError = failures.length > 0 || errors.length > 0;
+                                  
+                                  totalTests++;
+                                  if (!hasError) passedTests++;
+                                  
+                                  html += `
+                                  <div class="testcase" data-status="${hasError ? 'failed' : 'passed'}">
+                                      <h4 class="testcase-header">
+                                          <span class="testcase-icon ${hasError ? 'failure' : 'success'}" 
+                                                style="background: ${hasError ? '#f44336' : '#4caf50'}">
+                                              ${hasError ? '✗' : '✓'}
+                                          </span>
+                                          ${tcName}
                                       </h4>
-                                      <div class="time-info">Время выполнения: ${testTime.toFixed(4)}с</div>
+                                      <div>Время выполнения: ${tcTime}с</div>
                                   `;
                                   
-                                  if (hasFailure) {
-                                      const failure = failures[0];
-                                      const message = failure.getAttribute('message') || '';
-                                      const failureText = failure.textContent || '';
+                                  // Add error details if any
+                                  if (hasError) {
+                                      const errorElement = failures.length > 0 ? failures[0] : errors[0];
+                                      const message = errorElement.getAttribute('message') || '';
+                                      const details = errorElement.textContent || '';
                                       
-                                      suiteHTML += `
-                                      <div class="failure-detail">
-                                          <strong>Сообщение об ошибке:</strong> ${message}
-                                          <pre>${failureText}</pre>
+                                      html += `
+                                      <div class="error-details">
+                                          <strong>Ошибка:</strong> ${message}
+                                          <pre>${details}</pre>
                                       </div>
                                       `;
                                   }
                                   
-                                  suiteHTML += `</div>`;
+                                  html += `</div>`;
                               }
                               
-                              suiteHTML += `
+                              html += `
                                   </div>
                               </div>
                               `;
-                              
-                              testSuitesHTML += suiteHTML;
                           }
                           
-                          // Hide loading and show results
-                          document.getElementById('loading').style.display = 'none';
-                          document.getElementById('results-container').style.display = 'block';
-                          document.getElementById('testsuites-container').innerHTML = testSuitesHTML;
+                          document.getElementById('testsuites-container').innerHTML = html;
                           
-                          // Initialize interactions
+                          // Update counters
+                          document.getElementById('total-count').textContent = totalTests;
+                          document.getElementById('passed-count').textContent = passedTests;
+                          document.getElementById('failed-count').textContent = totalTests - passedTests;
+                          
+                          // Set progress bar
+                          const percentage = totalTests > 0 ? (passedTests / totalTests) * 100 : 0;
+                          setTimeout(() => {
+                              document.getElementById('progress-bar').style.width = `${percentage}%`;
+                          }, 300);
+                          
+                          // Attach event listeners
                           initializeInteractions();
-                          updateCounters();
-                          animateProgressBar();
                       }
-                      
+
                       function initializeInteractions() {
                           const testSuites = document.querySelectorAll('.testsuite');
                           const expandAllBtn = document.getElementById('expand-all');
@@ -491,46 +295,32 @@ jobs:
                           const filterBtns = document.querySelectorAll('.filter-btn');
                           let allExpanded = false;
                           
-                          // Animation for test suites appearance
-                          const observer = new IntersectionObserver((entries) => {
-                              entries.forEach(entry => {
-                                  if (entry.isIntersecting) {
-                                      setTimeout(() => {
-                                          entry.target.classList.add('visible');
-                                      }, parseInt(entry.target.dataset.delay) || 0);
-                                      observer.unobserve(entry.target);
-                                  }
-                              });
-                          }, { threshold: 0.1 });
-                          
-                          testSuites.forEach(suite => {
-                              observer.observe(suite);
+                          // Animate test suites appearance
+                          testSuites.forEach((suite, index) => {
+                              setTimeout(() => {
+                                  suite.classList.add('visible');
+                              }, index * 100);
                               
-                              // Click handler for expanding/collapsing
+                              // Toggle test suite details
                               const header = suite.querySelector('.testsuite-header');
                               header.addEventListener('click', () => {
-                                  suite.classList.toggle('active');
+                                  suite.classList.toggle('open');
                               });
                           });
                           
-                          // Expand/collapse all button
+                          // Expand/collapse all
                           expandAllBtn.addEventListener('click', () => {
                               allExpanded = !allExpanded;
                               testSuites.forEach(suite => {
-                                  if (allExpanded) {
-                                      suite.classList.add('active');
-                                      expandAllBtn.textContent = 'Свернуть все';
-                                  } else {
-                                      suite.classList.remove('active');
-                                      expandAllBtn.textContent = 'Развернуть все';
-                                  }
+                                  suite.classList.toggle('open', allExpanded);
                               });
+                              expandAllBtn.textContent = allExpanded ? 'Свернуть все' : 'Развернуть все';
                           });
                           
                           // Search functionality
                           searchBox.addEventListener('input', filterTests);
                           
-                          // Filter buttons functionality
+                          // Filter buttons
                           filterBtns.forEach(btn => {
                               btn.addEventListener('click', () => {
                                   filterBtns.forEach(b => b.classList.remove('active'));
@@ -539,18 +329,18 @@ jobs:
                               });
                           });
                       }
-                      
+
                       function filterTests() {
                           const searchTerm = document.getElementById('search-box').value.toLowerCase();
                           const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-                          const testSuites = document.querySelectorAll('.testsuite');
                           
+                          const testSuites = document.querySelectorAll('.testsuite');
                           testSuites.forEach(suite => {
                               let suiteVisible = false;
                               const testcases = suite.querySelectorAll('.testcase');
                               
                               testcases.forEach(testcase => {
-                                  const testName = testcase.querySelector('h4').textContent.toLowerCase();
+                                  const testName = testcase.querySelector('.testcase-header').textContent.toLowerCase();
                                   const testStatus = testcase.dataset.status;
                                   
                                   let visible = testName.includes(searchTerm);
@@ -565,53 +355,25 @@ jobs:
                               suite.style.display = suiteVisible ? 'block' : 'none';
                           });
                       }
-                      
-                      function updateCounters() {
-                          const totalTests = document.querySelectorAll('.testcase').length;
-                          const passedTests = document.querySelectorAll('.testcase[data-status="passed"]').length;
-                          const failedTests = totalTests - passedTests;
-                          
-                          document.getElementById('total-count').textContent = totalTests;
-                          document.getElementById('passed-count').textContent = passedTests;
-                          document.getElementById('failed-count').textContent = failedTests;
-                      }
-                      
-                      function animateProgressBar() {
-                          const totalTests = document.querySelectorAll('.testcase').length;
-                          const passedTests = document.querySelectorAll('.testcase[data-status="passed"]').length;
-                          const percentage = totalTests > 0 ? (passedTests / totalTests) * 100 : 0;
-                          
-                          setTimeout(() => {
-                              document.getElementById('progress-bar').style.width = percentage + '%';
-                          }, 500);
-                      }
                   });
               </script>
           </body>
           </html>
           EOF
-          
-                    # Copy the XML test results to the HTML directory
-                    cp merged_results.xml html-report/
-          
-                - name: Upload HTML test report
-                  if: always()
-                  uses: actions/upload-artifact@v4
-                  with:
-                    name: test_results_html
-                    path: html-report/
-                    retention-days: 5
-          
-                - name: Deploy test report to GitHub Pages
-                  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-                  uses: peaceiris/actions-gh-pages@v3
-                  with:
-                    github_token: ${{ secrets.GITHUB_TOKEN }}
-                    publish_dir: ./html-report
-                    destination_dir: test-reports
-                    keep_files: false
-          
-                - name: Post report URL
-                  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-                  run: |
-                    echo "::notice::📊 Отчет о тестировании доступен по адресу: https://${{ github.repository_owner }}.github.io/bmstu_cpp_course/test-reports/"
+          cp merged_results.xml html-report/
+
+      - name: Upload HTML test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test_results_html
+          path: html-report/
+          retention-days: 5
+
+      - name: Publish test report (if main branch)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test_reports_latest
+          path: html-report/
+          retention-days: 30
