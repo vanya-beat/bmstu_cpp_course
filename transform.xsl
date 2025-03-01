@@ -6,7 +6,7 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>Google Test Report</title>
+        <title>Отчет о тестах Google Test</title>
         <style>
           body { font-family: Arial, sans-serif; }
           h1 { color: #333; }
@@ -18,10 +18,10 @@
         </style>
       </head>
       <body>
-        <h1>Google Test Results</h1>
+        <h1>Результаты тестов Google Test</h1>
         <!-- Обработка каждого тестового набора -->
         <xsl:for-each select="testsuites/testsuite">
-          <h2>Test Suite: <xsl:value-of select="@name"/></h2>
+          <h2>Тестовый набор: <xsl:value-of select="@name"/></h2>
           <ul>
             <!-- Обработка каждого теста -->
             <xsl:for-each select="testcase">
@@ -33,12 +33,22 @@
                       <xsl:otherwise>passed</xsl:otherwise>
                     </xsl:choose>
                   </xsl:attribute>
+                  <!-- Надпись и эмодзи в зависимости от результата -->
+                  <xsl:choose>
+                    <xsl:when test="failure">
+                      Тест провален ❌
+                    </xsl:when>
+                    <xsl:otherwise>
+                      Тест пройден ✅
+                    </xsl:otherwise>
+                  </xsl:choose>
+                  <xsl:text> </xsl:text>
                   <xsl:value-of select="@name"/>
                 </span>
                 <!-- Вывод сообщения об ошибке, если тест провален -->
                 <xsl:if test="failure">
                   <div style="margin-left: 20px; color: red;">
-                    <xsl:value-of select="failure/@message"/>
+                    Ошибка: <xsl:value-of select="failure/@message"/>
                   </div>
                 </xsl:if>
               </li>
@@ -46,19 +56,19 @@
           </ul>
           <!-- Общая статистика по тестовому набору -->
           <p>
-            Tests: <xsl:value-of select="@tests"/>, 
-            Failures: <xsl:value-of select="@failures"/>, 
-            Errors: <xsl:value-of select="@errors"/>, 
-            Skipped: <xsl:value-of select="@skipped"/>
+            Тестов: <xsl:value-of select="@tests"/>, 
+            Провалов: <xsl:value-of select="@failures"/>, 
+            Ошибок: <xsl:value-of select="@errors"/>, 
+            Пропущено: <xsl:value-of select="@skipped"/>
           </p>
         </xsl:for-each>
         <!-- Общая статистика по всем тестам -->
-        <h2>Summary</h2>
+        <h2>Итог</h2>
         <p>
-          Total Tests: <xsl:value-of select="testsuites/@tests"/>, 
-          Total Failures: <xsl:value-of select="testsuites/@failures"/>, 
-          Total Errors: <xsl:value-of select="testsuites/@errors"/>, 
-          Total Skipped: <xsl:value-of select="testsuites/@skipped"/>
+          Всего тестов: <xsl:value-of select="testsuites/@tests"/>, 
+          Всего провалов: <xsl:value-of select="testsuites/@failures"/>, 
+          Всего ошибок: <xsl:value-of select="testsuites/@errors"/>, 
+          Всего пропущено: <xsl:value-of select="testsuites/@skipped"/>
         </p>
       </body>
     </html>
