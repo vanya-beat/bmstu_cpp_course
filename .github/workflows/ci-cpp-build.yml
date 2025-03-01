@@ -88,12 +88,14 @@ jobs:
             cd build
             cmake ..
             cmake --build .
+            # Create test results directory
+            mkdir -p test-results
             cd ..
             bash docker/run_tasks/run.sh
           "
 
-          # Optionally, retrieve test results
-          docker cp cpp_course_container:/workspace/build/test-results ./test-results
+          # Retrieve test results (continue on error)
+          docker cp cpp_course_container:/workspace/build/test-results ./test-results || true
 
           # Stop and remove the container
           docker stop cpp_course_container
@@ -101,6 +103,7 @@ jobs:
 
       - name: Upload test results (Загрузка результатов тестов)
         if: failure() || always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: test_results_xml
