@@ -40,19 +40,21 @@ jobs:
             bash -c "cd /workspace && \
                     mkdir -p build && \
                     cd build && \
-                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS='-fprofile-arcs -ftest-coverage' -DGTEST_OUTPUT=xml:test-results/ && \
+                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS='-fprofile-arcs -ftest-coverage' && \
                     cmake --build . && \
                     cd .. && \
-                    for test_bin in \$(find build -type f -executable -name '*test*'); do \
-                      echo \"Running \$test_bin with XML output\" && \
-                      \$test_bin --gtest_output=xml:\$(dirname \$test_bin)/gtest-results.xml || true; \
+                    mkdir -p test-results && \
+                    # Run only our project's test executables, not GoogleTest's Python tests
+                    for test_bin in \$(find build/tasks -type f -executable); do \
+                      echo \"Running \$test_bin\" && \
+                      \$test_bin --gtest_output=xml:test-results/\$(basename \$test_bin).xml || true; \
                     done && \
-                    mkdir -p /workspace/test-results && \
-                    find build -name '*.xml' -type f -exec cp {} /workspace/test-results/ \\;"
+                    # Copy test results to host-mounted directory
+                    cp -r test-results/* /workspace/test-results/ || true"
           
           # Show what test results were found
           echo "Found test results:"
-          ls -la test-results/ || echo "No test results directory found"
+          ls -la test-results/
 
       - name: Upload test results
         if: always()
