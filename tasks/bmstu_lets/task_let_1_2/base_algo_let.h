@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
-#include <string>
 #include <cstdint>
+#include <string>
+#include <vector>
 
 /*
 1. Сохранить в отдельный массив только положительные числа из исходного массива.
