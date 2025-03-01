@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "base_algo_let.h"
 
 std::vector<int> positive_numbers(const std::vector<int>& v) {
@@ -17,8 +18,8 @@ void replace_negative_numbers(std::vector<int>& v) {
 void double_values(std::vector<int>& v) {
   return;
 }
-void sort_students_by_age(const std::vector<Student>& v) {
+void sort_students_by_age(std::vector<Student>& v) {
   return;
 }
-void sort_students_by_name(const std::vector<Student>& v) {
+void sort_students_by_name(std::vector<Student>& v) {
 }
