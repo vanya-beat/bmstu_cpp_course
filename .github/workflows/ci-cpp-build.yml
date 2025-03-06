@@ -56,7 +56,7 @@ jobs:
           echo "Found test results:"
           ls -la test-results/
 
-      - name: Upload test results XML
+      - name: Upload test results
         if: always()
         continue-on-error: true
         uses: actions/upload-artifact@v4
@@ -69,7 +69,7 @@ jobs:
       - name: Create XSLT stylesheet
         if: always()
         run: |
-          cat > gtest-to-html.xsl << 'EOF'
+          cat > transform.xsl << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
             <xsl:output method="html" indent="yes"/>
@@ -152,14 +152,14 @@ jobs:
         if: always()
         run: sudo apt-get update && sudo apt-get install -y xsltproc
 
-      - name: Combine XML reports
+      - name: Merge XML reports
         if: always()
         run: |
-          mkdir -p html-report
-          echo '<?xml version="1.0" encoding="UTF-8"?>' > combined_tests.xml
-          echo '<testsuites>' >> combined_tests.xml
+          # Create combined XML file
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > merged_results.xml
+          echo '<testsuites>' >> merged_results.xml
           
-          # Count total tests and failures
+          # Add test counts 
           total_tests=0
           total_failures=0
           total_errors=0
@@ -167,106 +167,91 @@ jobs:
           
           for xml_file in test-results/*.xml; do
             if [ -f "$xml_file" ]; then
-              # Extract testsuite elements
-              suite_content=$(grep -v '<?xml' "$xml_file" | sed -n '/<testsuite/,/<\/testsuite>/p')
-              echo "$suite_content" >> combined_tests.xml
+              # Extract content without XML declaration
+              content=$(grep -v '<?xml' "$xml_file" | sed -n '/<testsuite/,/<\/testsuite>/p')
+              echo "$content" >> merged_results.xml
               
-              # Extract test counts for global stats
-              tests=$(grep -o 'tests="[0-9]*"' "$xml_file" | head -1 | grep -o '[0-9]*')
-              failures=$(grep -o 'failures="[0-9]*"' "$xml_file" | head -1 | grep -o '[0-9]*')
+              # Get test stats
+              tests=$(grep -o 'tests="[0-9]*"' "$xml_file" | head -1 | grep -o '[0-9]*' || echo "0")
+              failures=$(grep -o 'failures="[0-9]*"' "$xml_file" | head -1 | grep -o '[0-9]*' || echo "0")
               errors=$(grep -o 'errors="[0-9]*"' "$xml_file" | head -1 | grep -o '[0-9]*' || echo "0")
               skipped=$(grep -o 'skipped="[0-9]*"' "$xml_file" | head -1 | grep -o '[0-9]*' || echo "0")
               
-              # Add to totals
+              # Update totals
               total_tests=$((total_tests + tests))
               total_failures=$((total_failures + failures))
-              [ -n "$errors" ] && total_errors=$((total_errors + errors))
-              [ -n "$skipped" ] && total_skipped=$((total_skipped + skipped))
+              total_errors=$((total_errors + errors))
+              total_skipped=$((total_skipped + skipped))
             fi
           done
           
-          # Update root testsuites element with totals
-          echo "</testsuites>" >> combined_tests.xml
+          # Close testsuites element
+          echo '</testsuites>' >> merged_results.xml
           
-          # Add testsuites attributes using sed
-          sed -i "s/<testsuites>/<testsuites tests=\"$total_tests\" failures=\"$total_failures\" errors=\"$total_errors\" skipped=\"$total_skipped\">/" combined_tests.xml
+          # Update the testsuites tag with totals
+          sed -i "s/<testsuites>/<testsuites tests=\"$total_tests\" failures=\"$total_failures\" errors=\"$total_errors\" skipped=\"$total_skipped\">/" merged_results.xml
           
-          # Create empty file if no tests were found
-          if ! grep -q "<testsuite" combined_tests.xml; then
-            echo '<?xml version="1.0" encoding="UTF-8"?>' > combined_tests.xml
-            echo '<testsuites tests="0" failures="0" errors="0" skipped="0">' >> combined_tests.xml
-            echo '</testsuites>' >> combined_tests.xml
+          # Create default if no tests found
+          if ! grep -q "<testsuite" merged_results.xml; then
+            echo '<?xml version="1.0" encoding="UTF-8"?>' > merged_results.xml
+            echo '<testsuites tests="0" failures="0" errors="0" skipped="0">' >> merged_results.xml
+            echo '</testsuites>' >> merged_results.xml
           fi
 
       - name: Generate HTML report
         if: always()
         run: |
+          # Create HTML report directory
           mkdir -p html-report
-          xsltproc -o html-report/index.html gtest-to-html.xsl combined_tests.xml
-          echo "HTML report generated at html-report/index.html"
           
-          # Add custom CSS to enhance the report
-          cat > html-report/style.css << 'EOF'
-          body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-            max-width: 1200px;
-            margin: 0 auto;
-          }
-          h1 {
-            color: #0066cc;
-            text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-          }
-          h2 {
-            color: #0066cc;
-            background-color: #f0f8ff;
-            padding: 10px;
-            border-radius: 5px;
-            border-left: 5px solid #0066cc;
-          }
-          .passed { 
-            color: #4caf50; 
-            font-weight: bold;
-          }
-          .failed { 
-            color: #f44336;
-            font-weight: bold; 
-          }
-          ul {
-            list-style-type: none;
-            padding: 0;
-          }
-          li {
-            margin: 8px 0;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-          }
-          li:hover {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-          }
-          div[style*="margin-left: 20px"] {
-            background-color: #fff0f0;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            border-left: 4px solid #f44336;
-          }
-          p {
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
-          }
+          # Generate main HTML report from merged XML
+          xsltproc -o html-report/index.html transform.xsl merged_results.xml
+          
+          # Also generate individual HTML reports for each test file
+          for xml_file in test-results/*.xml; do
+            if [ -f "$xml_file" ]; then
+              base_name=$(basename "$xml_file" .xml)
+              xsltproc -o "html-report/${base_name}.html" transform.xsl "$xml_file"
+            fi
+          done
+          
+          # Copy the XML files to HTML report directory for reference
+          cp test-results/*.xml html-report/ || true
+          cp merged_results.xml html-report/ || true
+          
+          # Add index listing all reports
+          cat > html-report/reports.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Google Test Reports</title>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
+              h1 { color: #0066cc; }
+              ul { list-style-type: none; padding: 0; }
+              li { margin: 10px 0; padding: 10px; background-color: #f5f5f5; border-radius: 5px; }
+              a { color: #0066cc; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>Available Test Reports</h1>
+            <ul>
+              <li><a href="index.html">Combined Test Report</a> - All test results</li>
           EOF
           
-          # Include the CSS in the HTML file
-          sed -i '6i\    <link rel="stylesheet" href="style.css">' html-report/index.html
+          # Add links to individual reports
+          for html_file in html-report/*.html; do
+            base_name=$(basename "$html_file")
+            if [[ "$base_name" != "index.html" && "$base_name" != "reports.html" ]]; then
+              echo "    <li><a href=\"$base_name\">$(basename "$base_name" .html)</a></li>" >> html-report/reports.html
+            fi
+          done
+          
+          # Close HTML
+          echo "  </ul></body></html>" >> html-report/reports.html
+          
+          echo "HTML reports generated successfully"
 
       - name: Upload HTML test report
         if: always()
