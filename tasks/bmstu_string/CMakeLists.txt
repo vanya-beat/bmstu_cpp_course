@@ -11,7 +11,8 @@ foreach (TASK ${TASKS})
     file(GLOB FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}/*.[ch]pp
             ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}/*.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}/*.c)
+            ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}/*.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/${TASK}/*.natvis)
     list(APPEND SOURCES ${FILES})
 endforeach ()
 message(STATUS "SOURCES: ${SOURCES}")
