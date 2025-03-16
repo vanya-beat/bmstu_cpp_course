@@ -1,8 +1,3 @@
-| **CI Service** | Tests Status                                                                                                                                                                                    | Style Check                                                                                                                                                                                               |
-|:---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Github Actions | [![Tests Status](https://github.com/ifanfomin/bmstu_cpp_course/actions/workflows/ci-cpp-build.yml/badge.svg)](https://github.com/ifanfomin/bmstu_cpp_course/actions/workflows/ci-cpp-build.yml) | [![Tests Status](https://github.com/ifanfomin/bmstu_cpp_course/actions/workflows/ci-cpp-stylecheck.yml/badge.svg)](https://github.com/ifanfomin/bmstu_cpp_course/actions/workflows/ci-cpp-stylecheck.yml) |
-
-
 # Гайд по установке и началу работы
 ## Подключение Ubuntu к Github по ssh
 Источник: [Ссылка на инструкцию от гитхаба](https://docs.github.com/ru/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)

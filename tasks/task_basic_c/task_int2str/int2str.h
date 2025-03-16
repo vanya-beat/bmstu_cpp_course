@@ -1,10 +1,11 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-char* int2str(int number);
+	char* int2str(int number);
 
 #ifdef __cplusplus
 }

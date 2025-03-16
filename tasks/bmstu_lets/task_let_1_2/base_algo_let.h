@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
-#include <string>
 #include <cstdint>
+#include <string>
+#include <vector>
 
 /*
 1. Сохранить в отдельный массив только положительные числа из исходного массива.
@@ -14,17 +14,16 @@
 7. Отсортировать массив студентов по имени и по возрасту
  */
 
-struct Student {
-  Student(const char* name_, int age_)
-      : age(age_),
-        name(name_) {
-  }
-  /// operator ==
-  bool operator==(const Student& other) const {
-    return other.age == age && other.name == name;
-  }
-  uint8_t age;
-  std::string name;
+struct Student
+{
+	Student(const char* name_, int age_) : age(age_), name(name_) {}
+	/// operator ==
+	bool operator==(const Student& other) const
+	{
+		return other.age == age && other.name == name;
+	}
+	uint8_t age;
+	std::string name;
 };
 std::vector<int> positive_numbers(const std::vector<int>& v);
 void sort_positive_numbers(std::vector<int>& v);
