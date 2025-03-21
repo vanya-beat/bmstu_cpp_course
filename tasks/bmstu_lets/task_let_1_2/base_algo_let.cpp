@@ -1,26 +1,20 @@
+// Copyright 2025 <ShuranovArtem>
 #include <algorithm>
+#include <numeric>
 #include "base_algo_let.h"
 
 std::vector<int> positive_numbers(const std::vector<int>& v) {
   std::vector<int> positives;
-  for (int i : v) {
-    if (i > 0) {
-      positives.push_back(i);
-    }
-  }
-  return(positives);
+    std::copy_if(v.begin(), v.end(), std::back_inserter(positives),
+      [](int i) { return i > 0; });
+    return positives;
 }
 void sort_positive_numbers(std::vector<int>& v) {
   std::sort(v.begin(), v.end());
 }
 int sum_positive_numbers(const std::vector<int>& v) {
-  int summa = 0;
-  for (int i : v) {
-    if (i > 0) {
-      summa += i;
-    }
-  } //accumulate
-  return summa;
+  return std::accumulate(v.begin(), v.end(), 0,
+    [](int sum, int i) { return i > 0 ? sum + i : sum; });
 }
 bool is_divisible_by_10(const std::vector<int>& v) {
   return std::any_of(v.begin(), v.end(), [](int i) { return i % 10 == 0; });
