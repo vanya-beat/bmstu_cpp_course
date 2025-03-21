@@ -3,106 +3,103 @@
 #include <exception>
 #include <iostream>
 
-namespace bmstu {
-template <typename T> class basic_string;
+namespace bmstu
+{
+template <typename T>
+class basic_string;
 
 typedef basic_string<char> string;
 typedef basic_string<wchar_t> wstring;
 typedef basic_string<char16_t> u16string;
 typedef basic_string<char32_t> u32string;
 
-template <typename T> class basic_string {
-public:
-  /// Конструктор по умолчанию
-  basic_string()
-      : ptr_(nullptr),
-        size_(0) {
-  }
+template <typename T>
+class basic_string;
 
-  basic_string(size_t size)
-      : ptr_(nullptr),
-        size_(0) {
-  }
+typedef basic_string<char> string;
+typedef basic_string<wchar_t> wstring;
+// typedef basic_string<char8_t> u8string;
+typedef basic_string<char16_t> u16string;
+typedef basic_string<char32_t> u32string;
 
-  basic_string(std::initializer_list<T> il)
-      : ptr_(nullptr),
-        size_(0) {
-  }
+template <typename T>
+#ifdef _MSC_VER
+class basic_string
+#else
+class basic_string
+#endif
+{
+   public:
+	/// Конструктор по умолчанию
+	basic_string() : ptr_(new T[1]{0}), size_(0) {}
 
-  basic_string(const T* c_str) {
-  }
+	basic_string(size_t size) : ptr_(new T[size + 1]), size_(size) {}
 
-  basic_string(const basic_string& other) {
-  }
+	basic_string(std::initializer_list<T> il)
+		: ptr_(new T[il.size() + 1]), size_(il.size())
+	{
+	}
 
-  basic_string(basic_string&& dying) {
-  }
+	/// Конструктор с параметром си-с
+	basic_string(const T* c_str) {}
 
-  ~basic_string() {
-  }
+	/// Конструктор копирования
+	basic_string(const basic_string& other) {}
 
-  const T* c_str() const {
-    return nullptr;
-  }
+	/// Перемещающий конструктор
+	basic_string(basic_string&& dying) {}
 
-  size_t size() const {
-    return 0;
-  }
+	/// Деструктор
+	~basic_string() {}
 
-  basic_string& operator=(basic_string&& other) {
-    return *this;
-  }
+	/// Геттер на си-строку
+	const T* c_str() const { return ptr_; }
 
-  basic_string& operator=(const T* c_str) {
-    return *this;
-  }
+	size_t size() const { return 0; }
 
-  basic_string& operator=(const basic_string& other) {
-    return *this;
-  }
+	/// Оператор копирующего присваивания
+	basic_string& operator=(basic_string&& other) { return *this; }
 
-  friend basic_string<T> operator+(const basic_string<T>& left,
-                                   const basic_string<T>& right) {
-    return {};
-  }
+	/// Оператор копирующего присваивания си строки
+	basic_string& operator=(const T* c_str) { return *this; }
 
-  template <typename S> friend S& operator<<(S& os, const basic_string& obj) {
-    return os;
-  }
+	/// Оператор копирующего присваивания
+	basic_string& operator=(const basic_string& other) { return *this; }
 
-  template <typename S> friend S& operator>>(S& is, basic_string& obj) {
-    return is;
-  }
+	friend basic_string<T> operator+(const basic_string<T>& left,
+									 const basic_string<T>& right)
+	{
+		return {};
+	}
 
-  basic_string& operator+=(const basic_string& other) {
-    return *this;
-  }
+	template <typename S>
+	friend S& operator<<(S& os, const basic_string& obj)
+	{
+		return os;
+	}
 
-  basic_string& operator+=(T symbol) {
-    return *this;
-  }
+	template <typename S>
+	friend S& operator>>(S& is, basic_string& obj)
+	{
+		return is;
+	}
 
-  T& operator[](size_t index) noexcept {
-    return data()[0];
-  }
+	basic_string& operator+=(const basic_string& other) { return *this; }
 
-  T& at(size_t index) {
-    return data()[0];
-  }
+	basic_string& operator+=(T symbol) { return *this; }
 
-private:
-  static size_t strlen_(const T* str) {
-    return 0;
-  }
+	T& operator[](size_t index) noexcept { return *(ptr_ + index); }
 
-  void clean_() {
-  }
+	T& at(size_t index) { throw std::out_of_range("Wrong index"); }
 
-  T* data() {
-    return nullptr;
-  }
+	T* data() { return ptr_; }
 
-  T* ptr_ = nullptr;
-  size_t size_;
+   private:
+	static size_t strlen_(const T* str) { return 0; }
+
+	void clean_() {}
+
+	T* ptr_ = nullptr;
+	size_t size_;
 };
-} // namespace bmstu
+}  // namespace bmstu

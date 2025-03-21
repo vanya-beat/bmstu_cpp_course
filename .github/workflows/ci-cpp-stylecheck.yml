@@ -1,37 +1,39 @@
-name: C++ Style Check
+name: Clang Format Check
 
 on:
   push:
-    branches: [main, hw]
+    paths:
+      - 'tasks/**/*.c'
+      - 'tasks/**/*.cpp'
+      - 'tasks/**/*.h'
+      - 'tasks/**/*.hpp'
   pull_request:
-    branches: [main, hw]
+    paths:
+      - 'tasks/**/*.c'
+      - 'tasks/**/*.cpp'
+      - 'tasks/**/*.h'
+      - 'tasks/**/*.hpp'
 
 jobs:
-  build-docker:
-    uses: ./.github/workflows/docker-build.yml
-
-  style-check:
-    name: Run Style Check
-    needs: build-docker
+  formatting-check:
+    name: Formatting Check
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Docker image
-        uses: actions/download-artifact@v4
-        with:
-          name: cpp_course-image
-
-      - name: Load Docker image
-        run: docker load -i cpp_course_image.tar
-
-      - name: Run style check
-        run: |
-          # Mount repository directly instead of copying
-          docker run --name style_check_container \
-            -v ${{ github.workspace }}:/workspace \
-            bmstu_cpp_course-bmstu:latest \
-            bash -c "cd /workspace && bash docker/run_tasks/run_style_check.sh"
+    - uses: actions/checkout@v4
+    
+    - name: Install clang-format
+      run: sudo apt-get install -y clang-format
+    
+    - name: Check clang-format
+      run: |
+        find tasks -iname '*.c' -o -iname '*.cpp' -o -iname '*.h' -o -iname '*.hpp' | while read -r file
+        do
+          if ! clang-format --dry-run --Werror "$file" >/dev/null 2>&1
+          then
+            echo "❌ Code style issues found in: $file"
+            clang-format --dry-run --Werror "$file"
+            exit 1
+          fi
+        done
+        echo "✅ All files are properly formatted"
