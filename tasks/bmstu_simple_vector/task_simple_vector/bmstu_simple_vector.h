@@ -24,37 +24,37 @@ class simple_vector
 
 		iterator(std::nullptr_t) noexcept : ptr_(nullptr) {}
 
-		iterator(iterator&& other) noexcept : ptr_(nullptr) {}
+		iterator(iterator&& other) noexcept { std::exchange(ptr_, other.ptr_); }
 
 		explicit iterator(pointer ptr) : ptr_(ptr) {}
 
 		reference operator*() const { return *ptr_; }
 
-		pointer operator->() { return nullptr; }
+		pointer operator->() { return ptr_; }
 
 		iterator& operator=(const iterator& other) = default;
 
-		iterator& operator=(iterator&& other) noexcept { return *this; }
+		iterator& operator=(iterator&& other) noexcept { std::exchange(*ptr_, other.ptr_); return *this; }
 
 #pragma region Operators
-		iterator& operator++() { return *this; }
+		iterator& operator++() { ++ptr_; return *this; }
 
-		iterator& operator--() { return *this; }
+		iterator& operator--() { --ptr_; return *this; }
 
-		iterator operator++(int) { return *this; }
+		iterator operator++(int) { ++ptr_; return this; }
 
-		iterator operator--(int) { return *this; }
+		iterator operator--(int) { --ptr_; return this; }
 
 		explicit operator bool() const { return ptr_ != nullptr; }
 
 		friend bool operator==(const iterator& lhs, const iterator& rhs)
 		{
-			return "false";
+			return lhs.ptr_ == rhs.ptr_;
 		}
 
 		friend bool operator==(const iterator& lhs, std::nullptr_t)
 		{
-			return "false";
+			return lhs.ptr_ == nullptr;
 		}
 
 		iterator& operator=(std::nullptr_t) noexcept
@@ -65,38 +65,42 @@ class simple_vector
 
 		friend bool operator==(std::nullptr_t, const iterator& rhs)
 		{
-			return true;
+			return rhs.ptr_ == nullptr;
 		}
 
 		friend bool operator!=(const iterator& lhs, const iterator& rhs)
 		{
-			return true;
-		}
-
-		iterator operator+(const difference_type& n) const noexcept
-		{
-			return nullptr;
+			return !(lhs == rhs);
 		}
 
 		iterator operator+=(const difference_type& n) noexcept
 		{
-			return nullptr;
+			return  (this->ptr_ + n);
 		}
 
-		iterator operator-(const difference_type& n) const noexcept
+		iterator operator+(const difference_type& n) const noexcept
 		{
-			return nullptr;
+			iterator copy(*this);
+			copy.ptr_ += n;
+			return copy;
 		}
 
 		iterator operator-=(const difference_type& n) noexcept
 		{
-			return nullptr;
+			return (this->ptr_ - n);
+		}
+
+		iterator operator-(const difference_type& n) const noexcept
+		{
+			iterator copy(*this);
+			copy.ptr_ -= n;
+			return copy;
 		}
 
 		friend difference_type operator-(const iterator& end,
 										 const iterator& begin) noexcept
 		{
-			return 0;
+			return end.ptr_ - begin.ptr_;
 		}
 
 #pragma endregion
@@ -108,77 +112,191 @@ class simple_vector
 
 	~simple_vector() = default;
 
-	simple_vector(std::initializer_list<T> init) noexcept {}
+	simple_vector(std::initializer_list<T> init) noexcept {
+		size_ = init.size();
+		capacity_ = init.size();
+		iterator it = begin();
+		for (auto el = init.begin(); el != init.end(); ++el, ++it) {
+			*it = *el;
+		}
+	}
 
-	simple_vector(const simple_vector& other) {}
+	simple_vector(const simple_vector& other) {
+		size_ = other.size_;
+		capacity_ = other.capacity_;
+		for (auto it1 = begin(), it2 = other.begin(); it2 != other.end(); ++it1, ++it2) {
+			*it1 = *it2;
+		}
+	}
 
-	simple_vector(simple_vector&& other) noexcept { swap(other); }
+	simple_vector(simple_vector&& other) noexcept { this->swap(other); }
 
-	simple_vector& operator=(const simple_vector& other) { return *this; }
+	simple_vector& operator=(const simple_vector& other) { 
+		if (other.empty()) {
+			clear();
+			return *this;
+		}
+		size_ = other.size_;
+		capacity_ = other.capacity_;
+		for (auto it1 = begin(), it2 = other.begin(); it2 != other.end(); ++it1, ++it2) {
+			*it1 = *it2;
+		}
+		return *this;
+	}
 
-	simple_vector(size_t size, const T& value = T{}) {}
+	simple_vector(size_t size, const T& value = T{}) {
+		size_ = size;
+		capacity_ = size_;
+		for (auto it = begin(); it != end(); ++it) {
+			*it = value;
+		}
+	}
 
-	iterator begin() noexcept { return nullptr; }
+	iterator begin() noexcept { return iterator(data_.get()); }
 
-	iterator end() noexcept { return nullptr; }
+	iterator end() noexcept { return iterator((data_.get() + size_)); }
 
 	using const_iterator = iterator;
 
-	const_iterator begin() const noexcept { return nullptr; }
+	const_iterator begin() const noexcept { return iterator(data_.get()); }
 
-	const_iterator end() const noexcept { return nullptr; }
+	const_iterator end() const noexcept { return iterator((data_.get() + size_)); }
 
 	typename iterator::reference operator[](size_t index) noexcept
 	{
-		return data_[0];
+		return data_[index];
 	}
 
 	typename const_iterator::reference operator[](size_t index) const noexcept
 	{
-		return data_[0];
+		return data_[index];
 	}
 
-	typename iterator::reference at(size_t index) { return data_.get()[1]; }
+	typename iterator::reference at(size_t index) { return data_.get()[index]; }
 
 	typename const_iterator::reference at(size_t index) const
 	{
-		return data_.get()[1];
+		return data_.get()[index];
 	}
 
-	size_t size() const noexcept { return 1; }
+	size_t size() const noexcept { return size_; }
 
-	size_t capacity() const noexcept { return 100500; }
+	size_t capacity() const noexcept { return capacity_; }
 
-	void swap(simple_vector& other) noexcept {}
+	void swap(simple_vector& other) noexcept {
+		std::swap(size_, other.size_);
+		std::swap(capacity_, other.capacity_);
+		data_.swap(other.data_);
+	}
 
-	friend void swap(simple_vector& lhs, simple_vector& rhs) noexcept {}
+	friend void swap(simple_vector& lhs, simple_vector& rhs) noexcept {
+		lhs.swap(rhs);
+	}
 
-	void reserve(size_t new_cap) {}
+	void reserve(size_t new_cap) {
+		if (new_cap > capacity_) {
+			new_cap = std::max(capacity_ * 2, new_cap);
+			array_ptr<T> new_data(new_cap);
+			for (auto it1 = begin(), it2 = iterator(new_data.get()); it1 != end(); ++it1, ++it2) {
+				*it2 = std::move(*it1);
+			}
+			data_.swap(new_data);
+			capacity_ = new_cap;
+		}     return *m_ptr;
+	}
 
-	void resize(size_t new_size) { return; }
+	void resize(size_t new_size) { 
+		if (new_size > capacity_) {
+			size_t new_cap = std::max(new_size, capacity_ * 2);
+			reserve(new_cap);
+		}
+		if (size_ > new_size) {
+			size_ = new_size;
+		}
+		for (auto it = end(); it != begin() + new_size; ++it) {
+			*it = T{};
+		}
+		size_ = new_size;
+	 }
 
-	iterator insert(const_iterator where, T&& value) { return nullptr; }
+	iterator insert(const_iterator where, T&& value) { 
+		auto index = where - begin();
+		if (capacity_ == 0) {
+			reserve(1);
+		}
+		if (size_ == capacity_) {
+			capacity_ *= 2;
+		}
+		array_ptr<T> temp_data(capacity_);
+		T* ptr_td = temp_data.get();
+		for (auto it = begin(); it != begin() + index; ++it, ++ptr_td) {
+			*ptr_td = std::move(*it);
+		}
+		temp_data[index] = std::move(value);
+		ptr_td = temp_data.get() + index + 1;
+		if (index + 1 < size_) {
+			for (auto it = begin() + index; it != end(); ++it, ++ptr_td) {
+				*ptr_td = std::move(*it);
+			}
+		}
+		data_.swap(temp_data);
+		++size_;
+		return begin() + index;
+	}
 
-	iterator insert(const_iterator where, const T& value) { return nullptr; }
+	iterator insert(const_iterator where, const T& value) { 
+		auto index = where - begin();
+		if (capacity_ == 0) {
+			reserve(1);
+		}
+		if (size_ == capacity_) {
+			capacity_ *= 2;
+		}
+		array_ptr<T> temp_data(capacity_);
+		T* ptr_td = temp_data.get();
+		for (auto it = begin(); it != begin() + index; ++it, ++ptr_td) {
+			*ptr_td = std::move(*it);
+		}
+		temp_data[index] = std::move(value);
+		ptr_td = temp_data.get() + index + 1;
+		if (index + 1 < size_) {
+			for (auto it = begin() + index; it != end(); ++it, ++ptr_td) {
+				*ptr_td = std::move(*it);
+			}
+		}
+		data_.swap(temp_data);
+		++size_;
+		return begin() + index;
+	}
 
-	void push_back(T&& value) {}
+	void push_back(T&& value) {
+		insert(end(), std::move(value));
+	}
 
-	void clear() noexcept {}
+	void clear() noexcept { size_ == 0; capacity_ == 0; }
 
-	void push_back(const T& value) {}
+	void push_back(const T& value) {
+		insert(end(), value);
+	}
 
-	bool empty() const noexcept { return false; }
+	bool empty() const noexcept { return size_ == 0; }
 
-	void pop_back() { return; }
+	void pop_back() { 
+		if (size_ != 0) { (*this)[--size_] = {}; }
+	}
 
 	friend bool operator==(const simple_vector& lhs, const simple_vector& rhs)
 	{
+		if (lhs.size() != rhs.size()) return false;
+		for (auto it1 = lhs.begin(), it2 = rhs.begin(); it1 != lhs.end(); ++it1, ++it2) {
+			if (*it1 != *it2) return false;
+		}
 		return true;
 	}
 
 	friend bool operator!=(const simple_vector& lhs, const simple_vector& rhs)
 	{
-		return false;
+		return !(lhs == rhs);
 	}
 
 	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
@@ -188,15 +306,36 @@ class simple_vector
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
 	{
+		os << "[";
+		for (size_t i = 0; i < vec.size(); ++i) {
+			os << vec[i];
+			if (i != vec.size() - 1) {
+				os << ", ";
+			}
+		}
+		os << " ]";
 		return os;
 	}
-	iterator erase(iterator where) { return nullptr; }
+	iterator erase(iterator where) { 
+		size_t index = where - begin();
+		if (!empty()) {
+			std::move(begin() + index + 1, end(), begin() + index);
+			--size_;
+		}
+		return begin() + index;
+	}
 
    private:
 	static bool alphabet_compare(const simple_vector<T>& lhs,
 								 const simple_vector<T>& rhs)
 	{
-		return false;
+		auto it1 = lhs.begin(); 
+		auto it2 = rhs.begin();
+		for (; it1 != lhs.end(), it2 != rhs.end(); ++it1, ++it2) {
+			if (*it1 < *it2) { return true; }
+			if (*it1 > *it2) { return false; }
+		}
+		return (it1 == lhs.end()) && (it2 != rhs.end());
 	}
 	array_ptr<T> data_;
 	size_t size_ = 0;
