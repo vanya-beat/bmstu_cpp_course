@@ -1,4 +1,3 @@
-#include <assert.h>
 #include "str2int.h"
 #include "stdio.h"
 
