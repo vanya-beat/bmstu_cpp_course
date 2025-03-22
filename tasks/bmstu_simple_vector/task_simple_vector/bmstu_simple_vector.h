@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <utility>
 #include "array_ptr.h"
+#include <algorithm>
 
 namespace bmstu
 {
@@ -30,7 +31,12 @@ class simple_vector
 
 		reference operator*() const { return *ptr_; }
 
-		pointer operator->() { return ptr_; }
+		pointer operator->() const { return ptr_; }
+
+		friend pointer to_address(const iterator& it) noexcept
+		{
+			return it.ptr_;
+		}
 
 		iterator& operator=(const iterator& other) = default;
 
@@ -112,18 +118,14 @@ class simple_vector
 
 	~simple_vector() = default;
 
-	simple_vector(std::initializer_list<T> init) noexcept {
-		size_ = init.size();
-		capacity_ = init.size();
+	simple_vector(std::initializer_list<T> init) : size_(init.size()), capacity_(init.size()), data_(init.size()) {
 		iterator it = begin();
 		for (auto el = init.begin(); el != init.end(); ++el, ++it) {
 			*it = *el;
 		}
 	}
 
-	simple_vector(const simple_vector& other) {
-		size_ = other.size_;
-		capacity_ = other.capacity_;
+	simple_vector(const simple_vector& other) : size_(other.size_), capacity_(other.capacity_), data_(other.size_) {
 		for (auto it1 = begin(), it2 = other.begin(); it2 != other.end(); ++it1, ++it2) {
 			*it1 = *it2;
 		}
@@ -144,9 +146,7 @@ class simple_vector
 		return *this;
 	}
 
-	simple_vector(size_t size, const T& value = T{}) {
-		size_ = size;
-		capacity_ = size_;
+	simple_vector(size_t size, const T& value = T{}) : size_(size), capacity_(size), data_(size) {
 		for (auto it = begin(); it != end(); ++it) {
 			*it = value;
 		}
@@ -198,11 +198,11 @@ class simple_vector
 			new_cap = std::max(capacity_ * 2, new_cap);
 			array_ptr<T> new_data(new_cap);
 			for (auto it1 = begin(), it2 = iterator(new_data.get()); it1 != end(); ++it1, ++it2) {
-				*it2 = std::move(*it1);
+		  	*it2 = std::move(*it1);
 			}
 			data_.swap(new_data);
 			capacity_ = new_cap;
-		}     return *m_ptr;
+	  	}
 	}
 
 	void resize(size_t new_size) { 
@@ -273,7 +273,7 @@ class simple_vector
 		insert(end(), std::move(value));
 	}
 
-	void clear() noexcept { size_ == 0; capacity_ == 0; }
+	void clear() noexcept { size_ = 0; }
 
 	void push_back(const T& value) {
 		insert(end(), value);
@@ -299,9 +299,25 @@ class simple_vector
 		return !(lhs == rhs);
 	}
 
-	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
+	/*friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
 	{
-		return true;
+		
+	}*/
+
+	friend bool operator<(const simple_vector& lhs, const simple_vector& rhs) {
+		return alphabet_compare(lhs, rhs);
+	}
+
+	friend bool operator>(const simple_vector& lhs, const simple_vector& rhs) {
+		return !(lhs <= rhs);
+	}
+
+	friend bool operator<=(const simple_vector& lhs, const simple_vector& rhs) {
+		return (lhs < rhs || lhs == rhs);
+	}
+
+	friend bool operator>=(const simple_vector& lhs, const simple_vector& rhs) {
+		return !(lhs < rhs);
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
