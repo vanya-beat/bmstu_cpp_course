@@ -5,6 +5,14 @@ RUN sh install_deps.sh
 #COPY . /cpp_course
 ENV TZ=Europe/Moscow
 
+# gdbinit setup
+WORKDIR /cpp_bmstu
+COPY .gdbinit .
+RUN mkdir -p "/.config/gdb/"
+COPY .gdbinit_home /.config/gdb/gdbinit
+ADD . .
+# gdbinit setup end
+
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 

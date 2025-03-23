@@ -1,0 +1,1 @@
+source tasks/bmstu_simple_vector/task_simple_vector/simple_vector_gdb.py
