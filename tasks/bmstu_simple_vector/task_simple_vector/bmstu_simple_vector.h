@@ -230,7 +230,17 @@ class simple_vector
 
 	}
 
-	void reserve(size_t new_cap) {}
+	void reserve(size_t new_cap) {
+		const size_t old_capacity = capacity_;
+		if (new_cap > old_capacity) {
+			array_ptr<T> new_data(new_cap);
+			for (auto it = begin(), nit = iterator(new_data.get()); it != end(); ++it, ++nit) {
+				*nit = *it;
+			}
+			data_.swap(new_data);
+			capacity_ = new_cap;
+		}
+	}
 
 	void resize(size_t new_size) {
 		const size_t old_size = size_;
@@ -267,16 +277,16 @@ class simple_vector
 			data_ = array_ptr<T>(new_size);
 			for (size_t i = 0; i < size_; i++) {
 				if (i < old_size) {
-					data_.get()[i] = old_ptr[i];
+					data_[i] = std::move(old_ptr[i]);
 				} else {
-					data_.get()[i] = T{};
+					data_[i] = T{};
 				}
 			}
 			delete[] old_ptr;
 		}
 		for (size_t i = end() - begin() - 1; i != where_index - 1; --i) {
 			if (i == where_index) {
-				data_[i] = value;
+				data_[i] = std::move(value);
 			} else {
 				data_[i] = data_[i - 1];
 			}
@@ -287,7 +297,7 @@ class simple_vector
 	iterator insert(const_iterator where, const T& value) {
 		size_t where_index = where - begin();
 		size_t new_size = size_ + 1;
-		const size_t old_size = size_;
+		size_t old_size = size_;
 		size_ = new_size;
 		if (size_ > capacity_) {
 			capacity_ = size_;
@@ -314,28 +324,7 @@ class simple_vector
 	}
 
 	void push_back(T&& value) {
-		size_ += 1;
-		if (capacity_ == 0) {
-			capacity_ = size_;
-			data_ = array_ptr<T>(size_);
-		}
-		if (size_ <= capacity_) {
-			data_.get()[size_ - 1] = value;
-		} else if (size_ > capacity_) {
-			capacity_ *= 2;
-			T* old_ptr = new T[capacity_];
-			std::copy(data_.get(), data_.get() + size_ - 1, old_ptr);
-			data_ = array_ptr<T>(capacity_);
-			for (size_t i = 0; i < size_; i++) {
-				if (i < size_ - 1) {
-					data_.get()[i] = old_ptr[i];
-				} else if (i == size_ - 1) {
-					data_.get()[i] = value;
-				} else {
-					data_.get()[i] = T{};
-				}
-			}
-		}
+		insert(end(), std::move(value));
 	}
 
 	void clear() noexcept {
@@ -343,13 +332,7 @@ class simple_vector
 	}
 
 	void push_back(const T& value) {
-		data_[size_] = value;
-		size_++;
-		if (size_ == 1) {
-			capacity_ = 1;
-		} else if (size_ > capacity_) {
-			capacity_ *= 2;
-		}
+		insert(end(), value);
 	}
 
 	[[nodiscard]] bool empty() const noexcept { return size_ == 0; }
@@ -363,17 +346,16 @@ class simple_vector
 
 	friend bool operator==(const simple_vector& lhs, const simple_vector& rhs)
 	{
-		// if (lhs.size_ == rhs.size_) {
-		// 	bool result = true;
-		// 	for (size_t i = 0; i < lhs.size_; i++) {
-		// 		if (lhs.data_.get()[i] != rhs.data_.get()[i]) {
-		// 			result = false;
-		// 		}
-		// 	}
-		// 	return result;
-		// }
-		// return false;
-		return alphabet_compare(lhs, rhs) == 0;
+		if (lhs.size_ == rhs.size_) {
+			bool result = true;
+			for (size_t i = 0; i < lhs.size_; i++) {
+				if (lhs.data_.get()[i] != rhs.data_.get()[i]) {
+					result = false;
+				}
+			}
+			return result;
+		}
+		return false;
 	}
 
 	friend bool operator!=(const simple_vector& lhs, const simple_vector& rhs)
@@ -381,31 +363,11 @@ class simple_vector
 		return !(lhs == rhs);
 	}
 
-	// friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
-	// {
-	// 	return alphabet_compare(lhs, rhs) ? std::strong_ordering::less
-	// 			: (lhs == rhs)			  ? std::strong_ordering::equal
-	// 	                                  : std::strong_ordering::greater;
-	// }
-
-	friend auto operator>(const simple_vector& lhs, const simple_vector& rhs)
+	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
 	{
-		return alphabet_compare(lhs, rhs) == 1;
-	}
-
-	friend auto operator<(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		return alphabet_compare(lhs, rhs) == -1;
-	}
-
-	friend auto operator>=(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		return lhs > rhs || lhs == rhs;
-	}
-
-	friend auto operator<=(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		return lhs < rhs || lhs == rhs;
+		return alphabet_compare(lhs, rhs) ? std::strong_ordering::less
+				: (lhs == rhs)			  ? std::strong_ordering::equal
+		                                  : std::strong_ordering::greater;
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
@@ -414,48 +376,39 @@ class simple_vector
 	}
 
 	iterator erase(iterator where) {
-		return nullptr;
-		// if (!empty()) {
-		// 	size_t where_index = where - begin();
-		// 	array_ptr<T> arr2 = array_ptr<T>(data_.get());
-		// 	for (size_t i = where_index; i != size_ - 2; ++i) {
-		// 		data_[i] = arr2[i + 1];
-		// 	}
-		// }
-		// return iterator(data_.get());
+		if (!empty()) {
+			size_t where_index = where - begin();
+			size_t i = where_index;
+			T* arr = new T[size_];
+			std::copy(data_.get(), data_.get() + size_, arr);
+			for (; i != size_ - 1; ++i) {
+				data_[i] = arr[i + 1];
+			}
+			delete[] arr;
+			data_[size_ - 1] = T{};
+			size_ -= 1;
+		}
+		return iterator(data_.get());
 	}
-	// 1, 2, 3, 4, 5
-	// 1, 2, 3, 4, 5
-
-	// 1, 2, 3, 4, 5
-	// 1, 2, 4, 5
-
 
    private:
-	static size_t alphabet_compare(const simple_vector<T>& lhs,
-								 const simple_vector<T>& rhs)
-	{
-		size_t compare = 0;  // -1 : < //  0 : == // 1 : > //
-		int i = (lhs.size() < rhs.size()) ? lhs.size() - 1 : rhs.size() - 1;
-		while (i >= 0) {
-			if (lhs.data_[i] < rhs.data_[i]) {
-				compare = -1;
-			} else if (lhs.data_[i] > rhs.data_[i]) {
-				compare = 1;
-			}
-			--i;
-		}
-		if (compare == 0) {
-			if (lhs.size() > rhs.size()) {
-				compare = 1;
-			} else if (lhs.size() < rhs.size()) {
-				compare = -1;
-			}
-		}
-		return compare;
+	static bool alphabet_compare(const simple_vector<T>& lhs,
+								 const simple_vector<T>& rhs) {
+		auto bi1 = lhs.begin(), bi2 = rhs.begin();
+		auto ei1 = lhs.end(), ei2 = rhs.end();
 
-		return compare;
+		for (;(bi1 != ei2) && (bi2 != ei1); ++bi1, ++bi2) {
+			if (*bi1 < *bi2) {
+				return true;
+			}
+			if (*bi2 < *bi1) {
+				return false;
+			}
+		}
+
+		return (bi1 == ei1) && (bi2 == ei2);
 	}
+
 	array_ptr<T> data_;
 	size_t size_ = 0;
 	size_t capacity_ = 0;
