@@ -91,3 +91,5 @@ git add -A
 git commit -m "Программа проходит все тесты"
 git push
 ```
+13. Либо используем боковую панель vs code:  
+![](README_media/vscode_git.png)
