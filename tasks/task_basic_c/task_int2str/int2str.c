@@ -1,4 +1,3 @@
-// Copyright 2025 <ShuranovArtem>
 #include "int2str.h"
 #include <stdlib.h>
 
