@@ -1,5 +1,4 @@
 #include "int2str.h"
-#include <assert.h>
 #include <stdlib.h>
 
 char* int2str(const int number) {
@@ -32,5 +31,4 @@ char* int2str(const int number) {
     buf[0] = '-';
   }
   return buf;
-
 }
