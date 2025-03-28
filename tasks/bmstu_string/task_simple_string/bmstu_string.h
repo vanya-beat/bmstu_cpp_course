@@ -15,7 +15,20 @@ typedef basic_string<char16_t> u16string;
 typedef basic_string<char32_t> u32string;
 
 template <typename T>
+class basic_string;
+
+typedef basic_string<char> string;
+typedef basic_string<wchar_t> wstring;
+// typedef basic_string<char8_t> u8string;
+typedef basic_string<char16_t> u16string;
+typedef basic_string<char32_t> u32string;
+
+template <typename T>
+#ifdef _MSC_VER
 class basic_string
+#else
+class basic_string
+#endif
 {
    public:
 	/// Конструктор по умолчанию
