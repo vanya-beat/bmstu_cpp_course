@@ -1,4 +1,5 @@
 #include <stdlib.h>
+
 #include "int2str.h"
 
 char* int2str(const int number)
