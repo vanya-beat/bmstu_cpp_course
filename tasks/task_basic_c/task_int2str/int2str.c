@@ -1,41 +1,43 @@
 #include "int2str.h"
+#include <stdbool.h>
 #include <stdlib.h>
-
-char* int2str(const int number)
+#define int_MIN (-2147483647 - 1)
+#define int_MAX 2147483647
+char* int2str(int number)
 {
-	int size = 0;
-	unsigned int temp_number = number;
-	unsigned int ext_number;
+	char* str = (char*)malloc(12 * sizeof(char));
 
-	if (number < 0)
+	bool is_negative = false;
+	int i = 0;
+	long long int remainder = number;
+
+	if (remainder < 0)
 	{
-		ext_number = -number;
-		temp_number = -temp_number;
-		size++;
+		is_negative = true;
+		remainder = -remainder;
 	}
-	else
+	if (remainder == 0)
 	{
-		ext_number = number;
+		str[i++] = '0';
+		str[i] = '\0';
+		return str;
+	}
+	while (remainder != 0)
+	{
+		str[i++] = (remainder % 10) + '0';
+		remainder /= 10;
+	}
+	if (is_negative)
+	{
+		str[i++] = '-';
+	}
+	str[i] = '\0';
+	for (int j = 0; j < i / 2; j++)
+	{
+		char temp = str[j];
+		str[j] = str[i - j - 1];
+		str[i - j - 1] = temp;
 	}
 
-	do
-	{
-		size++;
-		temp_number /= 10;
-	} while (temp_number > 0);
-
-	char* buf = malloc(size + 1);
-	buf[size] = '\0';
-
-	for (int i = size - 1; i >= 0; i--)
-	{
-		buf[i] = (ext_number % 10) + '0';
-		ext_number /= 10;
-	}
-
-	if (number < 0)
-	{
-		buf[0] = '-';
-	}
-	return buf;
+	return str;
 }
