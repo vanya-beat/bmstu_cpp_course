@@ -7,7 +7,7 @@
 ```
 ssh-keygen -t ed25519 -C "ваша@почта.ru"
 ```
-3. Просто нажимаем три раза `Enter` после следующих трёх строк: 
+3. Просто нажимаем три раза `Enter` после следующих трёх строк:
 ```
 Enter a file in which to save the key (/home/YOU/.ssh/id_ALGORITHM):
 Enter passphrase (empty for no passphrase):
