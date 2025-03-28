@@ -402,9 +402,15 @@ class simple_vector
 
 	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
 	{
-		return alphabet_compare(lhs, rhs) ? std::strong_ordering::less
-			   : (lhs == rhs)			  ? std::strong_ordering::equal
-										  : std::strong_ordering::greater;
+		if (lhs == rhs)
+		{
+			return std::strong_ordering::equal;
+		}
+		if (alphabet_compare(lhs, rhs))
+		{
+			return std::strong_ordering::less;
+		}
+		return std::strong_ordering::greater;
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
