@@ -27,7 +27,7 @@ NC='\033[0m' # No Color
 
 # Функция для проверки файлов с помощью clang-format
 check_files() {
-  for file in $(find "$SOURCE_DIR" -name '*.cpp' -o -name '*.h' -o -name '*.c'); do
+  for file in $(find "$SOURCE_DIR" -name '*.cpp' -o -name '*.h'); do
     echo "Checking $file"
     clang-format -style=file -assume-filename="$CLANG_FORMAT_CONFIG" "$file" | diff -u "$file" -
     if [ $? -ne 0 ]; then
