@@ -468,3 +468,18 @@ TEST(SimpleVector, PushBackCopyMove3)
 	auto it = v.begin();
 	it = nullptr;
 }
+
+TEST(SimpleVector, SpaceShip)
+{
+	bmstu::simple_vector<int> v1 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v2 = {2, 3, 4, 5, 6};
+	ASSERT_EQ(v1<=>v2, std::strong_ordering::less);
+
+	bmstu::simple_vector<int> v3 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v4 = {2, 3, 4, 5, 6};
+	ASSERT_EQ(v4<=>v3, std::strong_ordering::greater);
+
+	bmstu::simple_vector<int> v5 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v6 = {1, 2, 3, 4, 5};
+	ASSERT_EQ(v5<=>v6, std::strong_ordering::equal);
+}

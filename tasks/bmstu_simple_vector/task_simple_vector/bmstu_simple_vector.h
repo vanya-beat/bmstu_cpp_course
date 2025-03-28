@@ -3,6 +3,7 @@
 #include <utility>
 #include "array_ptr.h"
 #include <algorithm>
+#include <compare>
 
 namespace bmstu
 {
@@ -285,8 +286,7 @@ class simple_vector
 		if (size_ != 0) { (*this)[--size_] = {}; }
 	}
 
-	friend bool operator==(const simple_vector& lhs, const simple_vector& rhs)
-	{
+	friend bool operator==(const simple_vector& lhs, const simple_vector& rhs) {
 		if (lhs.size() != rhs.size()) return false;
 		for (auto it1 = lhs.begin(), it2 = rhs.begin(); it1 != lhs.end(); ++it1, ++it2) {
 			if (*it1 != *it2) return false;
@@ -294,15 +294,15 @@ class simple_vector
 		return true;
 	}
 
-	friend bool operator!=(const simple_vector& lhs, const simple_vector& rhs)
-	{
+	friend bool operator!=(const simple_vector& lhs, const simple_vector& rhs) {
 		return !(lhs == rhs);
 	}
 
-	/*friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		
-	}*/
+	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs) {
+		if (lhs < rhs) return std::strong_ordering::less;
+		if (lhs > rhs) return std::strong_ordering::greater;
+		if (lhs == rhs) return std::strong_ordering::equal;
+	}
 
 	friend bool operator<(const simple_vector& lhs, const simple_vector& rhs) {
 		return alphabet_compare(lhs, rhs);
