@@ -7,7 +7,7 @@
 ```
 ssh-keygen -t ed25519 -C "ваша@почта.ru"
 ```
-3. Просто нажимаем три раза `Enter` после следующих трёх строк:  
+3. Просто нажимаем три раза `Enter` после следующих трёх строк:
 ```
 Enter a file in which to save the key (/home/YOU/.ssh/id_ALGORITHM):
 Enter passphrase (empty for no passphrase):
@@ -26,27 +26,27 @@ ssh-add ~/.ssh/id_ed25519
 cat ~/.ssh/id_ed25519.pub
 ```
 7. Переходим на [github.com](https://github.com) и нажимаем на иконку профиля в правом верхнем углу:  
-![](README_media/github_1.png)
+   ![](README_media/github_1.png)
 8. Выбираем `settings`:  
-![](README_media/github_2.png)
+   ![](README_media/github_2.png)
 9. Далее слева нажимаем на `SSH and GPG keys`:  
-![](README_media/github_3.png)
+   ![](README_media/github_3.png)
 10. Теперь нажимаем на `New SSH key`:  
-![](README_media/github_4.png)
+    ![](README_media/github_4.png)
 11. В `Title` вводим нашу ос (для удобства), в `Key` вставляем скопированный в 6 пункте ключ:  
-![](README_media/github_5.png)
+    ![](README_media/github_5.png)
 12. Нажимаем `Add SSH key`
-Всё, подключение между гитхабом и вашим ПК готово
+    Всё, подключение между гитхабом и вашим ПК готово
 
 ## Подготовка окружения к работе
 1. Делаем форк основного [репозитория](https://github.com/vanya-beat/bmstu_cpp_course):
-![](README_media/github_6.png)
+   ![](README_media/github_6.png)
 2. Нажимаем `Create fork`:  
-![](README_media/github_7.png)
+   ![](README_media/github_7.png)
 3. Далее нажимаем `Code`:  
-![](README_media/github_8.png)
+   ![](README_media/github_8.png)
 4. Копируем ссылку SSH:  
-![](README_media/github_9.png)
+   ![](README_media/github_9.png)
 5. Далее открываем терминал с помощью `ctrl + alt + T`, заходим в папку для проектов и клонируем репозиторий и переходим в него:
 ```
 cd projects/
@@ -78,9 +78,9 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 sudo docker compose up --build
 ```
 9. Открываем эту папку в VS Code (открыть с помощью и находим vs code):
-![](README_media/vscode_open.png)
+   ![](README_media/vscode_open.png)
 10. Решаем задачу перевода строки в число в файле str2int.c по пути `tasks/task_basic_c/task_str2int/str2int.c`:  
-![](README_media/vscode_path.png)
+    ![](README_media/vscode_path.png)
 11. После написания программы запускаем тесты этой коммандой в корне проекта, открыв для удобства терминал в vs code с помощью `~ + ctrl`:
 ```
 sudo docker compose up --build
@@ -92,4 +92,4 @@ git commit -m "Программа проходит все тесты"
 git push
 ```
 13. Либо используем боковую панель vs code:  
-![](README_media/vscode_git.png)
+    ![](README_media/vscode_git.png)
