@@ -87,7 +87,7 @@ jobs:
 
       - name: Apply XSLT transformation
         run: |
-          # Применяем XSLT-шаблон к каждому XML-файлу
+          # Применяем XSLT-шаблон к каждому XML-файлу 
           for xml_file in test-results/*.xml; do
             xsltproc transform.xsl "$xml_file" > "${xml_file%.xml}.html"
           done
