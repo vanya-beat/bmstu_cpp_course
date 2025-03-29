@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess
+CMAKE_SOURCE_DIR = "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build
+CMAKE_BINARY_DIR = "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build"
 
 # Include any dependencies generated for this target.
 include tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/depend.make
@@ -70,32 +70,32 @@ include tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/progress.make
 include tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/flags.make
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o: tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/flags.make
-tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o: /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp
+tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o: /home/greenliess/Рабочий\ стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o: tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o"
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o -MF CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o.d -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o -c /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o"
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o -MF CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o.d -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o -c "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp"
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.i"
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp > CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.i
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp" > CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.i
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.s"
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.s
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp" -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.s
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o: tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/flags.make
-tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o: /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp
+tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o: /home/greenliess/Рабочий\ стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o: tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o"
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o -MF CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o.d -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o -c /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o"
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o -MF CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o.d -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o -c "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp"
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.i"
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp > CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.i
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp" > CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.i
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.s"
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.s
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp" -o CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.s
 
 # Object files for target bmstu_lets
 bmstu_lets_OBJECTS = \
@@ -111,18 +111,18 @@ tasks/bmstu_lets/bmstu_lets: tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.ma
 tasks/bmstu_lets/bmstu_lets: lib/libgtest_main.a
 tasks/bmstu_lets/bmstu_lets: lib/libgtest.a
 tasks/bmstu_lets/bmstu_lets: tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable bmstu_lets"
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/bmstu_lets.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable bmstu_lets"
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/bmstu_lets.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build: tasks/bmstu_lets/bmstu_lets
 .PHONY : tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/clean:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets && $(CMAKE_COMMAND) -P CMakeFiles/bmstu_lets.dir/cmake_clean.cmake
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" && $(CMAKE_COMMAND) -P CMakeFiles/bmstu_lets.dir/cmake_clean.cmake
 .PHONY : tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/clean
 
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/depend:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess" "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets" "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets" "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/DependInfo.cmake" "--color=$(COLOR)"
 .PHONY : tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/depend
 

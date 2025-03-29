@@ -1,4 +1,4 @@
-# Install script for directory: /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets
+# Install script for directory: /home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

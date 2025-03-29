@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/g++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/_deps/googletest-src/googletest/include -isystem /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/_deps/googletest-src/googletest
+CXX_INCLUDES = -isystem "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/_deps/googletest-src/googletest/include" -isystem "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/_deps/googletest-src/googletest"
 
 CXX_FLAGS = -g -std=gnu++23
 

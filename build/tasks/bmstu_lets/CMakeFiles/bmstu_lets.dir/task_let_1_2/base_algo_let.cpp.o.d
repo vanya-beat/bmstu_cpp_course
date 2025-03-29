@@ -1,5 +1,5 @@
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o: \
- /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp \
+ /home/greenliess/Рабочий\ стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp \
  /usr/include/stdc-predef.h /usr/include/c++/13/algorithm \
  /usr/include/c++/13/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
@@ -106,7 +106,7 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o: \
  /usr/include/c++/13/bits/memory_resource.h /usr/include/c++/13/cstddef \
  /usr/include/c++/13/bits/uses_allocator.h \
  /usr/include/c++/13/bits/uses_allocator_args.h /usr/include/c++/13/tuple \
- /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.h \
+ /home/greenliess/Рабочий\ стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.h \
  /usr/include/c++/13/cstdint \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \

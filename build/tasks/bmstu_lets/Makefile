@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess
+CMAKE_SOURCE_DIR = "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build
+CMAKE_BINARY_DIR = "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -142,14 +142,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/CMakeFiles /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets//CMakeFiles/progress.marks
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build/CMakeFiles 0
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(CMAKE_COMMAND) -E cmake_progress_start "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/CMakeFiles" "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_lets//CMakeFiles/progress.marks"
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/clean
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/clean
 .PHONY : clean
 
 # The main clean target
@@ -158,22 +158,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/preinstall
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/preinstall
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/rule:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/rule
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/rule
 .PHONY : tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/rule
 
 # Convenience name for target.
@@ -182,7 +182,7 @@ bmstu_lets: tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/rule
 
 # fast build rule for target.
 bmstu_lets/fast:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build
 .PHONY : bmstu_lets/fast
 
 task_let_1_2/base_algo_let.o: task_let_1_2/base_algo_let.cpp.o
@@ -190,7 +190,7 @@ task_let_1_2/base_algo_let.o: task_let_1_2/base_algo_let.cpp.o
 
 # target to build an object file
 task_let_1_2/base_algo_let.cpp.o:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o
 .PHONY : task_let_1_2/base_algo_let.cpp.o
 
 task_let_1_2/base_algo_let.i: task_let_1_2/base_algo_let.cpp.i
@@ -198,7 +198,7 @@ task_let_1_2/base_algo_let.i: task_let_1_2/base_algo_let.cpp.i
 
 # target to preprocess a source file
 task_let_1_2/base_algo_let.cpp.i:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.i
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.i
 .PHONY : task_let_1_2/base_algo_let.cpp.i
 
 task_let_1_2/base_algo_let.s: task_let_1_2/base_algo_let.cpp.s
@@ -206,7 +206,7 @@ task_let_1_2/base_algo_let.s: task_let_1_2/base_algo_let.cpp.s
 
 # target to generate assembly for a file
 task_let_1_2/base_algo_let.cpp.s:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.s
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.s
 .PHONY : task_let_1_2/base_algo_let.cpp.s
 
 task_let_1_2/base_algo_let_tests.o: task_let_1_2/base_algo_let_tests.cpp.o
@@ -214,7 +214,7 @@ task_let_1_2/base_algo_let_tests.o: task_let_1_2/base_algo_let_tests.cpp.o
 
 # target to build an object file
 task_let_1_2/base_algo_let_tests.cpp.o:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o
 .PHONY : task_let_1_2/base_algo_let_tests.cpp.o
 
 task_let_1_2/base_algo_let_tests.i: task_let_1_2/base_algo_let_tests.cpp.i
@@ -222,7 +222,7 @@ task_let_1_2/base_algo_let_tests.i: task_let_1_2/base_algo_let_tests.cpp.i
 
 # target to preprocess a source file
 task_let_1_2/base_algo_let_tests.cpp.i:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.i
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.i
 .PHONY : task_let_1_2/base_algo_let_tests.cpp.i
 
 task_let_1_2/base_algo_let_tests.s: task_let_1_2/base_algo_let_tests.cpp.s
@@ -230,7 +230,7 @@ task_let_1_2/base_algo_let_tests.s: task_let_1_2/base_algo_let_tests.cpp.s
 
 # target to generate assembly for a file
 task_let_1_2/base_algo_let_tests.cpp.s:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.s
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.s
 .PHONY : task_let_1_2/base_algo_let_tests.cpp.s
 
 # Help Target
@@ -264,6 +264,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/greenliess/projects/bmstu_cpp_course_greenliess/bmstu_cpp_course_greenliess/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
