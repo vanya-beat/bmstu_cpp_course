@@ -29,24 +29,3 @@ int str2int(const char *str) {
     return number;
     return 0;
 }
-int main(void) {
-  
-    char str[25];
-    printf("Введите строку\n"); 
-    scanf("%s", str);
-    int vaidation=1;
-    for (int j=0; j<strlen(str);j++) {
-       if (str[j]!='0' && 
-       str[j]!='1' && str[j]!='2' && str[j]!='3' && 
-       str[j]!='4' && str[j]!='5' && str[j]!='6' && 
-       str[j]!='7' && str[j]!='8' && str[j]!='9') {
-         if (j==0 && str[j]=='-') vaidation=1;
-         else            vaidation=0;
-       }
-     }
-
-     if (vaidation==1) {
-           printf("%d\n", str2int(str));
-     }
-     else printf ("Введена некоррктная строка\n");
-   }
