@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 char* int2str(int number)
 {
@@ -14,10 +15,13 @@ char* int2str(int number)
 		return zero_str;
 	}
 
-	// Обработка INT_MIN
 	if (number == INT_MIN)
 	{
-		return strdup("-2147483648");
+		char* min_str = malloc(12 * sizeof(char));
+		if (min_str == NULL)
+			return NULL;
+		strcpy(min_str, "-2147483648");
+		return min_str;
 	}
 
 	int is_negative = number < 0;
@@ -28,13 +32,12 @@ char* int2str(int number)
 
 	int num_len = 0;
 	int temp = number;
-	do
+	while (temp > 0)
 	{
 		num_len++;
 		temp /= 10;
-	} while (temp > 0);
+	}
 
-	// Учитываем знак
 	if (is_negative)
 	{
 		num_len++;
@@ -47,15 +50,15 @@ char* int2str(int number)
 	str[num_len] = '\0';
 	int idx = num_len - 1;
 
-	while (number > 0)
+	do
 	{
 		str[idx--] = (number % 10) + '0';
 		number /= 10;
-	}
+	} while (number > 0);
 
 	if (is_negative)
 	{
-		str[idx] = '-';
+		str[0] = '-';
 	}
 
 	return str;
