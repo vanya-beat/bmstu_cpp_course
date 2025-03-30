@@ -11,10 +11,10 @@ namespace bmstu
 template <typename T>
 class basic_string;
 
-typedef basic_string<char> string;
-typedef basic_string<wchar_t> wstring;
-typedef basic_string<char16_t> u16string;
-typedef basic_string<char32_t> u32string;
+using string = basic_string<char>;
+using wstring = basic_string<wchar_t>;
+using u16string = basic_string<char16_t>;
+using u32string = basic_string<char32_t>;
 
 template <typename T>
 #ifdef _MSC_VER
@@ -26,7 +26,7 @@ class basic_string
    public:
 	basic_string() : ptr_(new T[1]{0}), size_(0) {}
 
-	basic_string(size_t size) : ptr_(new T[size + 1]), size_(size)
+	explicit basic_string(size_t size) : ptr_(new T[size + 1]), size_(size)
 	{
 		std::fill_n(ptr_, size, static_cast<T>(' '));
 		ptr_[size] = 0;
@@ -52,11 +52,11 @@ class basic_string
 		std::copy(other.ptr_, other.ptr_ + size_ + 1, ptr_);
 	}
 
-	basic_string(basic_string&& dying) noexcept
-		: ptr_(dying.ptr_), size_(dying.size_)
+	basic_string(basic_string&& other) noexcept
+		: ptr_(other.ptr_), size_(other.size_)
 	{
-		dying.ptr_ = nullptr;
-		dying.size_ = 0;
+		other.ptr_ = nullptr;
+		other.size_ = 0;
 	}
 
 	~basic_string() { delete[] ptr_; }
@@ -68,7 +68,17 @@ class basic_string
 
 	size_t size() const { return size_; }
 
-	basic_string& operator=(basic_string&& other)
+	basic_string& operator=(const basic_string& other)
+	{
+		if (this != &other)
+		{
+			basic_string tmp(other);
+			swap(tmp);
+		}
+		return *this;
+	}
+
+	basic_string& operator=(basic_string&& other) noexcept
 	{
 		if (this != &other)
 		{
@@ -84,17 +94,7 @@ class basic_string
 	basic_string& operator=(const T* c_str)
 	{
 		basic_string tmp(c_str);
-		*this = std::move(tmp);
-		return *this;
-	}
-
-	basic_string& operator=(const basic_string& other)
-	{
-		if (this != &other)
-		{
-			basic_string tmp(other);
-			*this = std::move(tmp);
-		}
+		swap(tmp);
 		return *this;
 	}
 
@@ -174,8 +174,14 @@ class basic_string
 		size_ = 0;
 	}
 
-	T* ptr_ = nullptr;
-	size_t size_ = 0;
+	void swap(basic_string& other) noexcept
+	{
+		std::swap(ptr_, other.ptr_);
+		std::swap(size_, other.size_);
+	}
+
+	T* ptr_;
+	size_t size_;
 };
 
 }  // namespace bmstu
