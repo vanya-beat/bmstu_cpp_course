@@ -59,6 +59,7 @@ void sort_students_by_age(std::vector<Student>& v)
 	return;
 }
 
+
 void sort_students_by_name(std::vector<Student>& v) 
 // Отсортировать массив студентов по имени
 {

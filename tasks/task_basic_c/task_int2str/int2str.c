@@ -3,6 +3,8 @@
 #include "stdio.h"
 #include <iostream>
 
+
+
 static int length_number (const unsigned int number) {
 	int length = 0;
     unsigned int nn = number;
