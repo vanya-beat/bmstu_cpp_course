@@ -1,40 +1,42 @@
-#include <assert.h>
 #include <stdlib.h>
 #include "int2str.h"
-#include "stdio.h"
 
 char* int2str(int number)
 {
-	int is_negative = number < 0;
-	unsigned int n = is_negative ? -((unsigned int)number) : number;
-
-	int length = 0;
-	unsigned int temp = n;
-	do
+	char* str = "0";
+	if (number == 0)
 	{
-		length++;
-		temp /= 10;
-	} while (temp > 0);
+		str = malloc(2);
+		str[0] = '0';
+		str[1] = '\0';
+		return str;
+	}
 
-	if (is_negative)
-		length++;
+	int neg = number < 0;
+	unsigned n = neg ? -number : number;
 
-	char* str = (char*)malloc(length + 1);
+	int len = 0;
+	unsigned tmp = n;
+	while (tmp)
+	{
+		len++;
+		tmp /= 10;
+	}
+
+	str = malloc(len + neg + 1);
 	if (!str)
 		return NULL;
 
-	str[length] = '\0';
+	str[len + neg] = '\0';
+	int i = len + neg - 1;
 
-	for (int i = length - 1; i >= (is_negative ? 1 : 0); i--)
+	while (n)
 	{
-		str[i] = '0' + (n % 10);
+		str[i--] = '0' + (n % 10);
 		n /= 10;
 	}
 
-	if (is_negative)
+	if (neg)
 		str[0] = '-';
-	if (length == 1 && str[0] == '0' && number == 0)
-		return str;
-
 	return str;
 }
