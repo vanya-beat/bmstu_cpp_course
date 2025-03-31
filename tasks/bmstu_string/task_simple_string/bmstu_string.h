@@ -1,80 +1,68 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
-#include <stdexcept>
+#include <exception>
+#include <iostream>
 
 namespace bmstu
 {
-
-template <typename CharType>
+template <typename T>
 class basic_string;
 
-using string = basic_string<char>;
-using wstring = basic_string<wchar_t>;
-using u16string = basic_string<char16_t>;
-using u32string = basic_string<char32_t>;
+typedef basic_string<char> string;
+typedef basic_string<wchar_t> wstring;
+typedef basic_string<char16_t> u16string;
+typedef basic_string<char32_t> u32string;
 
-template <typename CharType>
+template <typename T>
 class basic_string
 {
    public:
-	// Конструктор по умолчанию
-	basic_string() noexcept : data_(new CharType[1]{0}), size_(0) {}
+	basic_string() : ptr_(new T[1]{0}), size_(0) {}
 
-	// Конструктор с заданным размером
-	explicit basic_string(size_t count)
-		: data_(new CharType[count + 1]), size_(count)
+	explicit basic_string(size_t size) : ptr_(new T[size + 1]), size_(size)
 	{
-		std::fill_n(data_.get(), count, static_cast<CharType>(' '));
-		data_[count] = 0;
+		std::fill(ptr_, ptr_ + size_, static_cast<T>(' '));
+		ptr_[size_] = 0;
 	}
 
-	// Конструктор из списка инициализации
-	basic_string(std::initializer_list<CharType> init)
-		: data_(new CharType[init.size() + 1]), size_(init.size())
+	basic_string(std::initializer_list<T> il)
+		: ptr_(new T[il.size() + 1]), size_(il.size())
 	{
-		std::copy(init.begin(), init.end(), data_.get());
-		data_[size_] = 0;
+		std::copy(il.begin(), il.end(), ptr_);
+		ptr_[size_] = 0;
 	}
 
-	// Конструктор из C-строки
-	basic_string(const CharType* cstr)
+	basic_string(const T* c_str)
 	{
-		if (cstr)
+		if (c_str)
 		{
-			size_ = str_len(cstr);
-			data_.reset(new CharType[size_ + 1]);
-			std::copy(cstr, cstr + size_, data_.get());
-			data_[size_] = 0;
+			size_ = strlen_(c_str);
+			ptr_ = new T[size_ + 1];
+			std::copy(c_str, c_str + size_ + 1, ptr_);
 		}
 		else
 		{
 			size_ = 0;
-			data_.reset(new CharType[1]{0});
+			ptr_ = new T[1]{0};
 		}
 	}
 
-	// Копирующий конструктор
 	basic_string(const basic_string& other)
-		: data_(new CharType[other.size_ + 1]), size_(other.size_)
+		: ptr_(new T[other.size_ + 1]), size_(other.size_)
 	{
-		std::copy(other.data_.get(), other.data_.get() + size_ + 1,
-				  data_.get());
+		std::copy(other.ptr_, other.ptr_ + other.size_ + 1, ptr_);
 	}
 
-	// Перемещающий конструктор
 	basic_string(basic_string&& other) noexcept
-		: data_(std::move(other.data_)), size_(other.size_)
+		: ptr_(other.ptr_), size_(other.size_)
 	{
+		other.ptr_ = new T[1]{0};
 		other.size_ = 0;
-		other.data_.reset(new CharType[1]{0});
 	}
 
-	// Деструктор
-	~basic_string() = default;
+	~basic_string() { delete[] ptr_; }
 
-	// Операторы присваивания
 	basic_string& operator=(const basic_string& other)
 	{
 		if (this != &other)
@@ -89,131 +77,122 @@ class basic_string
 	{
 		if (this != &other)
 		{
-			data_ = std::move(other.data_);
+			delete[] ptr_;
+			ptr_ = other.ptr_;
 			size_ = other.size_;
+			other.ptr_ = new T[1]{0};
 			other.size_ = 0;
-			other.data_.reset(new CharType[1]{0});
 		}
 		return *this;
 	}
 
-	basic_string& operator=(const CharType* cstr)
+	basic_string& operator=(const T* c_str)
 	{
-		basic_string tmp(cstr);
+		basic_string tmp(c_str);
 		swap(tmp);
 		return *this;
 	}
 
-	// Доступ к данным
-	const CharType* c_str() const noexcept { return data_.get(); }
-	size_t size() const noexcept { return size_; }
-	CharType* data() noexcept { return data_.get(); }
-	const CharType* data() const noexcept { return data_.get(); }
-
-	// Операторы доступа
-	CharType& operator[](size_t pos) noexcept { return data_[pos]; }
-	const CharType& operator[](size_t pos) const noexcept { return data_[pos]; }
-
-	CharType& at(size_t pos)
+	const T* c_str() const
 	{
-		if (pos >= size_)
+		return ptr_ ? ptr_ : reinterpret_cast<const T*>("");
+	}
+	size_t size() const { return size_; }
+
+	T& operator[](size_t index) noexcept { return ptr_[index]; }
+	const T& operator[](size_t index) const noexcept { return ptr_[index]; }
+
+	T& at(size_t index)
+	{
+		if (index >= size_)
 			throw std::out_of_range("Index out of range");
-		return data_[pos];
+		return ptr_[index];
 	}
 
-	const CharType& at(size_t pos) const
+	const T& at(size_t index) const
 	{
-		if (pos >= size_)
+		if (index >= size_)
 			throw std::out_of_range("Index out of range");
-		return data_[pos];
+		return ptr_[index];
 	}
 
-	// Операторы конкатенации
+	T* data() { return ptr_; }
+	const T* data() const { return ptr_; }
+
 	basic_string& operator+=(const basic_string& other)
 	{
-		size_t new_size = size_ + other.size_;
-		std::unique_ptr<CharType[]> new_data(new CharType[new_size + 1]);
-
-		if (size_)
-			std::copy(data_.get(), data_.get() + size_, new_data.get());
-		if (other.size_)
-			std::copy(other.data_.get(), other.data_.get() + other.size_,
-					  new_data.get() + size_);
-
-		new_data[new_size] = 0;
-		data_ = std::move(new_data);
-		size_ = new_size;
+		*this = *this + other;
 		return *this;
 	}
 
-	basic_string& operator+=(CharType ch)
+	basic_string& operator+=(T symbol)
 	{
-		std::unique_ptr<CharType[]> new_data(new CharType[size_ + 2]);
-		if (size_)
-			std::copy(data_.get(), data_.get() + size_, new_data.get());
-		new_data[size_] = ch;
-		new_data[size_ + 1] = 0;
-		data_ = std::move(new_data);
+		T* new_ptr = new T[size_ + 2];
+		if (ptr_)
+			std::copy(ptr_, ptr_ + size_, new_ptr);
+		new_ptr[size_] = symbol;
+		new_ptr[size_ + 1] = 0;
+		delete[] ptr_;
+		ptr_ = new_ptr;
 		++size_;
 		return *this;
 	}
 
-	friend basic_string operator+(const basic_string& lhs,
-								  const basic_string& rhs)
+	friend basic_string operator+(const basic_string& left,
+								  const basic_string& right)
 	{
-		basic_string result(lhs);
-		result += rhs;
+		basic_string result;
+		result.size_ = left.size_ + right.size_;
+		result.ptr_ = new T[result.size_ + 1];
+		std::copy(left.ptr_, left.ptr_ + left.size_, result.ptr_);
+		std::copy(right.ptr_, right.ptr_ + right.size_,
+				  result.ptr_ + left.size_);
+		result.ptr_[result.size_] = 0;
 		return result;
 	}
 
-	// Функция вывода
-	template <typename Stream>
-	void print_to(Stream& os) const
+	template <typename S>
+	friend S& operator<<(S& os, const basic_string& obj)
 	{
-		const CharType* ptr = data_.get();
-		while (*ptr)
-		{
-			os.put(*ptr);
-			++ptr;
-		}
+		const T* p = obj.c_str();
+		while (*p)
+			os.put(*p++);
+		return os;
 	}
 
-	// Функция ввода
-	template <typename Stream>
-	void read_from(Stream& is)
+	template <typename S>
+	friend S& operator>>(S& is, basic_string& obj)
 	{
-		clear();
-		CharType ch;
-		while (is.get(ch) && ch != '\n' && ch != static_cast<CharType>('\0'))
-		{
-			*this += ch;
-		}
-	}
-
-	// Вспомогательные методы
-	void clear()
-	{
-		data_.reset(new CharType[1]{0});
-		size_ = 0;
-	}
-
-	void swap(basic_string& other) noexcept
-	{
-		std::swap(data_, other.data_);
-		std::swap(size_, other.size_);
+		obj.clean_();
+		T ch;
+		while (is.get(ch) && ch != '\n' && ch != static_cast<T>('\0'))
+			obj += ch;
+		return is;
 	}
 
    private:
-	static size_t str_len(const CharType* str)
+	static size_t strlen_(const T* str)
 	{
-		const CharType* p = str;
+		const T* p = str;
 		while (*p)
 			++p;
 		return p - str;
 	}
 
-	std::unique_ptr<CharType[]> data_;
+	void clean_()
+	{
+		delete[] ptr_;
+		ptr_ = new T[1]{0};
+		size_ = 0;
+	}
+
+	void swap(basic_string& other) noexcept
+	{
+		std::swap(ptr_, other.ptr_);
+		std::swap(size_, other.size_);
+	}
+
+	T* ptr_;
 	size_t size_;
 };
-
 }  // namespace bmstu
