@@ -1,5 +1,7 @@
+#include <assert.h>
 #include <stdlib.h>
 #include "int2str.h"
+#include "stdio.h"
 
 char* int2str(int number)
 {
@@ -13,28 +15,24 @@ char* int2str(int number)
 	}
 
 	int neg = number < 0;
-	unsigned n = neg ? -number : number;
+	unsigned num = neg ? -number : number;
 
 	int len = 0;
-	unsigned tmp = n;
-	while (tmp)
-	{
+	for (unsigned t = num; t; t /= 10)
 		len++;
-		tmp /= 10;
-	}
 
 	str = malloc(len + neg + 1);
 	if (!str)
 		return NULL;
 
-	str[len + neg] = '\0';
-	int i = len + neg - 1;
+	int pos = len + neg;
+	str[pos--] = '\0';
 
-	while (n)
+	do
 	{
-		str[i--] = '0' + (n % 10);
-		n /= 10;
-	}
+		str[pos--] = '0' + num % 10;
+		num /= 10;
+	} while (num);
 
 	if (neg)
 		str[0] = '-';
