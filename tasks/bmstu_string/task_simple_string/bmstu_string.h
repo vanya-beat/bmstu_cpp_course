@@ -38,27 +38,17 @@ class basic_string
 		ptr_[0] = 0;
 	}
 
-	basic_string(size_t size) : ptr_(nullptr), size_(0)
+	basic_string(size_t size) : ptr_(nullptr), size_(size)
 	{
-		size_ = size;
 		ptr_ = new T[size + 1];
-		for (size_t i = 0; i < size; i++)
-		{
-			ptr_[i] = ' ';
-		}
+		stf:fill(ptr_, ptr_ + size, ' ');
 		ptr_[size] = '\0';
 	}
 
-	basic_string(std::initializer_list<T> il) : ptr_(nullptr), size_(0)
+	basic_string(std::initializer_list<T> il) : ptr_(nullptr), size_(il.size())
 	{
-		size_ = il.size();
 		ptr_ = new T[size_ + 1];
-		size_t i = 0;
-		for (auto& item : il)
-		{
-			ptr_[i] = item;
-			i++;
-		}
+		std::copy(il.begin(), il.end(), ptr_);
 		ptr_[size_] = '\0';
 	}
 
@@ -66,7 +56,7 @@ class basic_string
 	{
 		size_ = strlen_(c_str);
 		ptr_ = new T[size_ + 1];
-		std::memcpy(ptr_, c_str, sizeof(T) * strlen_(c_str));
+		std::memcpy(ptr_, c_str, sizeof(T) * size_);
 		ptr_[size_] = '\0';
 	}
 
