@@ -15,7 +15,7 @@ std::vector<int> positive_numbers(const std::vector<int>& v)
 }
 void sort_positive_numbers(std::vector<int>& v)
 {
-	std::sort(v.begin(), v.end(), std::greater<int>());
+	std::sort(v.begin(), v.end());
 }
 
 int sum_positive_numbers(const std::vector<int>& v)
