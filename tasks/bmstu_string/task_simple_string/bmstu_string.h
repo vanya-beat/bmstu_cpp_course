@@ -1,182 +1,218 @@
-#ifndef BMSTU_STRING_H_
-#define BMSTU_STRING_H_
+#pragma once
 
-#include <stdexcept>
-#include <iosfwd>
-#include <initializer_list>
+#include <exception>
+#include <iostream>
 
-namespace bmstu {
+namespace bmstu
+{
 
-// Forward declarations
-template<typename CharT> class BasicString;
+template <typename T>
+class basic_string;
 
-// Common string type aliases
-using String    = BasicString<char>;
-using WString   = BasicString<wchar_t>;
-using U16String = BasicString<char16_t>;
-using U32String = BasicString<char32_t>;
+using string = basic_string<char>;
+using wstring = basic_string<wchar_t>;
+using u16string = basic_string<char16_t>;
+using u32string = basic_string<char32_t>;
 
-template<typename CharT>
-class BasicString {
-public:
-    // Construction/destruction
-    BasicString() noexcept 
-        : length_(0), data_(new CharT[1]{0}) {}
-    
-    explicit BasicString(size_t count) 
-        : length_(count), data_(new CharT[count + 1]) {
-        std::fill_n(data_, count, CharT(' '));
-        data_[count] = CharT(0);
-    }
-    
-    BasicString(const CharT* str) 
-        : length_(str ? str_length(str) : 0),
-          data_(new CharT[length_ + 1]) {
-        copy_chars(str, data_, length_);
-    }
-    
-    BasicString(std::initializer_list<CharT> chars)
-        : length_(chars.size()),
-          data_(new CharT[length_ + 1]) {
-        std::copy(chars.begin(), chars.end(), data_);
-        data_[length_] = CharT(0);
-    }
-    
-    // Copy/move semantics
-    BasicString(const BasicString& other)
-        : BasicString(other.data_) {}
-        
-    BasicString(BasicString&& other) noexcept
-        : length_(other.length_), data_(other.data_) {
-        other.length_ = 0;
-        other.data_ = nullptr;
-    }
-    
-    ~BasicString() { release(); }
-    
-    BasicString& operator=(const BasicString& rhs) {
-        if (this != &rhs) {
-            BasicString temp(rhs);
-            swap(temp);
-        }
-        return *this;
-    }
-    
-    BasicString& operator=(BasicString&& rhs) noexcept {
-        if (this != &rhs) {
-            release();
-            length_ = rhs.length_;
-            data_ = rhs.data_;
-            rhs.length_ = 0;
-            rhs.data_ = nullptr;
-        }
-        return *this;
-    }
-    
-    // Element access
-    CharT& at(size_t pos) {
-        if (pos >= length_) {
-            throw std::out_of_range("Invalid position");
-        }
-        return data_[pos];
-    }
-    
-    const CharT& at(size_t pos) const {
-        return const_cast<BasicString*>(this)->at(pos);
-    }
-    
-    CharT& operator[](size_t pos) { return data_[pos]; }
-    const CharT& operator[](size_t pos) const { return data_[pos]; }
-    
-    const CharT* c_str() const noexcept { 
-        return data_ ? data_ : empty_string(); 
-    }
-    
-    // Capacity
-    size_t size() const noexcept { return length_; }
-    bool empty() const noexcept { return length_ == 0; }
-    
-    // Operations
-    BasicString& operator+=(const BasicString& str) {
-        return append(str);
-    }
-    
-    BasicString& operator+=(CharT ch) {
-        CharT str[] = {ch, CharT(0)};
-        return append(str);
-    }
-    
-    BasicString& append(const BasicString& str) {
-        if (str.empty()) return *this;
-        
-        CharT* new_data = new CharT[length_ + str.length_ + 1];
-        copy_chars(data_, new_data, length_);
-        copy_chars(str.data_, new_data + length_, str.length_);
-        new_data[length_ + str.length_] = CharT(0);
-        
-        release();
-        data_ = new_data;
-        length_ += str.length_;
-        return *this;
-    }
-    
-    // Friends
-    friend BasicString operator+(const BasicString& lhs, const BasicString& rhs) {
-        BasicString result(lhs);
-        return result += rhs;
-    }
-    
-    template<typename Stream>
-    friend Stream& operator<<(Stream& os, const BasicString& str) {
-        return os << str.c_str();
-    }
-    
-    template<typename Stream>
-    friend Stream& operator>>(Stream& is, BasicString& str) {
-        str.clear();
-        CharT ch;
-        while (is.get(ch) && ch != '\n') {
-            str += ch;
-        }
-        return is;
-    }
-    
-    void clear() noexcept {
-        release();
-        length_ = 0;
-        data_ = new CharT[1]{0};
-    }
-    
-    void swap(BasicString& other) noexcept {
-        std::swap(length_, other.length_);
-        std::swap(data_, other.data_);
-    }
-    
-private:
-    size_t length_;
-    CharT* data_;
-    
-    static const CharT* empty_string() noexcept {
-        static const CharT empty[] = {0};
-        return empty;
-    }
-    
-    static size_t str_length(const CharT* str) noexcept {
-        const CharT* end = str;
-        while (*end) ++end;
-        return end - str;
-    }
-    
-    static void copy_chars(const CharT* src, CharT* dest, size_t count) noexcept {
-        std::copy(src, src + count, dest);
-    }
-    
-    void release() noexcept {
-        delete[] data_;
-        data_ = nullptr;
-    }
+template <typename T>
+class basic_string
+{
+   public:
+	basic_string()
+	{
+		size_ = 0;
+		ptr_ = new T[1];
+		ptr_[0] = 0;
+	}
+
+	explicit basic_string(size_t size)
+	{
+		size_ = size;
+		ptr_ = new T[size_ + 1];
+		for (size_t i = 0; i < size_; ++i)
+		{
+			ptr_[i] = ' ';
+		}
+		ptr_[size_] = 0;
+	}
+
+	basic_string(std::initializer_list<T> il)
+	{
+		size_ = il.size();
+		ptr_ = new T[size_ + 1];
+		size_t i = 0;
+		for (const auto& item : il)
+		{
+			ptr_[i++] = item;
+		}
+		ptr_[size_] = 0;
+	}
+
+	basic_string(const T* c_str)
+	{
+		size_ = strlen_(c_str);
+		ptr_ = new T[size_ + 1];
+		copy_data_(c_str);
+	}
+
+	basic_string(const basic_string& other)
+	{
+		size_ = other.size_;
+		ptr_ = new T[size_ + 1];
+		copy_data_(other.c_str());
+	}
+
+	basic_string(basic_string&& dying) noexcept
+	{
+		ptr_ = dying.ptr_;
+		size_ = dying.size_;
+		dying.ptr_ = nullptr;
+		dying.size_ = 0;
+	}
+
+	~basic_string() { clean_(); }
+
+	const T* c_str() const
+	{
+		return (ptr_ != nullptr) ? ptr_ : reinterpret_cast<const T*>("");
+	}
+
+	size_t size() const { return size_; }
+
+	basic_string& operator=(const basic_string& other)
+	{
+		if (this == &other)
+		{
+			return *this;
+		}
+		clean_();
+		size_ = other.size_;
+		ptr_ = new T[size_ + 1];
+		copy_data_(other.c_str());
+		return *this;
+	}
+
+	basic_string& operator=(basic_string&& other) noexcept
+	{
+		if (this == &other)
+		{
+			return *this;
+		}
+		delete[] ptr_;
+		size_ = other.size_;
+		ptr_ = other.ptr_;
+		other.ptr_ = nullptr;
+		other.size_ = 0;
+		return *this;
+	}
+
+	basic_string& operator=(const T* c_str)
+	{
+		clean_();
+		size_ = strlen_(c_str);
+		ptr_ = new T[size_ + 1];
+		for (size_t i = 0; i < size_; ++i)
+		{
+			ptr_[i] = c_str[i];
+		}
+		ptr_[size_] = 0;
+		return *this;
+	}
+
+	friend basic_string operator+(const basic_string& left,
+								  const basic_string& right)
+	{
+		basic_string result;
+		result.size_ = left.size_ + right.size_;
+		result.ptr_ = new T[result.size_ + 1];
+		result.copy_data_(left.c_str());
+		for (size_t i = 0; i < right.size_; ++i)
+		{
+			result.ptr_[i + left.size_] = right.ptr_[i];
+		}
+		result.ptr_[result.size_] = 0;
+		return result;
+	}
+
+	template <typename S>
+	friend S& operator<<(S& os, const basic_string& obj)
+	{
+		os << obj.c_str();
+		return os;
+	}
+
+	template <typename S>
+	friend S& operator>>(S& is, basic_string& obj)
+	{
+		is >> std::noskipws;
+		T symbol;
+		obj.clean_();
+		obj.size_ = 0;
+		obj.ptr_ = new T[1];
+		obj.ptr_[0] = 0;
+		while (is >> symbol)
+		{
+			obj += symbol;
+		}
+		return is;
+	}
+
+	basic_string& operator+=(const basic_string& other)
+	{
+		*this = (*this + other);
+		return *this;
+	}
+
+	basic_string& operator+=(const T symbol)
+	{
+		T* prev_ptr = ptr_;
+		++size_;
+		ptr_ = new T[size_ + 1];
+		copy_data_(prev_ptr);
+		delete[] prev_ptr;
+		ptr_[size_ - 1] = symbol;
+		ptr_[size_] = 0;
+		return *this;
+	}
+
+	T& operator[](size_t index) const
+	{
+		if (index >= size_)
+		{
+			throw std::out_of_range("Index out of range");
+		}
+		return ptr_[index];
+	}
+
+   private:
+	size_t size_ = 0;
+	T* ptr_ = nullptr;
+
+	static size_t strlen_(const T* str)
+	{
+		size_t len = 0;
+		while (str[len] != 0)
+		{
+			++len;
+		}
+		return len;
+	}
+
+	void clean_()
+	{
+		delete[] ptr_;
+		ptr_ = nullptr;
+		size_ = 0;
+	}
+
+	void copy_data_(const T* c_str)
+	{
+		for (size_t i = 0; i < size_; ++i)
+		{
+			ptr_[i] = c_str[i];
+		}
+		ptr_[size_] = 0;
+	}
 };
 
-} // namespace bmstu
-
-#endif // BMSTU_STRING_H_
+}  // namespace bmstu
