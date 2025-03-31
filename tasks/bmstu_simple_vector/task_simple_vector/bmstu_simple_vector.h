@@ -128,7 +128,8 @@ class simple_vector
 #pragma endregion
 	   private:
 		pointer ptr_ = nullptr;
-	};	
+	};	/// iterator end ///
+
 	simple_vector() noexcept = default;
 
 	~simple_vector() = default;
