@@ -441,22 +441,22 @@ class simple_vector
 	static bool alphabet_compare(const simple_vector<T>& lhs,
 								 const simple_vector<T>& rhs)
 	{
-		auto bi1 = lhs.begin(), bi2 = rhs.begin();
-		auto ei1 = lhs.end(), ei2 = rhs.end();
+		auto lhs_it = lhs.begin(), rhs_it = rhs.begin();
+		auto lhs_end = lhs.end(), rhs_end = rhs.end();
 
-		for (; (bi1 != ei2) && (bi2 != ei1); ++bi1, ++bi2)
+		for (; (lhs_it != rhs_end) && (rhs_it != lhs_end); ++lhs_it, ++rhs_it)
 		{
-			if (*bi1 < *bi2)
+			if (*lhs_it < *rhs_it)
 			{
 				return true;
 			}
-			if (*bi2 < *bi1)
+			if (*rhs_it < *lhs_it)
 			{
 				return false;
 			}
 		}
 
-		return (bi1 == ei1) && (bi2 == ei2);
+		return (lhs_it == lhs_end) && (rhs_it == rhs_end);
 	}
 
 	array_ptr<T> data_;
