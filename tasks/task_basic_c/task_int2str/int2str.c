@@ -1,44 +1,42 @@
 #include <stdlib.h>
 #include "int2str.h"
 
-char* int2str(int n)
+static int calculate_number_len(unsigned int number)
 {
-	char* buf = (char*)calloc(13, 1);
-	int len = 0;
-
-	unsigned int u = 0;
-	if (n < 0)
-	{
-		len = 1;
-		buf[0] = '-';
-		u = -n;
-	}
-	else
-	{
-		u = n;
-	}
-
-	unsigned int tmp = u;
-	int cnt = 0;
+	int length = 0;
 	do
 	{
-		tmp /= 10;
-		len++;
-		cnt++;
-	} while (tmp > 0 || cnt < 1);
+		length++;
+		number /= 10;
+	} while (number > 0);
+	return length;
+}
 
-	int d = 0;
-	cnt = 0;
-	char c = 0;
-	do
+char* int2str(int num)
+{
+	int is_negative = num < 0;
+	unsigned int number = is_negative ? -num : num;
+	int number_len = calculate_number_len(number);
+	int str_len = number_len + (is_negative ? 1 : 0) + 1;
+	char* str = (char*)calloc(str_len, sizeof(char));
+
+	if (str == NULL)
 	{
-		d = u % 10;
-		u /= 10;
-		c = d + 48;
-		buf[len - 1 - cnt] = c;
-		cnt++;
-	} while (u > 0 || cnt < 1);
-	buf[len] = 0;
+		return NULL;
+	}
 
-	return buf;
+	if (is_negative)
+	{
+		str[0] = '-';
+	}
+
+	for (int i = number_len - 1; i >= 0; i--)
+	{
+		str[is_negative ? i + 1 : i] = (number % 10) + '0';
+		number /= 10;
+	}
+
+	str[str_len - 1] = '\0';
+
+	return str;
 }
