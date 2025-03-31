@@ -4,13 +4,15 @@
 
 int str2int(const char* str)
 {
-	int znak = 1;
+	int sign = 1;
 
 	int result = 0;
 
+	int count = 0;
+
 	if (*str == '-')
 	{
-		znak = -1;
+		sign = -1;
 		str++;
 	}
 	else if (*str == '+')
@@ -18,16 +20,15 @@ int str2int(const char* str)
 		str++;
 	}
 
-	int count = 0;
 	while (*str != '\0')
 	{
 		result = result * 10 + (*str - '0');
-		count += 1;
+		count++;
 		str++;
-		assert(znak == -1 && result == -2147483648 ||
-			   znak == -1 && result >= 0 && count <= 9 ||
-			   znak == 1 && result >= 0);
+		assert(sign == -1 && result == -2147483648 ||
+			   sign == -1 && result >= 0 && count <= 9 ||
+			   sign == 1 && result >= 0);
 	}
 	assert(count > 0);
-	return result * znak;
+	return result * sign;
 }
