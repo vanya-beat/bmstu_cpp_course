@@ -32,21 +32,24 @@ class basic_string
 {
    public:
 	/// Конструктор по умолчанию
-	basic_string() : ptr_(nullptr), size_(0)
+	basic_string()
 	{
+		size_ = 0;
 		ptr_ = new T[1];
 		ptr_[0] = 0;
 	}
 
-	basic_string(size_t size) : ptr_(nullptr), size_(size)
+	basic_string(size_t size)
 	{
+		size_ = size;
 		ptr_ = new T[size + 1];
 		stf:fill(ptr_, ptr_ + size, ' ');
 		ptr_[size] = '\0';
 	}
 
-	basic_string(std::initializer_list<T> il) : ptr_(nullptr), size_(il.size())
+	basic_string(std::initializer_list<T> il)
 	{
+		size_ = il.size();
 		ptr_ = new T[size_ + 1];
 		std::copy(il.begin(), il.end(), ptr_);
 		ptr_[size_] = '\0';
@@ -60,11 +63,10 @@ class basic_string
 		ptr_[size_] = '\0';
 	}
 
-	basic_string(const basic_string& other)
+	basic_string(const basic_string& other) : ptr_(nullptr), size_(other.size_)
 	{
-		size_ = other.size_;
 		ptr_ = new T[size_ + 1];
-		std::memcpy(ptr_, other.ptr_, sizeof(T) * strlen_(other.ptr_));
+		std::memcpy(ptr_, other.ptr_, sizeof(T) * size_);
 		ptr_[size_] = '\0';
 	}
 
