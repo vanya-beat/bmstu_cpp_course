@@ -43,7 +43,7 @@ class basic_string
 	{
 		size_ = size;
 		ptr_ = new T[size + 1];
-		stf:fill(ptr_, ptr_ + size, ' ');
+		std::fill(ptr_, ptr_ + size, ' ');
 		ptr_[size] = '\0';
 	}
 
@@ -93,7 +93,7 @@ class basic_string
 
 	basic_string& operator=(basic_string&& other)
 	{
-		delete[] ptr_;
+		clean_();
 		size_ = other.size_;
 		ptr_ = other.ptr_;
 		other.ptr_ = nullptr;
@@ -106,34 +106,32 @@ class basic_string
 		clean_();
 		size_ = strlen_(c_str);
 		ptr_ = new T[size_ + 1];
-		std::memcpy(ptr_, c_str, sizeof(T) * strlen_(c_str));
+		std::memcpy(ptr_, c_str, sizeof(T) * size_);
 		ptr_[size_] = '\0';
 		return *this;
 	}
 
 	basic_string& operator=(const basic_string& other)
 	{
-		clean_();
-		size_ = other.size_;
-		ptr_ = new T[size_ + 1];
-		std::memcpy(ptr_, other.c_str(), sizeof(T) * strlen_(other.c_str()));
-		ptr_[size_] = '\0';
+		if (this != &other)
+		{
+			clean_();
+			size_ = other.size_;
+			ptr_ = new T[size_ + 1];
+			std::memcpy(ptr_, other.ptr_, sizeof(T) * size_);
+			ptr_[size_] = '\0';
+		}
 		return *this;
 	}
-
 	friend basic_string<T> operator+(const basic_string<T>& left,
 									 const basic_string<T>& right)
 	{
-		basic_string result;
-		result.size_ = left.size_ + right.size_;
-		result.ptr_ = new T[result.size_ + 1];
+		basic_string result(left.size_ + right.size_);
 		std::memcpy(result.ptr_, left.c_str(),
-					sizeof(T) * strlen_(left.c_str()));
+					sizeof(T) * left.size_);
+		std::memcpy(result.ptr_ + left.size_, right.ptr_,
+					sizeof(T) * right.size_);
 		result.ptr_[result.size_] = '\0';
-		for (size_t i = 0; i < right.size_; ++i)
-		{
-			result.ptr_[i + left.size_] = right.ptr_[i];
-		}
 		return result;
 	}
 
@@ -169,19 +167,20 @@ class basic_string
 
 	basic_string& operator+=(T symbol)
 	{
-		size_++;
-		T* left = ptr_;
-		ptr_ = new T[size_ + 1];
-		std::memcpy(ptr_, left, sizeof(T) * strlen_(left));
-		delete[] left;
-		ptr_[size_ - 1] = symbol;
-		ptr_[size_] = 0;
+		size_t new_size = size_ + 1;
+		T* new_ptr = new T[new_size + 1];
+		std::memcpy(new_ptr, ptr_, sizeof(T) * size_);
+		new_ptr[size_] = symbol;
+		new_ptr[new_size] = '\0';
+		clean_();
+		ptr_ = new_ptr;
+		size_ = new_size;
 		return *this;
 	}
 
-	T& operator[](size_t index) noexcept { return data()[index]; }
+	T& operator[](size_t index) noexcept { return ptr_[index]; }
 
-	T& at(size_t index) { return data()[0]; }
+	T& at(size_t index) { return ptr_[index]; }
 
    private:
 	static size_t strlen_(const T* str)
@@ -197,11 +196,10 @@ class basic_string
 
 	void clean_()
 	{
-		size_ = 0;
 		delete[] ptr_;
+		ptr_ = nullptr;
+		size_ = 0;
 	}
-
-	T* data() { return ptr_; }
 
 	T* ptr_ = nullptr;
 	size_t size_;
