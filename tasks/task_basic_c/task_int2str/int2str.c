@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include "int2str.h"
+#include <stdlib.h>
 
 static int calculate_number_len(unsigned int number)
 {

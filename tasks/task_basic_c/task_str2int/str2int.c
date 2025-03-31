@@ -1,6 +1,5 @@
-#include <assert.h>
-
 #include "str2int.h"
+#include <assert.h>
 
 int str2int(const char* str)
 {
