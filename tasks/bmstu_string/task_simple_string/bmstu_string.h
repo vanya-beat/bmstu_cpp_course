@@ -167,14 +167,13 @@ class basic_string
 
 	basic_string& operator+=(T symbol)
 	{
-		size_t new_size = size_ + 1;
-		T* new_ptr = new T[new_size + 1];
-		std::memcpy(new_ptr, ptr_, sizeof(T) * size_);
-		new_ptr[size_] = symbol;
-		new_ptr[new_size] = '\0';
-		clean_();
-		ptr_ = new_ptr;
-		size_ = new_size;
+		size_++;
+		T* left = ptr_;
+		ptr_ = new T[size_ + 1];
+		std::memcpy(ptr_, left, sizeof(T) * size_);
+		delete[] left;
+		ptr_[size_ - 1] = symbol;
+		ptr_[size_] = 0;
 		return *this;
 	}
 
