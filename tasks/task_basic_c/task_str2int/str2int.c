@@ -1,46 +1,49 @@
 #include <assert.h>
+#include <limits.h>
 #include <stdio.h>
-
-#include "stdbool.h"
 #include "str2int.h"
 
-bool space(char c)
-{
-	return (c == ' ');
-}
-bool digit(char c)
-{
-	return (c >= '0' & c <= '9');
-}
 int str2int(const char* str)
 {
-	int poly4aetca = 0;
-	int znak = 1;
-	bool base = 1;
-	while (space(*str))
+	if (str == NULL || *str == '\0')
 	{
-		str++;
+		return 0;
 	}
-	if (*str == '-' || *str == '+')
+
+	int sign = 1;
+	long long result = 0;
+	int i = 0;
+
+	if (str[0] == '-')
 	{
-		znak = (*str == '-') ? -1 : 1;
-		str++;
+		sign = -1;
+		i++;
 	}
-	while (digit(*str))
+
+	for (; str[i] != '\0'; i++)
 	{
-		int digit = *str - 0x30;
-		if (((znak == -1) && (poly4aetca > (-2147483647 - 1 - digit) / 10)) ||
-			((znak == 1) && (poly4aetca > (2147483647 - digit) / 10)))
+		if (str[i] >= '0' && str[i] <= '9')
 		{
-			assert(0 == 1);
+			result = result * 10 + (str[i] - '0');
+
+			if ((sign == 1 && result > INT_MAX) ||
+				(sign == -1 && result > (long long)INT_MAX + 1))
+			{
+				return 0;
+			}
 		}
-		poly4aetca = poly4aetca * 10 + digit;
-		base = 0;
-		str++;
+		else
+		{
+			return 0;
+		}
 	}
-	if (base)
+
+	result *= sign;
+
+	if (result < INT_MIN || result > INT_MAX)
 	{
-		assert(0 == 1);
+		return 0;
 	}
-	return poly4aetca * znak;
+
+	return (int)result;
 }
