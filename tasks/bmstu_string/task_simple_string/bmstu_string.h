@@ -215,4 +215,4 @@ class basic_string
 	}
 };
 
-}  // namespace bmstu
+}  
