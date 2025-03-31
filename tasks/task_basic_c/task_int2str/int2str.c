@@ -5,7 +5,6 @@ char* int2str(int num)
 {
 	char* str = (char*)calloc(13, sizeof(char));
 	int number_len = 0;
-
 	unsigned int number = 0;
 	if (num < 0)
 	{
