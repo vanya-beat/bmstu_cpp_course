@@ -1,58 +1,32 @@
 #include <assert.h>
-#include <limits.h>
-#include <stdbool.h>
-#include <stdio.h>
+#include "stdio.h"
 #include "str2int.h"
 
-int str2int(const char* str)
+int str2int(const char* s)
 {
-	if (str == NULL || *str == '\0')
+	int m = 1;
+
+	int r = 0;
+
+	if (*s == '-')
 	{
-		return 0;
+		m = -1;
+		s++;
+	}
+	else if (*s == '+')
+	{
+		s++;
 	}
 
-	int sign = 1;
-	int i = 0;
-	int number = 0;
-	bool negative_overflow = false;
-	bool positive_overflow = false;
-
-	if (str[0] == '-')
+	int n = 0;
+	while (*s)
 	{
-		sign = -1;
-		i = 1;
+		r = r * 10 + (*s - '0');
+		n++;
+		s++;
+		assert(m == -1 && r == -2147483648 || m == -1 && r >= 0 && n <= 9 ||
+			   m == 1 && r >= 0);
 	}
-
-	for (; str[i] != '\0'; i++)
-	{
-		if (str[i] < '0' || str[i] > '9')
-		{
-			return 0;
-		}
-
-		int digit = str[i] - '0';
-
-		if (sign == 1)
-		{
-			if (number > INT_MAX / 10 ||
-				(number == INT_MAX / 10 && digit > INT_MAX % 10))
-			{
-				return 0;
-			}
-		}
-		else
-		{
-			if (number > INT_MAX / 10 ||
-				(number == INT_MAX / 10 && digit > (INT_MAX % 10 + 1)))
-			{
-				return 0;
-			}
-		}
-
-		number = number * 10 + digit;
-	}
-
-	number = number * sign;
-
-	return number;
+	assert(n > 0);
+	return r * m;
 }

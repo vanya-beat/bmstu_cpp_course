@@ -1,49 +1,44 @@
-#include "int2str.h"
-#include <assert.h>
-#include "stdio.h"
 #include <stdlib.h>
+#include "int2str.h"
 
-char* int2str(int number)
+char* int2str(int n)
 {
-	char* str = "0";
+	char* buf = (char*)calloc(13, 1);
+	int len = 0;
 
-	if (number == 0)
+	unsigned int u = 0;
+	if (n < 0)
 	{
-		str = malloc(2);
-		str[0] = '0';
-		str[1] = '\0';
-		return str;
+		len = 1;
+		buf[0] = '-';
+		u = -n;
+	}
+	else
+	{
+		u = n;
 	}
 
-	int is_negative = number < 0;
-	unsigned absolute = is_negative ? -number : number;
-
-	int length = 0;
-	for (unsigned temp = absolute; temp != 0; temp /= 10)
-	{
-		length++;
-	}
-
-	str = malloc(length + is_negative + 1);
-	if (!str)
-	{
-		return NULL;
-	}
-
-	int position = length + is_negative;
-	str[position--] = '\0';
-
+	unsigned int tmp = u;
+	int cnt = 0;
 	do
 	{
-		str[position--] = '0' + (absolute % 10);
-		absolute /= 10;
-	}
-	while (absolute > 0);
+		tmp /= 10;
+		len++;
+		cnt++;
+	} while (tmp > 0 || cnt < 1);
 
-	if (is_negative)
+	int d = 0;
+	cnt = 0;
+	char c = 0;
+	do
 	{
-		str[0] = '-';
-	}
+		d = u % 10;
+		u /= 10;
+		c = d + 48;
+		buf[len - 1 - cnt] = c;
+		cnt++;
+	} while (u > 0 || cnt < 1);
+	buf[len] = 0;
 
-	return str;
+	return buf;
 }
