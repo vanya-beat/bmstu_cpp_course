@@ -17,11 +17,7 @@ using u16string = basic_string<char16_t>;
 using u32string = basic_string<char32_t>;
 
 template <typename T>
-#ifdef _MSC_VER
 class basic_string
-#else
-class basic_string
-#endif
 {
    public:
 	basic_string() : ptr_(new T[1]{0}), size_(0) {}
@@ -122,7 +118,7 @@ class basic_string
 	{
 		obj.clean_();
 		T ch;
-		while (is.get(ch) && ch != '\n')
+		while (is.get(ch) && ch != '\n' && ch != static_cast<T>('\0'))
 		{
 			obj += ch;
 		}
@@ -138,7 +134,10 @@ class basic_string
 	basic_string& operator+=(T symbol)
 	{
 		T* new_ptr = new T[size_ + 2];
-		std::copy(ptr_, ptr_ + size_, new_ptr);
+		if (ptr_)
+		{
+			std::copy(ptr_, ptr_ + size_, new_ptr);
+		}
 		new_ptr[size_] = symbol;
 		new_ptr[size_ + 1] = 0;
 		delete[] ptr_;
@@ -149,21 +148,37 @@ class basic_string
 
 	T& operator[](size_t index) noexcept { return ptr_[index]; }
 
+	const T& operator[](size_t index) const noexcept { return ptr_[index]; }
+
 	T& at(size_t index)
 	{
 		if (index >= size_)
+		{
 			throw std::out_of_range("Wrong index");
+		}
+		return ptr_[index];
+	}
+
+	const T& at(size_t index) const
+	{
+		if (index >= size_)
+		{
+			throw std::out_of_range("Wrong index");
+		}
 		return ptr_[index];
 	}
 
 	T* data() { return ptr_; }
+	const T* data() const { return ptr_; }
 
    private:
 	static size_t strlen_(const T* str)
 	{
 		const T* p = str;
 		while (*p)
+		{
 			++p;
+		}
 		return p - str;
 	}
 
