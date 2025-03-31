@@ -1,14 +1,13 @@
 #pragma once
 
-#include <algorithm>
-#include <exception>
-#include <initializer_list>
-#include <iostream>
+#include <iterator>
+#include <memory>
+#include <stdexcept>
 
 namespace bmstu
 {
 
-template <typename T>
+template <typename CharType>
 class basic_string;
 
 using string = basic_string<char>;
@@ -16,187 +15,222 @@ using wstring = basic_string<wchar_t>;
 using u16string = basic_string<char16_t>;
 using u32string = basic_string<char32_t>;
 
-template <typename T>
+template <typename CharType>
 class basic_string
 {
    public:
-	basic_string() : ptr_(new T[1]{0}), size_(0) {}
-
-	explicit basic_string(size_t size) : ptr_(new T[size + 1]), size_(size)
+	// Конструктор по умолчанию
+	basic_string() noexcept
+		: buffer_(std::make_unique<CharType[]>(1)), length_(0)
 	{
-		std::fill_n(ptr_, size, static_cast<T>(' '));
-		ptr_[size] = 0;
+		buffer_[0] = static_cast<CharType>(0);
 	}
 
-	basic_string(std::initializer_list<T> il)
-		: ptr_(new T[il.size() + 1]), size_(il.size())
+	// Конструктор с заданным размером
+	explicit basic_string(size_t count)
+		: buffer_(std::make_unique<CharType[]>(count + 1)), length_(count)
 	{
-		std::copy(il.begin(), il.end(), ptr_);
-		ptr_[size_] = 0;
+		std::fill_n(buffer_.get(), count, static_cast<CharType>(' '));
+		buffer_[count] = static_cast<CharType>(0);
 	}
 
-	basic_string(const T* c_str) : size_(strlen_(c_str))
+	// Конструктор из списка инициализации
+	basic_string(std::initializer_list<CharType> init)
+		: buffer_(std::make_unique<CharType[]>(init.size() + 1)),
+		  length_(init.size())
 	{
-		ptr_ = new T[size_ + 1];
-		std::copy(c_str, c_str + size_, ptr_);
-		ptr_[size_] = 0;
+		std::copy(init.begin(), init.end(), buffer_.get());
+		buffer_[length_] = static_cast<CharType>(0);
 	}
 
-	basic_string(const basic_string& other) : size_(other.size_)
+	// Конструктор из C-строки
+	basic_string(const CharType* cstr)
 	{
-		ptr_ = new T[size_ + 1];
-		std::copy(other.ptr_, other.ptr_ + size_ + 1, ptr_);
-	}
-
-	basic_string(basic_string&& other) noexcept
-		: ptr_(other.ptr_), size_(other.size_)
-	{
-		other.ptr_ = nullptr;
-		other.size_ = 0;
-	}
-
-	~basic_string() { delete[] ptr_; }
-
-	const T* c_str() const
-	{
-		return ptr_ ? ptr_ : reinterpret_cast<const T*>("");
-	}
-
-	size_t size() const { return size_; }
-
-	basic_string& operator=(const basic_string& other)
-	{
-		if (this != &other)
+		if (cstr)
 		{
-			basic_string tmp(other);
-			swap(tmp);
+			length_ = calculate_length(cstr);
+			buffer_ = std::make_unique<CharType[]>(length_ + 1);
+			std::copy(cstr, cstr + length_, buffer_.get());
+			buffer_[length_] = static_cast<CharType>(0);
 		}
-		return *this;
+		else
+		{
+			buffer_ = std::make_unique<CharType[]>(1);
+			buffer_[0] = static_cast<CharType>(0);
+			length_ = 0;
+		}
 	}
 
+	// Копирующий конструктор
+	basic_string(const basic_string& other)
+		: buffer_(std::make_unique<CharType[]>(other.length_ + 1)),
+		  length_(other.length_)
+	{
+		std::copy(other.buffer_.get(), other.buffer_.get() + length_ + 1,
+				  buffer_.get());
+	}
+
+	// Перемещающий конструктор
+	basic_string(basic_string&& other) noexcept
+		: buffer_(std::move(other.buffer_)), length_(other.length_)
+	{
+		other.length_ = 0;
+		other.buffer_ = std::make_unique<CharType[]>(1);
+		other.buffer_[0] = static_cast<CharType>(0);
+	}
+
+	// Деструктор
+	~basic_string() = default;
+
+	// Получение C-строки
+	const CharType* c_str() const noexcept { return buffer_.get(); }
+
+	// Получение размера
+	size_t size() const noexcept { return length_; }
+
+	// Оператор присваивания перемещением
 	basic_string& operator=(basic_string&& other) noexcept
 	{
 		if (this != &other)
 		{
-			delete[] ptr_;
-			ptr_ = other.ptr_;
-			size_ = other.size_;
-			other.ptr_ = nullptr;
-			other.size_ = 0;
+			buffer_ = std::move(other.buffer_);
+			length_ = other.length_;
+			other.length_ = 0;
+			other.buffer_ = std::make_unique<CharType[]>(1);
+			other.buffer_[0] = static_cast<CharType>(0);
 		}
 		return *this;
 	}
 
-	basic_string& operator=(const T* c_str)
+	// Оператор присваивания C-строки
+	basic_string& operator=(const CharType* cstr)
 	{
-		basic_string tmp(c_str);
-		swap(tmp);
+		if (cstr)
+		{
+			size_t new_length = calculate_length(cstr);
+			auto new_buffer = std::make_unique<CharType[]>(new_length + 1);
+			std::copy(cstr, cstr + new_length, new_buffer.get());
+			new_buffer[new_length] = static_cast<CharType>(0);
+			buffer_ = std::move(new_buffer);
+			length_ = new_length;
+		}
+		else
+		{
+			buffer_ = std::make_unique<CharType[]>(1);
+			buffer_[0] = static_cast<CharType>(0);
+			length_ = 0;
+		}
 		return *this;
 	}
 
-	friend basic_string operator+(const basic_string& left,
-								  const basic_string& right)
+	// Копирующий оператор присваивания
+	basic_string& operator=(const basic_string& other)
+	{
+		if (this != &other)
+		{
+			basic_string temp(other);
+			swap(temp);
+		}
+		return *this;
+	}
+
+	// Конкатенация строк
+	friend basic_string operator+(const basic_string& lhs,
+								  const basic_string& rhs)
 	{
 		basic_string result;
-		result.size_ = left.size_ + right.size_;
-		result.ptr_ = new T[result.size_ + 1];
-		std::copy(left.ptr_, left.ptr_ + left.size_, result.ptr_);
-		std::copy(right.ptr_, right.ptr_ + right.size_,
-				  result.ptr_ + left.size_);
-		result.ptr_[result.size_] = 0;
+		result.length_ = lhs.length_ + rhs.length_;
+		result.buffer_ = std::make_unique<CharType[]>(result.length_ + 1);
+		std::copy(lhs.buffer_.get(), lhs.buffer_.get() + lhs.length_,
+				  result.buffer_.get());
+		std::copy(rhs.buffer_.get(), rhs.buffer_.get() + rhs.length_,
+				  result.buffer_.get() + lhs.length_);
+		result.buffer_[result.length_] = static_cast<CharType>(0);
 		return result;
 	}
 
-	template <typename S>
-	friend S& operator<<(S& os, const basic_string& obj)
+	// Оператор вывода
+	template <typename Stream>
+	friend Stream& operator<<(Stream& os, const basic_string& str)
 	{
-		return os << obj.c_str();
+		return os << str.c_str();
 	}
 
-	template <typename S>
-	friend S& operator>>(S& is, basic_string& obj)
+	// Оператор ввода
+	template <typename Stream>
+	friend Stream& operator>>(Stream& is, basic_string& str)
 	{
-		obj.clean_();
-		T ch;
-		while (is.get(ch) && ch != '\n' && ch != static_cast<T>('\0'))
-		{
-			obj += ch;
-		}
+		std::basic_string<CharType> temp;
+		std::getline(is, temp);
+		str = temp.c_str();
 		return is;
 	}
 
+	// Оператор += для строки
 	basic_string& operator+=(const basic_string& other)
 	{
 		*this = *this + other;
 		return *this;
 	}
 
-	basic_string& operator+=(T symbol)
+	// Оператор += для символа
+	basic_string& operator+=(CharType ch)
 	{
-		T* new_ptr = new T[size_ + 2];
-		if (ptr_)
-		{
-			std::copy(ptr_, ptr_ + size_, new_ptr);
-		}
-		new_ptr[size_] = symbol;
-		new_ptr[size_ + 1] = 0;
-		delete[] ptr_;
-		ptr_ = new_ptr;
-		++size_;
+		auto new_buffer = std::make_unique<CharType[]>(length_ + 2);
+		std::copy(buffer_.get(), buffer_.get() + length_, new_buffer.get());
+		new_buffer[length_] = ch;
+		new_buffer[length_ + 1] = static_cast<CharType>(0);
+		buffer_ = std::move(new_buffer);
+		++length_;
 		return *this;
 	}
 
-	T& operator[](size_t index) noexcept { return ptr_[index]; }
-
-	const T& operator[](size_t index) const noexcept { return ptr_[index]; }
-
-	T& at(size_t index)
+	// Оператор индексации
+	CharType& operator[](size_t pos) noexcept { return buffer_[pos]; }
+	const CharType& operator[](size_t pos) const noexcept
 	{
-		if (index >= size_)
-		{
-			throw std::out_of_range("Wrong index");
-		}
-		return ptr_[index];
+		return buffer_[pos];
 	}
 
-	const T& at(size_t index) const
+	// Доступ с проверкой границ
+	CharType& at(size_t pos)
 	{
-		if (index >= size_)
-		{
-			throw std::out_of_range("Wrong index");
-		}
-		return ptr_[index];
+		if (pos >= length_)
+			throw std::out_of_range("Invalid position");
+		return buffer_[pos];
 	}
 
-	T* data() { return ptr_; }
-	const T* data() const { return ptr_; }
+	const CharType& at(size_t pos) const
+	{
+		if (pos >= length_)
+			throw std::out_of_range("Invalid position");
+		return buffer_[pos];
+	}
+
+	// Получение указателя на данные
+	CharType* data() noexcept { return buffer_.get(); }
+	const CharType* data() const noexcept { return buffer_.get(); }
 
    private:
-	static size_t strlen_(const T* str)
+	// Вычисление длины C-строки
+	static size_t calculate_length(const CharType* str)
 	{
-		const T* p = str;
-		while (*p)
-		{
-			++p;
-		}
-		return p - str;
+		size_t len = 0;
+		while (str[len] != static_cast<CharType>(0))
+			++len;
+		return len;
 	}
 
-	void clean_()
-	{
-		delete[] ptr_;
-		ptr_ = new T[1]{0};
-		size_ = 0;
-	}
-
+	// Обмен содержимым
 	void swap(basic_string& other) noexcept
 	{
-		std::swap(ptr_, other.ptr_);
-		std::swap(size_, other.size_);
+		using std::swap;
+		swap(buffer_, other.buffer_);
+		swap(length_, other.length_);
 	}
 
-	T* ptr_;
-	size_t size_;
+	std::unique_ptr<CharType[]> buffer_;
+	size_t length_;
 };
 
 }  // namespace bmstu
