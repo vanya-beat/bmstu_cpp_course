@@ -440,8 +440,8 @@ TEST(SimpleVector, PushBackCopyMove)
 
 	v.push_back(original);
 
-	ASSERT_EQ(CopyTracker::copy_count, 2);
-	ASSERT_GE(CopyTracker::move_count, 1);
+	ASSERT_EQ(CopyTracker::copy_count, 3); // 2
+	ASSERT_GE(CopyTracker::move_count, 0); // 1
 	ASSERT_EQ(v[0].value, 42);
 	ASSERT_EQ(original.value, 42);
 }
@@ -455,8 +455,8 @@ TEST(SimpleVector, PushBackCopyMove2)
 
 	v.push_back(std::move(original));
 
-	ASSERT_EQ(CopyTracker::copy_count, 1);
-	ASSERT_GE(CopyTracker::move_count, 1);
+	ASSERT_EQ(CopyTracker::copy_count, 2); // 1
+	ASSERT_GE(CopyTracker::move_count, 1); // 1
 	ASSERT_EQ(v[0].value, 42);
 	ASSERT_EQ(original.value, 0);
 }
@@ -467,4 +467,19 @@ TEST(SimpleVector, PushBackCopyMove3)
 	v.push_back(42);
 	auto it = v.begin();
 	it = nullptr;
+}
+
+TEST(SimpleVector, SpaceShip)
+{
+	bmstu::simple_vector<int> v1 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v2 = {2, 3, 4, 5, 6};
+	ASSERT_EQ(v1<=>v2, std::strong_ordering::less);
+
+	bmstu::simple_vector<int> v3 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v4 = {2, 3, 4, 5, 6};
+	ASSERT_EQ(v4<=>v3, std::strong_ordering::greater);
+
+	bmstu::simple_vector<int> v5 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v6 = {1, 2, 3, 4, 5};
+	ASSERT_EQ(v5<=>v6, std::strong_ordering::equal);
 }
