@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <numeric>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "base_algo_let.h"
 
@@ -34,12 +34,12 @@ bool is_divisible_by_10(const std::vector<int>& v) {
 }
 
 void replace_negative_numbers(std::vector<int>& v) {
-  std::replace_if(
-      v.begin(), v.end(), [](int num) { return num < 0; }, 0);
+  std::replace_if(v.begin(), v.end(), [](int num) { return num < 0; }, 0);
 }
 
 void double_values(std::vector<int>& v) {
-  std::transform(v.begin(), v.end(), v.begin(), [](int num) { return num * 2; });
+  std::transform(v.begin(), v.end(), v.begin(),
+                 [](int num) { return num * 2; });
 }
 
 void sort_students_by_age(std::vector<Student>& v) {
