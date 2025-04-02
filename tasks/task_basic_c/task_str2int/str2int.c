@@ -23,7 +23,7 @@ int str2int(const char* s)
 	if (!*s)
 		assert(0 && "No digits after sign");
 
-	long long res = 0;	
+	long long res = 0;
 	while (*s >= '0' && *s <= '9')
 	{
 		res = res * 10 + (*s - '0');
