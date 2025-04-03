@@ -1,6 +1,7 @@
 #include "int2str.h"
 #include <assert.h>
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 static int count_digits(unsigned n)
 {
@@ -17,7 +18,11 @@ char* int2str(int n)
 {
 	if (n == 0)
 	{
-		char* z = malloc(2);
+		char* z = (char*)malloc(2);
+		if (z == NULL)
+		{
+			return NULL;
+		}
 		z[0] = '0';
 		z[1] = '\0';
 		return z;
@@ -26,7 +31,7 @@ char* int2str(int n)
 	int neg = n < 0;
 	unsigned num = neg ? -n : n;
 	int len = count_digits(num) + neg;
-	char* s = malloc(len + 1);
+	char* s = (char*)malloc(len + 1);
 
 	if (!s)
 		return NULL;
