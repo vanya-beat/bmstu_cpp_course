@@ -42,3 +42,4 @@ int str2int(const char* s)
 
 	return (int)(res * sign);
 }
+//bmstuu
