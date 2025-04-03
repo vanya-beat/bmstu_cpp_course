@@ -449,4 +449,6 @@ class simple_vector
 	size_t capacity_ = 0;
 };
 
-}  // namespace bmstuu
+}  
+
+// namespace bmstuu
