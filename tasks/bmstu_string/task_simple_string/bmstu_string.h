@@ -217,6 +217,6 @@ class basic_string
 	size_t size_;
 };
 
-}  
+}  // namespace bmstu
 
 // namespace bmstuu
