@@ -1,5 +1,5 @@
-#include "base_algo_let.h"
 #include <algorithm>
+#include "base_algo_let.h"
 
 std::vector<int> positive_numbers(const std::vector<int>& v)
 {
@@ -61,4 +61,4 @@ void sort_students_by_name(std::vector<Student>& v)
 			  { return a.name < b.name; });
 }
 
-//bmstuu
+// bmstuu
