@@ -451,4 +451,3 @@ class simple_vector
 
 }  // namespace bmstu
 
-// namespace bmstuu

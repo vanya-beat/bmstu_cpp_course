@@ -219,4 +219,3 @@ class basic_string
 
 }  // namespace bmstu
 
-// namespace bmstuu

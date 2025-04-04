@@ -51,4 +51,3 @@ char* int2str(int n)
 	return s;
 }
 
-//bmstuu

@@ -61,4 +61,3 @@ void sort_students_by_name(std::vector<Student>& v)
 			  { return a.name < b.name; });
 }
 
-// bmstuu
