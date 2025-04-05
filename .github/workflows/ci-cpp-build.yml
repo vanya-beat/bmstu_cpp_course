@@ -29,11 +29,11 @@ jobs:
         run: docker load -i cpp_course_image.tar
 
       - name: Run tests in container
+        id: run-tests
         run: |
-          # Создаем директорию для результатов тестов на хосте
           mkdir -p test-results
           
-          # Запускаем тесты в контейнере
+          # Запускаем тесты и сохраняем статус (0 = успех, 1 = провал)
           docker run --name cpp_course_container \
             -v ${{ github.workspace }}:/workspace \
             bmstu_cpp_course-bmstu:latest \
@@ -44,21 +44,20 @@ jobs:
                     cmake --build . && \
                     cd .. && \
                     mkdir -p test-results && \
-                    # Запускаем только тестовые исполняемые файлы проекта, а не тесты GoogleTest на Python
+                    TEST_FAILURE=0 && \
                     for test_bin in \$(find build/tasks -type f -executable); do \
                       echo \"Running \$test_bin\" && \
-                      \$test_bin --gtest_output=xml:test-results/\$(basename \$test_bin).xml || true; \
+                      \$test_bin --gtest_output=xml:test-results/\$(basename \$test_bin).xml || TEST_FAILURE=1; \
                     done && \
-                    # Копируем результаты тестов в директорию, смонтированную на хосте
-                    cp -r test-results/* /workspace/test-results/ || true"
-          
-          # Показываем, какие результаты тестов были найдены
-          echo "Found test results:"
+                    cp -r test-results/* /workspace/test-results/ && \
+                    exit \$TEST_FAILURE"
+
+          # Проверяем, есть ли результаты тестов
+          echo "Test results:"
           ls -la test-results/
 
       - name: Upload test results (XML)
-        if: always()
-        continue-on-error: true
+        if: always()  # Загружаем артефакты даже при провале
         uses: actions/upload-artifact@v4
         with:
           name: test_results_xml
@@ -87,7 +86,6 @@ jobs:
 
       - name: Apply XSLT transformation
         run: |
-          # Применяем XSLT-шаблон к каждому XML-файлу 
           for xml_file in test-results/*.xml; do
             xsltproc transform.xsl "$xml_file" > "${xml_file%.xml}.html"
           done
