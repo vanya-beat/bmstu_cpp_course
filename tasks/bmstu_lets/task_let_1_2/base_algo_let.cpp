@@ -60,4 +60,3 @@ void sort_students_by_name(std::vector<Student>& v)
 	std::sort(v.begin(), v.end(), [](const Student& a, const Student& b)
 			  { return a.name < b.name; });
 }
-

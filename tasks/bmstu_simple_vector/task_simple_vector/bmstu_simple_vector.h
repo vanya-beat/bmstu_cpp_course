@@ -1,7 +1,7 @@
+#include "array_ptr.h"
 #include <ostream>
 #include <stdexcept>
 #include <utility>
-#include "array_ptr.h"
 
 namespace bmstu
 {
@@ -449,5 +449,4 @@ class simple_vector
 	size_t capacity_ = 0;
 };
 
-}  // namespace bmstu
-
+}  
