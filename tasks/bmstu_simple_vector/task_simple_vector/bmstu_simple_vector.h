@@ -133,17 +133,20 @@ class simple_vector
 	~simple_vector() = default;
 
 	simple_vector(std::initializer_list<T> init) noexcept
-	: data_(array_ptr<T>(init.size())),
-	  size_(init.size()), capacity_(init.size())
+		: data_(array_ptr<T>(init.size())),
+		  size_(init.size()),
+		  capacity_(init.size())
 	{
 		std::copy(init.begin(), init.end(), data_.get());
 	}
 
 	simple_vector(const simple_vector& other)
-	: data_(array_ptr<T>(other.size_)),
-	  size_(other.size_), capacity_(other.size_)
+		: data_(array_ptr<T>(other.size_)),
+		  size_(other.size_),
+		  capacity_(other.size_)
 	{
-		std::copy(other.data_.get(), other.data_.get() + other.size_, data_.get());
+		std::copy(other.data_.get(), other.data_.get() + other.size_,
+				  data_.get());
 	}
 
 	simple_vector(simple_vector&& other) noexcept { swap(other); }
@@ -159,7 +162,7 @@ class simple_vector
 	}
 
 	explicit simple_vector(const size_t size, const T& value = T{})
-	: data_(array_ptr<T>(size)), size_(size), capacity_(size)
+		: data_(array_ptr<T>(size)), size_(size), capacity_(size)
 	{
 		std::fill(data_.get(), data_.get() + size, value);
 	}
@@ -172,7 +175,10 @@ class simple_vector
 
 	const_iterator begin() const noexcept { return iterator(data_.get()); }
 
-	const_iterator end() const noexcept{ return iterator(data_.get() + size_); }
+	const_iterator end() const noexcept
+	{
+		return iterator(data_.get() + size_);
+	}
 
 	typename iterator::reference operator[](size_t index) noexcept
 	{
@@ -186,7 +192,10 @@ class simple_vector
 
 	typename iterator::reference at(size_t index) { return data_.get()[index]; }
 
-	typename const_iterator::reference at(size_t index) const { return data_.get()[index]; }
+	typename const_iterator::reference at(size_t index) const
+	{
+		return data_.get()[index];
+	}
 
 	[[nodiscard]] size_t size() const noexcept { return size_; }
 
@@ -199,16 +208,23 @@ class simple_vector
 		std::swap(capacity_, other.capacity_);
 	}
 
-	friend void swap(simple_vector& lhs, simple_vector& rhs) noexcept { lhs.swap(rhs); }
+	friend void swap(simple_vector& lhs, simple_vector& rhs) noexcept
+	{
+		lhs.swap(rhs);
+	}
 
 	void reserve(size_t new_cap)
 	{
 		if (new_cap > capacity_)
 		{
 			array_ptr<T> new_data(new_cap);
-			if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
+			if constexpr (std::is_nothrow_move_constructible_v<T> ||
+						  !std::is_copy_constructible_v<T>)
+			{
 				std::move(data_.get(), data_.get() + size_, new_data.get());
-			} else {
+			}
+			else
+			{
 				std::copy(data_.get(), data_.get() + size_, new_data.get());
 			}
 			data_ = std::move(new_data);
@@ -236,7 +252,8 @@ class simple_vector
 		{
 			reserve(capacity_ == 0 ? 1 : capacity_ * 2);
 		}
-		std::move_backward(data_.get() + where_index, data_.get() + size_, data_.get() + size_ + 1);
+		std::move_backward(data_.get() + where_index, data_.get() + size_,
+						   data_.get() + size_ + 1);
 		data_[where_index] = std::move(value);
 		++size_;
 		return iterator(data_.get() + where_index);
@@ -301,7 +318,8 @@ class simple_vector
 	friend bool operator==(const simple_vector& lhs, const simple_vector& rhs)
 	{
 		return lhs.size_ == rhs.size_ &&
-			   std::equal(lhs.data_.get(), lhs.data_.get() + lhs.size_, rhs.data_.get());
+			   std::equal(lhs.data_.get(), lhs.data_.get() + lhs.size_,
+						  rhs.data_.get());
 	}
 
 	friend bool operator!=(const simple_vector& lhs, const simple_vector& rhs)
@@ -342,7 +360,8 @@ class simple_vector
 		if (!empty())
 		{
 			size_t where_index = where - begin();
-			std::move(data_.get() + where_index + 1, data_.get() + size_, data_.get() + where_index);
+			std::move(data_.get() + where_index + 1, data_.get() + size_,
+					  data_.get() + where_index);
 			--size_;
 			data_.get()[size_] = T{};
 			return iterator(data_.get() + where_index);

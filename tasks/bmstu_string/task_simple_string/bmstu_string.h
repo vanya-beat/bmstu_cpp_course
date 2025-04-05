@@ -128,7 +128,8 @@ class basic_string
 	{
 		basic_string result(left.size_ + right.size_);
 		std::memcpy(result.ptr_, left.c_str(), sizeof(T) * left.size_);
-		std::memcpy(result.ptr_ + left.size_, right.ptr_, sizeof(T) * right.size_);
+		std::memcpy(result.ptr_ + left.size_, right.ptr_,
+					sizeof(T) * right.size_);
 		result.ptr_[result.size_] = '\0';
 		return result;
 	}
