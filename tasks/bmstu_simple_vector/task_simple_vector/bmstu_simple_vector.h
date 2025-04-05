@@ -1,7 +1,7 @@
-#include "array_ptr.h"
 #include <ostream>
 #include <stdexcept>
 #include <utility>
+#include "array_ptr.h"
 
 namespace bmstu
 {
