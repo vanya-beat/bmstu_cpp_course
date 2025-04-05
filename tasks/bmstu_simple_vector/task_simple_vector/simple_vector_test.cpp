@@ -480,3 +480,13 @@ TEST(SimpleVector, PushBackCopyMove3)
 	auto it = v.begin();
 	it = nullptr;
 }
+
+TEST(SimpleVector, Concat)
+{
+	using namespace bmstu;
+	using svi = simple_vector<int>;
+	simple_vector<int> vec{1, 2, 3, 4};
+	vec.concat(simple_vector<int>{5, 6}).concat(svi{7, 8}).concat(svi{9, 10});
+	auto sv1 = svi{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+	ASSERT_EQ(vec, sv1);
+}

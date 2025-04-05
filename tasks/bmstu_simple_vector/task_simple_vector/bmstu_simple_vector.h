@@ -317,6 +317,20 @@ class simple_vector
 
 	void clear() noexcept { size_ = 0; }
 
+	simple_vector& concat(const simple_vector& other)
+	{
+		size_t new_size = size_ + other.size_;
+		if (new_size > capacity_)
+		{
+			reserve(new_size);
+		}
+
+		std::copy(other.begin(), other.end(), end());
+		size_ = new_size;
+
+		return *this;
+	}
+
 	friend bool operator==(const simple_vector& lhs, const simple_vector& rhs)
 	{
 		if (lhs.size_ != rhs.size_)
