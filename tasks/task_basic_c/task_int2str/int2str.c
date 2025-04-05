@@ -13,7 +13,7 @@ char* int2str(int num)
 	{
 		str[number_len++] = '-';
 	}
-	else if ( num == 0)
+	else if (num == 0)
 	{
 		str[number_len++] = '0';
 	}
