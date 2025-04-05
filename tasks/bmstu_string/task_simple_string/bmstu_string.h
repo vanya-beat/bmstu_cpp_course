@@ -141,7 +141,7 @@ class basic_string
 	{
 		obj.clean_();
 		T ch;
-		while (is.get(ch) && ch != '\n' && ch != static_cast<T>('\0'))
+		while (is.get(ch) && ch != static_cast<T>('\0'))
 			obj += ch;
 		return is;
 	}
