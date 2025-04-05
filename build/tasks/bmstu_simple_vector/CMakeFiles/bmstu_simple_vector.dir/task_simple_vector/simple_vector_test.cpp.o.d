@@ -154,8 +154,9 @@ tasks/bmstu_simple_vector/CMakeFiles/bmstu_simple_vector.dir/task_simple_vector/
  /usr/include/c++/13/bits/locale_facets.tcc \
  /usr/include/c++/13/bits/basic_ios.tcc \
  /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/utility \
- /usr/include/c++/13/bits/stl_relops.h /usr/include/c++/13/algorithm \
- /usr/include/c++/13/bits/stl_algo.h \
+ /usr/include/c++/13/bits/stl_relops.h \
+ /home/greenliess/Рабочий\ стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_simple_vector/task_simple_vector/array_ptr.h \
+ /usr/include/c++/13/algorithm /usr/include/c++/13/bits/stl_algo.h \
  /usr/include/c++/13/bits/algorithmfwd.h \
  /usr/include/c++/13/bits/stl_heap.h \
  /usr/include/c++/13/bits/uniform_int_dist.h \
@@ -165,7 +166,6 @@ tasks/bmstu_simple_vector/CMakeFiles/bmstu_simple_vector.dir/task_simple_vector/
  /usr/include/c++/13/bits/ranges_algobase.h \
  /usr/include/c++/13/pstl/glue_algorithm_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/greenliess/Рабочий\ стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_simple_vector/task_simple_vector/array_ptr.h \
  /home/greenliess/Рабочий\ стол/project/bmstu_cpp_course_greenliess/build/_deps/googletest-src/googletest/include/gtest/gtest.h \
  /usr/include/c++/13/limits /usr/include/c++/13/memory \
  /usr/include/c++/13/bits/stl_uninitialized.h \
