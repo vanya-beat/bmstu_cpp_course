@@ -29,6 +29,7 @@ jobs:
         run: docker load -i cpp_course_image.tar
 
       - name: Run tests in container
+        id: run_tests
         run: |
           mkdir -p test-results
           docker run --name cpp_course_container \
@@ -41,10 +42,18 @@ jobs:
                     cmake --build . && \
                     cd .. && \
                     mkdir -p test-results && \
+                    # Запускаем тестовые исполняемые файлы проекта и сохраняем статус выполнения
+                    exit_code=0 && \
                     for test_bin in \$(find build/tasks -type f -executable); do \
                       echo \"Running \$test_bin\" && \
-                      \$test_bin --gtest_output=xml:test-results/\$(basename \$test_bin).xml || true; \
+                      \$test_bin --gtest_output=xml:test-results/\$(basename \$test_bin).xml; \
+                      test_exit_code=\$?; \
+                      if [ \$test_exit_code -ne 0 ]; then \
+                        echo \"Test \$test_bin failed with exit code \$test_exit_code\" && \
+                        exit_code=1; \
+                      fi; \
                     done && \
+
                     cp -r test-results/* /workspace/test-results/ || true"
           
           echo "Found test results:"
@@ -62,6 +71,7 @@ jobs:
   generate-report:
     name: Generate HTML Report
     needs: test
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Выполнять даже если предыдущий job завершился с ошибкой
