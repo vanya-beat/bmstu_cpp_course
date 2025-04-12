@@ -16,7 +16,7 @@ int str2int(const char *str) {
     z = z * 10 + (*str - '0');
     count += 1;
     str++;
-    assert(x == -1 && z == -2147483648  x == -1 && z >= 0 && count <= 9  x == 1 && z >= 0);
+    assert((x == -1 && z == -2147483648) || (x == -1 && z >= 0 && count <= 9) || (x == 1 && z >= 0));
   }
   assert(count > 0);
   return z * x;
