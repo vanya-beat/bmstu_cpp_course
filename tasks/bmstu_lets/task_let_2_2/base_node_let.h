@@ -49,7 +49,7 @@ void delete_list(ForwardListNode<T>*& head)
 }
 
 template <typename T>
-void print_list(const ForwardListNode<T>* head, const std::ostream& os)
+void print_list(const ForwardListNode<T>* head, std::ostream& os)
 {
 }
 
