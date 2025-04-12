@@ -295,6 +295,7 @@ class simple_vector
 
 	void push_back(T&& value)
 	{
+		/// push_back это insert(value, end());
 		if (size_ >= capacity_)
 		{
 			size_t new_cap = capacity_ ? capacity_ * 2 : 1;
