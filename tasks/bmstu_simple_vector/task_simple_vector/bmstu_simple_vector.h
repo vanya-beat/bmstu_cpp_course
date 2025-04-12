@@ -424,14 +424,10 @@ class simple_vector
 		{
 			size_t where_index = where - begin();
 			size_t i = where_index;
-			T* arr = new T[size_];
-			std::copy(data_.get(), data_.get() + size_, arr);
-			for (; i != size_ - 1; ++i)
+			for (; i < size_ - 1; ++i)
 			{
-				data_[i] = arr[i + 1];
+				data_[i] = std::move(data_[i + 1]);
 			}
-			delete[] arr;
-			data_[size_ - 1] = T{};
 			size_ -= 1;
 		}
 		return iterator(data_.get());
