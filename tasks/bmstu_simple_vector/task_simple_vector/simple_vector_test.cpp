@@ -295,6 +295,18 @@ TEST(SimpleVector, Erase)
 		v.erase(v.begin() + 2);
 		ASSERT_EQ(v, (bmstu::simple_vector<int>{1, 2, 4}));
 	}
+
+	{
+		bmstu::simple_vector<int> v{1, 2, 3, 4, 5};
+		v.erase(v.begin());
+		ASSERT_EQ(v, (bmstu::simple_vector<int>{2, 3, 4, 5}));
+	}
+
+	{
+		bmstu::simple_vector<int> v{1, 2, 3, 4, 5};
+		v.erase(v.end());
+		ASSERT_EQ(v, (bmstu::simple_vector<int>{1, 2, 3, 4}));
+	}
 }
 
 TEST(SimpleVector, Reserve)
