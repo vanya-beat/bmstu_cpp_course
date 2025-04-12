@@ -422,8 +422,7 @@ class simple_vector
 	{
 		if (!empty())
 		{
-			size_t where_index = where - begin();
-			size_t i = where_index;
+			size_t i = where - begin();
 			for (; i < size_ - 1; ++i)
 			{
 				data_[i] = std::move(data_[i + 1]);
