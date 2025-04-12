@@ -243,51 +243,68 @@ class simple_vector
 		size_ = new_size;
 	}
 
-	void push_back(const T& value)
-	{
-		T tmp_value = value;
+    template <typename U>
+    void push_back_impl(U&& value) {
+        if (size_ >= capacity_) {
+            reserve(capacity_ ? capacity_ * 2 : 1);
+        }
+        data_[size_++] = std::forward<U>(value);
+    }
 
-		if (size_ >= capacity_)
-		{
-			size_t new_capacity = capacity_ ? capacity_ * 2 : 1;
-			array_ptr<T> new_data(new_capacity);
+    void push_back(const T& value) {
+        push_back_impl(value);  // Вызов с lvalue - произойдет копирование
+    }
 
-			for (size_t i = 0; i < size_; ++i)
-			{
-				new_data[i] = std::move(data_[i]);
-			}
-			new_data[size_] = std::move(tmp_value);
+    void push_back(T&& value) {
+        push_back_impl(std::move(value));  // Вызов с rvalue - произойдет перемещение
+    }
+	
 
-			data_.swap(new_data);
-			capacity_ = new_capacity;
-		}
-		else
-		{
-			data_[size_] = std::move(tmp_value);
-		}
-		++size_;
-	}
+	// void push_back(const T& value)
+	// {
+	// 	T tmp_value = value;
 
-	void push_back(T&& value)
-	{
-		if (size_ >= capacity_)
-		{
-			size_t new_capacity = capacity_ ? capacity_ * 2 : 1;
-			array_ptr<T> new_data(new_capacity);
-			for (size_t i = 0; i < size_; ++i)
-			{
-				new_data[i] = std::move(data_[i]);
-			}
-			new_data[size_] = std::move(value);
-			data_.swap(new_data);
-			capacity_ = new_capacity;
-			++size_;
-		}
-		else
-		{
-			data_[size_++] = std::move(value);
-		}
-	}
+	// 	if (size_ >= capacity_)
+	// 	{
+	// 		size_t new_capacity = capacity_ ? capacity_ * 2 : 1;
+	// 		array_ptr<T> new_data(new_capacity);
+
+	// 		for (size_t i = 0; i < size_; ++i)
+	// 		{
+	// 			new_data[i] = std::move(data_[i]);
+	// 		}
+	// 		new_data[size_] = std::move(tmp_value);
+
+	// 		data_.swap(new_data);
+	// 		capacity_ = new_capacity;
+	// 	}
+	// 	else
+	// 	{
+	// 		data_[size_] = std::move(tmp_value);
+	// 	}
+	// 	++size_;
+	// }
+
+	// void push_back(T&& value)
+	// {
+	// 	if (size_ >= capacity_) // DRY
+	// 	{
+	// 		size_t new_capacity = capacity_ ? capacity_ * 2 : 1;
+	// 		array_ptr<T> new_data(new_capacity);
+	// 		for (size_t i = 0; i < size_; ++i)
+	// 		{
+	// 			new_data[i] = std::move(data_[i]);
+	// 		}
+	// 		new_data[size_] = std::move(value);
+	// 		data_.swap(new_data);
+	// 		capacity_ = new_capacity;
+	// 		++size_;
+	// 	}
+	// 	else
+	// 	{
+	// 		data_[size_++] = std::move(value);
+	// 	}
+	// }
 
 	void pop_back()
 	{
