@@ -196,17 +196,10 @@ class simple_vector
 		return data_[index];
 	}
 
-	typename iterator::reference at(size_t index)
-	{
-		if (index >= size_)
-			throw std::out_of_range("Index out of range");
-		return data_[index];
-	}
+	typename iterator::reference at(size_t index) { return data_[index]; }
 
 	typename const_iterator::reference at(size_t index) const
 	{
-		if (index >= size_)
-			throw std::out_of_range("Index out of range");
 		return data_[index];
 	}
 
@@ -293,26 +286,7 @@ class simple_vector
 		return insert(where, std::move(tmp));
 	}
 
-	void push_back(T&& value)
-	{
-		if (size_ >= capacity_)
-		{
-			size_t new_cap = capacity_ ? capacity_ * 2 : 1;
-			array_ptr<T> new_data(new_cap);
-			for (size_t i = 0; i < size_; ++i)
-			{
-				new_data[i] = std::move(data_[i]);
-			}
-			new_data[size_] = std::move(value);
-			data_.swap(new_data);
-			capacity_ = new_cap;
-		}
-		else
-		{
-			data_[size_] = std::move(value);
-		}
-		++size_;
-	}
+	void push_back(T&& value) { insert(end(), std::move(value)); }
 
 	void clear() noexcept { size_ = 0; }
 
@@ -349,10 +323,36 @@ class simple_vector
 		return !(lhs == rhs);
 	}
 
-	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
+	friend bool operator<(const simple_vector& lhs, const simple_vector& rhs)
 	{
-		return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(),
-													  rhs.begin(), rhs.end());
+		auto lb = lhs.begin();
+		auto rb = rhs.begin();
+		auto le = lhs.end();
+		auto re = rhs.end();
+		for (; (lb != le) && (rb != re); ++lb, ++rb)
+		{
+			if (*lb < *rb)
+			{
+				return true;
+			}
+			if (*lb > *rb)
+			{
+				return false;
+			}
+		}
+		return (lb == le) && (rb != re);
+	}
+	friend bool operator>(const simple_vector& lhs, const simple_vector& rhs)
+	{
+		return !(lhs <= rhs);
+	}
+	friend bool operator<=(const simple_vector& lhs, const simple_vector& rhs)
+	{
+		return (lhs < rhs || lhs == rhs);
+	}
+	friend bool operator>=(const simple_vector& lhs, const simple_vector& rhs)
+	{
+		return !(lhs < rhs);
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
@@ -380,12 +380,6 @@ class simple_vector
 	}
 
    private:
-	static bool alphabet_compare(const simple_vector<T>& lhs,
-								 const simple_vector<T>& rhs)
-	{
-		return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-											rhs.end());
-	}
 	array_ptr<T> data_;
 	size_t size_ = 0;
 	size_t capacity_ = 0;

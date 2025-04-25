@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let.cpp" "tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o" "gcc" "tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let.cpp.o.d"
   "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_1_2/base_algo_let_tests.cpp" "tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o" "gcc" "tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.o.d"
+  "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/tasks/bmstu_lets/task_let_2_2/base_node_let_tests.cpp" "tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.o" "gcc" "tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -233,6 +233,30 @@ task_let_1_2/base_algo_let_tests.cpp.s:
 	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.s
 .PHONY : task_let_1_2/base_algo_let_tests.cpp.s
 
+task_let_2_2/base_node_let_tests.o: task_let_2_2/base_node_let_tests.cpp.o
+.PHONY : task_let_2_2/base_node_let_tests.o
+
+# target to build an object file
+task_let_2_2/base_node_let_tests.cpp.o:
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.o
+.PHONY : task_let_2_2/base_node_let_tests.cpp.o
+
+task_let_2_2/base_node_let_tests.i: task_let_2_2/base_node_let_tests.cpp.i
+.PHONY : task_let_2_2/base_node_let_tests.i
+
+# target to preprocess a source file
+task_let_2_2/base_node_let_tests.cpp.i:
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.i
+.PHONY : task_let_2_2/base_node_let_tests.cpp.i
+
+task_let_2_2/base_node_let_tests.s: task_let_2_2/base_node_let_tests.cpp.s
+.PHONY : task_let_2_2/base_node_let_tests.s
+
+# target to generate assembly for a file
+task_let_2_2/base_node_let_tests.cpp.s:
+	cd "/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build" && $(MAKE) $(MAKESILENT) -f tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/build.make tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.s
+.PHONY : task_let_2_2/base_node_let_tests.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -253,6 +277,9 @@ help:
 	@echo "... task_let_1_2/base_algo_let_tests.o"
 	@echo "... task_let_1_2/base_algo_let_tests.i"
 	@echo "... task_let_1_2/base_algo_let_tests.s"
+	@echo "... task_let_2_2/base_node_let_tests.o"
+	@echo "... task_let_2_2/base_node_let_tests.i"
+	@echo "... task_let_2_2/base_node_let_tests.s"
 .PHONY : help
 
 
