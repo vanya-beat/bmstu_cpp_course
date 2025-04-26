@@ -334,8 +334,10 @@ class simple_vector
 	{
 		if (where == end())
 		{
+			--size_;
 			return end();
 		}
+
 		auto index = where - begin();
 		for (size_t i = index; i < size_ - 1; ++i)
 		{
