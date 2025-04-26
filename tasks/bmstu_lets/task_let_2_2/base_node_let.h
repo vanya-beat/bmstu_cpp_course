@@ -59,7 +59,8 @@ void create_list(ForwardListNode<T>*& head, const std::vector<T>& data)
 		head = new ForwardListNode<T>(data[0]);
 		ForwardListNode<T>* current = head;
 
-		for (size_t i = 1; i < data.size(); ++i) {
+		for (size_t i = 1; i < data.size(); ++i)
+		{
 			current->next = new ForwardListNode<T>(data[i]);
 			current = current->next;
 		}
@@ -109,19 +110,6 @@ void reverse_list(ForwardListNode<T>*& head)
 	}
 	create_list(head, vec);
 }
-
-// template <typename T>
-// void remove_duplicates_(ForwardListNode<T>*& next)
-// {
-// 	if (next->next != nullptr)
-// 	{
-// 		if (next->data == next->next->data)
-// 		{
-// 			next->next = next->next->next;
-// 		}
-// 		remove_duplicates_(next->next);
-// 	}
-// }
 
 template <typename T>
 void remove_duplicates(ForwardListNode<T>*& head)
