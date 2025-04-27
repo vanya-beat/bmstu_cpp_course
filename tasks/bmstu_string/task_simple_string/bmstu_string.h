@@ -5,20 +5,12 @@
 
 namespace bmstu
 {
-template <typename T>
-class basic_string;
-
-typedef basic_string<char> string;
-typedef basic_string<wchar_t> wstring;
-typedef basic_string<char16_t> u16string;
-typedef basic_string<char32_t> u32string;
 
 template <typename T>
 class basic_string;
 
 typedef basic_string<char> string;
 typedef basic_string<wchar_t> wstring;
-// typedef basic_string<char8_t> u8string;
 typedef basic_string<char16_t> u16string;
 typedef basic_string<char32_t> u32string;
 
@@ -30,7 +22,7 @@ class basic_string
 #endif
 {
    public:
-	/// Конструктор по умолчанию
+	// Конструкторы
 	basic_string() : ptr_(new T[1]{0}), size_(0) {}
 
 	basic_string(size_t size) : ptr_(new T[size + 1]), size_(size) {}
@@ -40,31 +32,31 @@ class basic_string
 	{
 	}
 
-	/// Конструктор с параметром си-с
+	// Конструктор из C-строки
 	basic_string(const T* c_str) {}
 
-	/// Конструктор копирования
+	// Конструктор копирования
 	basic_string(const basic_string& other) {}
 
-	/// Перемещающий конструктор
+	// Перемещающий конструктор
 	basic_string(basic_string&& dying) {}
 
-	/// Деструктор
+	// Деструктор
 	~basic_string() {}
 
-	/// Геттер на си-строку
+	// Доступ к данным
 	const T* c_str() const { return ptr_; }
-
 	size_t size() const { return 0; }
+	T* data() { return ptr_; }
 
-	/// Оператор копирующего присваивания
+	// Операторы присваивания
 	basic_string& operator=(basic_string&& other) { return *this; }
-
-	/// Оператор копирующего присваивания си строки
 	basic_string& operator=(const T* c_str) { return *this; }
-
-	/// Оператор копирующего присваивания
 	basic_string& operator=(const basic_string& other) { return *this; }
+
+	// Операторы конкатенации
+	basic_string& operator+=(const basic_string& other) { return *this; }
+	basic_string& operator+=(T symbol) { return *this; }
 
 	friend basic_string<T> operator+(const basic_string<T>& left,
 									 const basic_string<T>& right)
@@ -72,6 +64,12 @@ class basic_string
 		return {};
 	}
 
+	// Операторы доступа
+	T& operator[](size_t index) noexcept { return *(ptr_ + index); }
+
+	T& at(size_t index) { throw std::out_of_range("Wrong index"); }
+
+	// Операторы ввода/вывода
 	template <typename S>
 	friend S& operator<<(S& os, const basic_string& obj)
 	{
@@ -84,22 +82,14 @@ class basic_string
 		return is;
 	}
 
-	basic_string& operator+=(const basic_string& other) { return *this; }
-
-	basic_string& operator+=(T symbol) { return *this; }
-
-	T& operator[](size_t index) noexcept { return *(ptr_ + index); }
-
-	T& at(size_t index) { throw std::out_of_range("Wrong index"); }
-
-	T* data() { return ptr_; }
-
    private:
+	// Вспомогательные методы
 	static size_t strlen_(const T* str) { return 0; }
-
 	void clean_() {}
 
+	// Данные
 	T* ptr_ = nullptr;
 	size_t size_;
 };
+
 }  // namespace bmstu
