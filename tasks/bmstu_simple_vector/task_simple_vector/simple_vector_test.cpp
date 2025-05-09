@@ -483,3 +483,40 @@ TEST(SimpleVector, SpaceShip)
 	bmstu::simple_vector<int> v6 = {1, 2, 3, 4, 5};
 	ASSERT_EQ(v5<=>v6, std::strong_ordering::equal);
 }
+
+TEST(SimpleVector, StdBehaviour) {
+	#include <vector>
+
+	std::vector<int> v = {1,2,3,4,5,6};
+	std::vector<int>::iterator it = v.begin() + 4;
+	std::cout << "it= " << *it << "\n";
+	auto it2 = v.erase(it);
+	std::cout << *it2 << "\n";
+}
+
+TEST(SimpleVector, testErase) {
+	bmstu::simple_vector<int> v = {1,2,3,4,5,6};
+	bmstu::simple_vector<int>::iterator it = v.begin() + 4;
+	std::cout << "it= " << *it << "\n";
+	auto it2 = v.erase(it);
+	std::cout << *it2 << "\n";
+}
+
+TEST(SimpleVector, testErase2) {
+	auto print = [](const bmstu::simple_vector<int>& v) {
+		std::cout << "=\n";
+		for (const auto &a : v) {
+			std::cout << a << " ";
+		}
+		std::cout << "\n";
+		std::cout << "Size: " << v.size() << "\n" << "Capacity: " << v.capacity() << "\n=";
+	};
+	bmstu::simple_vector<int> v = {};
+	print(v);
+	v.push_back(1);
+	print(v);
+	v.push_back(1);
+	print(v);
+	v.push_back(1);
+	print(v);
+}

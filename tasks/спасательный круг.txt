@@ -126,7 +126,7 @@ class simple_vector
 		}
 	}
 
-	simple_vector(const simple_vector& other) : size_(other.size_), capacity_(other.capacity_), data_(other.size_){
+	simple_vector(const simple_vector& other) : size_(other.size_), capacity_(other.capacity_), data_(other.size_) {
 		for (auto it1 = begin(), it2 = other.begin(); it2 != other.end(); ++it1, ++it2) {
 			*it1 = *it2;
 		}
@@ -196,14 +196,14 @@ class simple_vector
 
 	void reserve(size_t new_cap) {
 		if (new_cap > capacity_) {
-			capacity_ = std::max(new_cap, capacity_ * 2);
+			new_cap = std::max(capacity_ * 2, new_cap);
 			array_ptr<T> new_data(new_cap);
 			for (auto it1 = begin(), it2 = iterator(new_data.get()); it1 != end(); ++it1, ++it2) {
-				*it2 = std::move(*it1);
+		  		*it2 = std::move(*it1);
 			}
 			data_.swap(new_data);
 			capacity_ = new_cap;
-		}
+	  	}
 	}
 
 	void resize(size_t new_size) { 
@@ -218,7 +218,7 @@ class simple_vector
 			*it = T{};
 		}
 		size_ = new_size;
-	}
+	 }
 
 	iterator insert(const_iterator where, T&& value) { 
 		auto index = where - begin();
@@ -233,7 +233,7 @@ class simple_vector
 		for (auto it = begin(); it != begin() + index; ++it, ++ptr_td) {
 			*ptr_td = std::move(*it);
 		}
-		temp_data[index] = value;
+		temp_data[index] = std::move(value);
 		ptr_td = temp_data.get() + index + 1;
 		if (index + 1 < size_) {
 			for (auto it = begin() + index; it != end(); ++it, ++ptr_td) {
@@ -258,7 +258,7 @@ class simple_vector
 		for (auto it = begin(); it != begin() + index; ++it, ++ptr_td) {
 			*ptr_td = std::move(*it);
 		}
-		temp_data[index] = value;
+		temp_data[index] = std::move(value);
 		ptr_td = temp_data.get() + index + 1;
 		if (index + 1 < size_) {
 			for (auto it = begin() + index; it != end(); ++it, ++ptr_td) {
@@ -333,7 +333,7 @@ class simple_vector
 		return os;
 	}
 	iterator erase(iterator where) { 
-		auto index = where - begin();
+		size_t index = where - begin();
 		if (!empty()) {
 			std::move(begin() + index + 1, end(), begin() + index);
 			--size_;
