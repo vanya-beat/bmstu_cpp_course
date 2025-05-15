@@ -41,38 +41,20 @@ struct ForwardListNode
 template <typename T>
 void create_list(ForwardListNode<T>*& head, const std::vector<T>& data)
 {
-	head = nullptr;
-	ForwardListNode<T>* tail = nullptr;
 	if (data.empty()) {
 		return;
 	}
-
-	try {
-		for (const T& value : data) {
-			ForwardListNode<T>* newNode = new ForwardListNode<T>{value, nullptr};
-			if (newNode == nullptr) {
-				throw std::bad_alloc();
-			}
-
-			if (head == nullptr) {
-				head = newNode;
-				tail = newNode;
-			} else {
-				tail->next = newNode;
-				tail = newNode;
-			}
+	head = nullptr;
+	ForwardListNode<T>* last = nullptr;
+	for (const T& value : data) {
+		ForwardListNode<T>* newNode = new ForwardListNode<T>{value, nullptr};
+		if (head == nullptr) {
+			head = newNode;
+			last = newNode;
+		} else {
+			last->next = newNode;
+			last = newNode;
 		}
-
-	} catch (const std::bad_alloc& e) {
-		std::cerr << "Memory allocation failed: " << e.what() << std::endl;
-		ForwardListNode<T>* current = head;
-		while (current != nullptr) {
-			ForwardListNode<T>* next = current->next;
-			delete current;
-			current = next;
-		}
-		head = nullptr;
-		throw;
 	}
 }
 
@@ -83,13 +65,11 @@ void delete_list(ForwardListNode<T>*& head)
 		return;
 	}
 	ForwardListNode<T>* current = head;
-
 	while (current != nullptr) {
 		ForwardListNode<T>* next = current->next;
 		delete current;
 		current = next;
 	}
-
 	head = nullptr;
 }
 
@@ -99,9 +79,8 @@ void print_list(const ForwardListNode<T>* head, std::ostream& os)
 	if (head == nullptr) {
 		return;
 	}
-
-	const ForwardListNode<T>* current = head;
 	os << "[";
+	const ForwardListNode<T>* current = head;
 	while (current != nullptr) {
 		os << current->data;
 		current = current->next;
@@ -116,44 +95,29 @@ void print_list(const ForwardListNode<T>* head, std::ostream& os)
 template <typename T>
 void reverse_list(ForwardListNode<T>*& head)
 {
-	if (head == nullptr) {
-		return;
-	}
-	if (head != nullptr && head->next == nullptr) {
-		return;
-	}
-
 	ForwardListNode<T>* prev = nullptr;
-    ForwardListNode<T>* current = head;
-    ForwardListNode<T>* next = nullptr;
-
+	ForwardListNode<T>* current = head;
+	ForwardListNode<T>* next = nullptr;
 	while (current != nullptr) {
 		next = current->next;
 		current->next = prev;
 		prev = current;
 		current = next;
 	}
-
 	head = prev;
 }
 
 template <typename T>
 void remove_duplicates(ForwardListNode<T>*& head)
 {
-	if (head == nullptr) {
-		return;
-	}
-	if (head != nullptr && head->next == nullptr) {
-		return;
-	}
-
 	ForwardListNode<T>* current = head;
 	while (current->next != nullptr) {
 		if (current->data == current->next->data) {
 			ForwardListNode<T>* duplicate = current->next;
 			current->next = current->next->next;
 			delete duplicate;
-		} else {
+		}
+		else {
 			current = current->next;
 		}
 	}
