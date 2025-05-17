@@ -49,7 +49,10 @@ class simple_vector
 			return *this;
 		}
 
-		iterator& operator--() { return *this; }
+		iterator& operator--()
+		{
+			return *this;
+		}
 
 		iterator operator++(int)
 		{
@@ -63,7 +66,10 @@ class simple_vector
 			return *this;
 		}
 
-		explicit operator bool() const { return ptr_ != nullptr; }
+		explicit operator bool() const
+		{
+			return ptr_ != nullptr;
+		}
 
 		friend bool operator==(const iterator& lhs, const iterator& rhs)
 		{
@@ -161,7 +167,10 @@ class simple_vector
 		}
 	}
 
-	simple_vector(simple_vector&& other) noexcept { swap(other); }
+	simple_vector(simple_vector&& other) noexcept
+	{
+		swap(other);
+	}
 
 	simple_vector& operator=(const simple_vector& other)
 	{
@@ -183,13 +192,22 @@ class simple_vector
 		std::fill(data_.get(), data_.get() + size, value);
 	}
 
-	iterator begin() noexcept { return iterator(data_.get()); }
+	iterator begin() noexcept
+	{
+		return iterator(data_.get());
+	}
 
-	iterator end() noexcept { return iterator(data_.get() + size_); }
+	iterator end() noexcept
+	{
+		return iterator(data_.get() + size_);
+	}
 
 	using const_iterator = iterator;
 
-	const_iterator begin() const noexcept { return iterator(data_.get()); }
+	const_iterator begin() const noexcept
+	{
+		return iterator(data_.get());
+	}
 
 	const_iterator end() const noexcept
 	{
@@ -206,16 +224,25 @@ class simple_vector
 		return data_[index];
 	}
 
-	typename iterator::reference at(size_t index) { return data_.get()[index]; }
+	typename iterator::reference at(size_t index)
+	{
+		return data_.get()[index];
+	}
 
 	typename const_iterator::reference at(size_t index) const
 	{
 		return data_.get()[index];
 	}
 
-	size_t size() const noexcept { return size_; }
+	size_t size() const noexcept
+	{
+		return size_;
+	}
 
-	size_t capacity() const noexcept { return capacity_; }
+	size_t capacity() const noexcept
+	{
+		return capacity_;
+	}
 
 	void swap(simple_vector& other) noexcept
 	{
@@ -360,13 +387,25 @@ class simple_vector
 		return iterator(data_.get());
 	}
 
-	void push_back(T&& value) { insert(end(), std::move(value)); }
+	void push_back(T&& value)
+	{
+		insert(end(), std::move(value));
+	}
 
-	void clear() noexcept { size_ = 0; }
+	void clear() noexcept
+	{
+		size_ = 0;
+	}
 
-	void push_back(const T& value) { insert(end(), value); }
+	void push_back(const T& value)
+	{
+		insert(end(), value);
+	}
 
-	[[nodiscard]] bool empty() const noexcept { return size_ == 0; }
+	[[nodiscard]] bool empty() const noexcept
+	{
+		return size_ == 0;
+	}
 
 	void pop_back()
 	{
@@ -400,48 +439,48 @@ class simple_vector
 	}
 
 	friend bool operator<(const simple_vector& lhs, const simple_vector& rhs)
-    {
-    	auto lb = lhs.begin();
-    	auto rb = rhs.begin();
-    	auto le = lhs.end();
-    	auto re = rhs.end();
-    	for (; (lb != le) && (rb != re); ++lb, ++rb)
-    	{
-        	if (*lb < *rb)
-      		{
-            	return true;
-      		}
-      		if (*lb > *rb)
-      		{
-        		return false;
-      		}
-    	}
-    return (lb == le) && (rb != re);
-  	}
-  
+	{
+		auto lb = lhs.begin();
+		auto rb = rhs.begin();
+		auto le = lhs.end();
+		auto re = rhs.end();
+		for (; (lb != le) && (rb != re); ++lb, ++rb)
+		{
+			if (*lb < *rb)
+			{
+				return true;
+			}
+			if (*lb > *rb)
+			{
+				return false;
+			}
+		}
+		return (lb == le) && (rb != re);
+	}
+
 	friend bool operator>(const simple_vector& lhs, const simple_vector& rhs)
-  	{
-    	return !(lhs <= rhs);
-  	}
-  
+	{
+		return !(lhs <= rhs);
+	}
+
 	friend bool operator<=(const simple_vector& lhs, const simple_vector& rhs)
-  	{
-    	return (lhs < rhs || lhs == rhs);
-  	}
-  
+	{
+		return (lhs < rhs || lhs == rhs);
+	}
+
 	friend bool operator>=(const simple_vector& lhs, const simple_vector& rhs)
-  	{
-    	return !(lhs < rhs);
-  	}
+	{
+		return !(lhs < rhs);
+	}
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
 	{
 		os << "[ ";
 		for (size_t i = 0; i < vec.size_; ++i)
 		{
-		  os << vec.data_[i];
-		  if (i != vec.size_ - 1)
-			os << ", ";
+			os << vec.data_[i];
+			if (i != vec.size_ - 1)
+				os << ", ";
 		}
 		os << " ]";
 		return os;
