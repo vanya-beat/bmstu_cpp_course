@@ -520,3 +520,11 @@ TEST(SimpleVector, testErase2) {
 	v.push_back(1);
 	print(v);
 }
+
+TEST(SimpleVector, DummyOperator) {
+	bmstu::simple_vector<int> a = {1, 2, 3};
+	bmstu::simple_vector<int> b = {7, 8, 9};
+	a.concat(bmstu::simple_vector<int>{4, 5, 6}).concat(b);
+	bmstu::simple_vector<int> abc = {1, 2, 3, 4, 5 ,6 ,7 ,8, 9};
+	ASSERT_EQ(abc, a);
+}

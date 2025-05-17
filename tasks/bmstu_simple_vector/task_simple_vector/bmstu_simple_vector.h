@@ -341,6 +341,16 @@ class simple_vector
 		return begin() + index;
 	}
 
+	simple_vector& concat(const simple_vector& vec) {
+		if (vec.size_ == 0) {
+			return *this;
+		}
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
+			push_back(*it);
+		}
+		return *this;
+	}
+
    private:
 	static bool alphabet_compare(const simple_vector<T>& lhs,
 								 const simple_vector<T>& rhs)
