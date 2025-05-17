@@ -44,18 +44,15 @@ void create_list(ForwardListNode<T>*& head, const std::vector<T>& data)
 	if (data.empty()) {
 		return;
 	}
-	head = nullptr;
-	ForwardListNode<T>* last = nullptr;
-	for (const T& value : data) {
-		ForwardListNode<T>* newNode = new ForwardListNode<T>{value, nullptr};
-		if (head == nullptr) {
-			head = newNode;
-			last = newNode;
-		} else {
-			last->next = newNode;
-			last = newNode;
-		}
+	head = new ForwardListNode(*data.begin());
+	auto head_copy = head;
+	for (auto it = data.begin() + 1; it != data.end(); ++it) 
+	{
+		auto tmp = new ForwardListNode(*it);
+		head->next = tmp;
+		head = head->next;
 	}
+	head = head_copy;
 }
 
 template <typename T>
