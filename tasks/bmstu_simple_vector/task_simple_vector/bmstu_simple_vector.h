@@ -167,7 +167,6 @@ class simple_vector
 	{
 		size_ = other.size_;
 		capacity_ = other.capacity_;
-
 		size_t index = 0;
 		for (auto it = other.begin(); it != other.end(); ++it, ++index)
 		{
@@ -214,9 +213,9 @@ class simple_vector
 		return data_.get()[index];
 	}
 
-	[[nodiscard]] size_t size() const noexcept { return size_; }
+	size_t size() const noexcept { return size_; }
 
-	[[nodiscard]] size_t capacity() const noexcept { return capacity_; }
+	size_t capacity() const noexcept { return capacity_; }
 
 	void swap(simple_vector& other) noexcept
 	{
@@ -400,21 +399,51 @@ class simple_vector
 		return !(lhs == rhs);
 	}
 
-	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		if (lhs == rhs)
-		{
-			return std::strong_ordering::equal;
-		}
-		if (alphabet_compare(lhs, rhs))
-		{
-			return std::strong_ordering::less;
-		}
-		return std::strong_ordering::greater;
-	}
+	friend bool operator<(const simple_vector& lhs, const simple_vector& rhs)
+    {
+    	auto lb = lhs.begin();
+    	auto rb = rhs.begin();
+    	auto le = lhs.end();
+    	auto re = rhs.end();
+    	for (; (lb != le) && (rb != re); ++lb, ++rb)
+    	{
+        	if (*lb < *rb)
+      		{
+            	return true;
+      		}
+      		if (*lb > *rb)
+      		{
+        		return false;
+      		}
+    	}
+    return (lb == le) && (rb != re);
+  	}
+  
+	friend bool operator>(const simple_vector& lhs, const simple_vector& rhs)
+  	{
+    	return !(lhs <= rhs);
+  	}
+  
+	friend bool operator<=(const simple_vector& lhs, const simple_vector& rhs)
+  	{
+    	return (lhs < rhs || lhs == rhs);
+  	}
+  
+	friend bool operator>=(const simple_vector& lhs, const simple_vector& rhs)
+  	{
+    	return !(lhs < rhs);
+  	}
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
 	{
+		os << "[ ";
+		for (size_t i = 0; i < vec.size_; ++i)
+		{
+		  os << vec.data_[i];
+		  if (i != vec.size_ - 1)
+			os << ", ";
+		}
+		os << " ]";
 		return os;
 	}
 
@@ -433,27 +462,6 @@ class simple_vector
 	}
 
    private:
-	static bool alphabet_compare(const simple_vector<T>& lhs,
-								 const simple_vector<T>& rhs)
-	{
-		auto lhs_it = lhs.begin(), rhs_it = rhs.begin();
-		auto lhs_end = lhs.end(), rhs_end = rhs.end();
-
-		for (; (lhs_it != rhs_end) && (rhs_it != lhs_end); ++lhs_it, ++rhs_it)
-		{
-			if (*lhs_it < *rhs_it)
-			{
-				return true;
-			}
-			if (*rhs_it < *lhs_it)
-			{
-				return false;
-			}
-		}
-
-		return (lhs_it == lhs_end) && (rhs_it == rhs_end);
-	}
-
 	array_ptr<T> data_;
 	size_t size_ = 0;
 	size_t capacity_ = 0;
