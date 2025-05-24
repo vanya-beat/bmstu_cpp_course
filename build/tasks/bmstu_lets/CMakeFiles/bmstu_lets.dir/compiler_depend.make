@@ -272,7 +272,6 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.
   /usr/include/c++/13/bits/postypes.h \
   /usr/include/c++/13/bits/predefined_ops.h \
   /usr/include/c++/13/bits/ptr_traits.h \
-  /usr/include/c++/13/bits/quoted_string.h \
   /usr/include/c++/13/bits/range_access.h \
   /usr/include/c++/13/bits/ranges_algobase.h \
   /usr/include/c++/13/bits/ranges_base.h \
@@ -352,7 +351,6 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.
   /usr/include/c++/13/ext/type_traits.h \
   /usr/include/c++/13/functional \
   /usr/include/c++/13/initializer_list \
-  /usr/include/c++/13/iomanip \
   /usr/include/c++/13/ios \
   /usr/include/c++/13/iosfwd \
   /usr/include/c++/13/iostream \
@@ -373,6 +371,7 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.
   /usr/include/c++/13/ratio \
   /usr/include/c++/13/semaphore \
   /usr/include/c++/13/set \
+  /usr/include/c++/13/span \
   /usr/include/c++/13/sstream \
   /usr/include/c++/13/stdexcept \
   /usr/include/c++/13/stdlib.h \
@@ -388,6 +387,7 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_1_2/base_algo_let_tests.cpp.
   /usr/include/c++/13/utility \
   /usr/include/c++/13/variant \
   /usr/include/c++/13/vector \
+  /usr/include/c++/13/version \
   /usr/include/ctype.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
@@ -654,7 +654,6 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
   /usr/include/c++/13/bits/postypes.h \
   /usr/include/c++/13/bits/predefined_ops.h \
   /usr/include/c++/13/bits/ptr_traits.h \
-  /usr/include/c++/13/bits/quoted_string.h \
   /usr/include/c++/13/bits/range_access.h \
   /usr/include/c++/13/bits/ranges_algobase.h \
   /usr/include/c++/13/bits/ranges_base.h \
@@ -734,7 +733,6 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
   /usr/include/c++/13/ext/type_traits.h \
   /usr/include/c++/13/functional \
   /usr/include/c++/13/initializer_list \
-  /usr/include/c++/13/iomanip \
   /usr/include/c++/13/ios \
   /usr/include/c++/13/iosfwd \
   /usr/include/c++/13/iostream \
@@ -755,6 +753,7 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
   /usr/include/c++/13/ratio \
   /usr/include/c++/13/semaphore \
   /usr/include/c++/13/set \
+  /usr/include/c++/13/span \
   /usr/include/c++/13/sstream \
   /usr/include/c++/13/stdexcept \
   /usr/include/c++/13/stdlib.h \
@@ -770,6 +769,7 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
   /usr/include/c++/13/utility \
   /usr/include/c++/13/variant \
   /usr/include/c++/13/vector \
+  /usr/include/c++/13/version \
   /usr/include/ctype.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
@@ -1048,6 +1048,10 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
 
 /usr/include/string.h:
 
+/usr/include/strings.h:
+
+/usr/include/signal.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h:
 
 /usr/include/semaphore.h:
@@ -1068,6 +1072,8 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
 
 /usr/include/libintl.h:
 
+/usr/include/c++/13/version:
+
 /usr/include/c++/13/variant:
 
 /usr/include/c++/13/stop_token:
@@ -1075,6 +1081,8 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
 /usr/include/c++/13/stdlib.h:
 
 /usr/include/c++/13/stdexcept:
+
+/usr/include/c++/13/span:
 
 /usr/include/c++/13/semaphore:
 
@@ -1093,12 +1101,6 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
 /usr/include/c++/13/istream:
 
 /usr/include/c++/13/ios:
-
-/usr/include/strings.h:
-
-/usr/include/signal.h:
-
-/usr/include/c++/13/iomanip:
 
 /usr/include/c++/13/functional:
 
@@ -1121,10 +1123,6 @@ tasks/bmstu_lets/CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.
 /usr/include/x86_64-linux-gnu/bits/posix_opt.h:
 
 /usr/include/c++/13/climits:
-
-/usr/include/c++/13/cassert:
-
-/usr/include/c++/13/bits/cpp_type_traits.h:
 
 /usr/include/x86_64-linux-gnu/bits/types.h:
 
@@ -1688,11 +1686,11 @@ _deps/googletest-src/googletest/include/gtest/internal/gtest-type-util.h:
 
 /usr/include/c++/13/bits/parse_numbers.h:
 
-/usr/include/c++/13/bits/quoted_string.h:
-
-/usr/include/c++/13/bits/unordered_map.h:
-
 /usr/include/c++/13/bits/semaphore_base.h:
+
+/usr/include/c++/13/bits/cpp_type_traits.h:
+
+/usr/include/c++/13/cassert:
 
 /usr/include/wchar.h:
 
@@ -1715,3 +1713,5 @@ _deps/googletest-src/googletest/include/gtest/internal/gtest-type-util.h:
 /usr/include/c++/13/bits/streambuf_iterator.h:
 
 /usr/include/c++/13/bits/unique_lock.h:
+
+/usr/include/c++/13/bits/unordered_map.h:

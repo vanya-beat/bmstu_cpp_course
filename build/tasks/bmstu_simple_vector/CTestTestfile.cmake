@@ -4,3 +4,4 @@
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
+include("/home/greenliess/Рабочий стол/project/bmstu_cpp_course_greenliess/build/tasks/bmstu_simple_vector/bmstu_simple_vector[1]_include.cmake")

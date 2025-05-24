@@ -7,6 +7,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/bmstu_lets.dir/task_let_2_2/base_node_let_tests.cpp.o.d"
   "bmstu_lets"
   "bmstu_lets.pdb"
+  "bmstu_lets[1]_tests.cmake"
 )
 
 # Per-language clean rules from dependency scanning.
