@@ -536,3 +536,33 @@ TEST(BidirectLinkedListTests, from_vector)
 										"string7"s, "end_string"s}),
 			  my_vec);
 }
+
+TEST(BidirectLinkedListTests, list_concat)
+{
+	using namespace std;
+	using l = bmstu::list<std::string>;
+	l list = {"string1"s, "string3"s, "string4"s,
+			  "string5"s, "string6"s, "string7"s};
+	l list2 = {"string11"s, "string31"s, "string41"s,
+			   "string51"s, "string61"s, "string71"s};
+	l exp = {"string1"s,  "string3"s,  "string4"s,	"string5"s,
+			 "string6"s,  "string7"s,  "string11"s, "string31"s,
+			 "string41"s, "string51"s, "string61"s, "string71"s};
+	list.concat(list2);
+	ASSERT_EQ(list, exp);
+	ASSERT_EQ(list2, l{});
+}
+
+TEST(BidirectLinkedListTests, list_concat2)
+{
+	using namespace std;
+	using l = bmstu::list<std::string>;
+	l list = {"string1"s, "string3"s, "string4"s,
+			  "string5"s, "string6"s, "string7"s};
+	l list2 = {};
+	l exp = {"string1"s, "string3"s, "string4"s,
+			 "string5"s, "string6"s, "string7"s};
+	list.concat(list2);
+	ASSERT_EQ(list, exp);
+	ASSERT_EQ(list2, l{});
+}

@@ -1,1 +1,1 @@
-/usr/bin/g++ -g CMakeFiles/bmstu_simple_vector.dir/task_simple_vector/simple_vector_test.cpp.o -o bmstu_simple_vector  ../../lib/libgtest_main.a ../../lib/libgtest.a 
+/usr/bin/clang++ -g CMakeFiles/bmstu_simple_vector.dir/task_simple_vector/simple_vector_test.cpp.o -o bmstu_simple_vector  ../../lib/libgtest_main.a ../../lib/libgtest.a 
