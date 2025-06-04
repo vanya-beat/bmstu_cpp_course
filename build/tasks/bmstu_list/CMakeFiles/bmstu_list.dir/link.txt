@@ -1,0 +1,1 @@
+/usr/bin/g++ -g CMakeFiles/bmstu_list.dir/task_list/bmstu_list_test.cpp.o -o bmstu_list  ../../lib/libgtest_main.a ../../lib/libgtest.a
