@@ -47,37 +47,37 @@ class list
 			current = current->prev_node_;
 			return copy; 
 		}
-		iterator& operator+=(const iterator::difference_type& n) override
+		iterator& operator+=(const typename iterator::difference_type& n) override
 		{
 			for (auto it = 0; it < n; ++it) {
 				current = current->next_node_;
 			}
 			return *this;
 		}
-		iterator& operator-=(const iterator::difference_type& n) override
+		iterator& operator-=(const typename iterator::difference_type& n) override
 		{
 			for (auto it = 0; it < n; ++it) {
 				current = current->prev_node_;
 			}
 			return *this;
 		}
-		iterator operator+(const iterator::difference_type& n) const override
+		iterator operator+(const typename iterator::difference_type& n) const override
 		{
 			iterator copy = *this;
 			copy += n;
 			return copy;
 		}
-		iterator operator-(const iterator::difference_type& n) const override
+		iterator operator-(const typename iterator::difference_type& n) const override
 		{
 			iterator copy = *this;
 			copy -= n;
 			return copy;
 		}
-		iterator::reference operator*() const override
+		typename iterator::reference operator*() const override
 		{
 			return current->value_;
 		}
-		iterator::pointer operator->() const override
+		typename iterator::pointer operator->() const override
 		{
 			return &(current->value_);
 		}
@@ -90,14 +90,13 @@ class list
 			return current != other.current;
 		}
 		explicit operator bool() const override { return current != nullptr; }
-		iterator::difference_type operator-(
-			const iterator& other) const override
+		typename iterator::difference_type operator-(const iterator& other) const override
 		{
 			auto count = 0;
 			iterator copy_other(other);
 			while (current != copy_other.current) {
 				++count;
-				current = copy_other.current->next_node_;
+				copy_other = copy_other.current->next_node_;
 			}
 			return count;
 		}
@@ -105,8 +104,8 @@ class list
 	using const_iterator = iterator;
 
 	list() : head_(new node()), tail_(new node()), size_(0) {
-		head_->next_node_ = tail;
-		tail_->prev_node_ = head;
+		head_->next_node_ = tail_;
+		tail_->prev_node_ = head_;
 	}
 
 	template <typename it>
@@ -197,44 +196,32 @@ class list
 
 #pragma region iterators
 
-	iterator begin()
-
-		noexcept
+	iterator begin() noexcept
 	{
 		return iterator{head_->next_node_};
 	}
 
-	iterator end()
-
-		noexcept
+	iterator end() noexcept
 	{
 		return iterator{tail_};
 	}
 
-	const_iterator begin() const
-
-		noexcept
+	const_iterator begin() const noexcept
 	{
 		return const_iterator{head_->next_node_};
 	}
 
-	const_iterator end() const
-
-		noexcept
+	const_iterator end() const noexcept
 	{
 		return const_iterator{tail_};
 	}
 
-	const_iterator cbegin() const
-
-		noexcept
+	const_iterator cbegin() const noexcept
 	{
 		return const_iterator{head_->next_node_};
 	}
 
-	const_iterator cend() const
-
-		noexcept
+	const_iterator cend() const noexcept
 	{
 		return const_iterator{tail_};
 	}
@@ -242,7 +229,7 @@ class list
 #pragma endregion
 
 	T operator[](size_t pos) const {
-		return (begin() + pos);
+		return *(begin() + pos);
 	}
 
 	T& operator[](size_t pos) {
@@ -267,16 +254,19 @@ class list
 	friend auto operator<=>(const list& lhs, const list& rhs) 
 	{ 
 		if (lhs == rhs) {
-			return std::strong_order::equal;
+			return std::strong_ordering::equal;
 		}
-		
+		if (lexicographical_compare_(lhs, rhs)) {
+			return std::strong_ordering::less;
+		}
+		return std::strong_ordering::greater;
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const list& other)
 	{
 		os << "{";
 		for (size_t it = 0; it != other.size_; ++it) {
-			os << other[i] << ", ";
+			os << other[it] << ", ";
 		}
 		os << "}";
 		return os;
@@ -284,13 +274,27 @@ class list
 
 	iterator insert(const_iterator pos, const T& value)
 	{
+		node* old_last_ = pos.current->prev_node_;
+		node* new_last_ = new node(pos.current->prev_node_, value, pos.current);
+		pos.current->next_node_ = new_last_;
+		old_last_->next_node_ = new_last_;
+		++size_;
 		return iterator{nullptr};
 	}
 
    private:
 	static bool lexicographical_compare_(const list<T>& l, const list<T>& r)
 	{
-		return "123";
+		auto it1 = l.begin(), it2 = r.begin();
+		for (; (it1 != l.end()) && (it2 != r.end()); ++it1, ++it2) {
+			if (*it1 < *it2) {
+				return true;
+			}
+			if (*it1 > *it2) {
+				return false;
+			}
+		}
+		return (it1 == l.end()) && (it2 == r.end());
 	}
 
 	size_t size_ = 0;

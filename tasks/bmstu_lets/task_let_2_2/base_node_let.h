@@ -41,7 +41,6 @@ struct ForwardListNode
 template <typename T>
 void create_list(ForwardListNode<T>*& head, const std::vector<T>& data)
 {
-<<<<<<< HEAD
 	if (data.empty()) {
 		return;
 	}
@@ -54,14 +53,11 @@ void create_list(ForwardListNode<T>*& head, const std::vector<T>& data)
 		head = head->next;
 	}
 	head = head_copy;
-=======
->>>>>>> main
 }
 
 template <typename T>
 void delete_list(ForwardListNode<T>*& head)
 {
-<<<<<<< HEAD
 	if (head == nullptr) {
 		return;
 	}
@@ -72,14 +68,11 @@ void delete_list(ForwardListNode<T>*& head)
 		current = next;
 	}
 	head = nullptr;
-=======
->>>>>>> main
 }
 
 template <typename T>
 void print_list(const ForwardListNode<T>* head, std::ostream& os)
 {
-<<<<<<< HEAD
 	if (head == nullptr) {
 		return;
 	}
@@ -94,14 +87,11 @@ void print_list(const ForwardListNode<T>* head, std::ostream& os)
 		}
 		os << ", ";
 	}
-=======
->>>>>>> main
 }
 
 template <typename T>
 void reverse_list(ForwardListNode<T>*& head)
 {
-<<<<<<< HEAD
 	ForwardListNode<T>* prev = nullptr;
 	ForwardListNode<T>* current = head;
 	ForwardListNode<T>* next = nullptr;
@@ -112,14 +102,11 @@ void reverse_list(ForwardListNode<T>*& head)
 		current = next;
 	}
 	head = prev;
-=======
->>>>>>> main
 }
 
 template <typename T>
 void remove_duplicates(ForwardListNode<T>*& head)
 {
-<<<<<<< HEAD
 	ForwardListNode<T>* current = head;
 	while (current->next != nullptr) {
 		if (current->data == current->next->data) {
@@ -132,6 +119,3 @@ void remove_duplicates(ForwardListNode<T>*& head)
 		}
 	}
 }
-=======
-}
->>>>>>> main
