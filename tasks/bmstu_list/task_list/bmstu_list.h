@@ -30,92 +30,48 @@ class list
 		iterator() : current(nullptr) {}
 		iterator(node* node) : current(node) {}
 		iterator& operator++() override { 
-			if (current->next_node_->next_node != nullptr) {
-				node* next_copy = current->next_node_;
-				current->next_node_ = next_copy->next_node_;
-				current->prev_node_ = this;
-				current = next_copy;
-			}
-			if (current->next_node_->next_node_ == nullptr && current->next_node_ != nullptr) {
-				node* next_copy = current->next_node_;
-				current->next_node_ = nullptr;
-				current->prev_node_ = this;
-				current = next_copy;
-			}
+			current = current->next_node_;
 			return *this;
 		}
 		iterator& operator--() override { 
-			if (current->prev_node_->prev_node_ != nullptr) {
-				node* prev_copy = current->prev_node_;
-				current->prev_node_ = next_copy->prev_node_;
-				current->next_node = this;
-				current = prev_copy;
-			}
-			if (current->prev_node_->prev_node_ == nullptr && current->prev_node_ != nullptr) {
-				node* prev_copy = current->prev_node_;
-				current->prev_node_ = nullptr;
-				current->next_node_ = this;
-				current = prev_copy;
-			}
+			current = current->prev_node_;
 			return *this;
 		}
 		iterator operator++(int) override { 
-			if (current->next_node_->next_node != nullptr) {
-				node* next_copy = current->next_node_;
-				current->next_node_ = next_copy->next_node_;
-				current->prev_node_ = this;
-				current = next_copy;
-			}
-			if (current->next_node_->next_node_ == nullptr && current->next_node_ != nullptr) {
-				node* next_copy = current->next_node_;
-				current->next_node_ = nullptr;
-				current->prev_node_ = this;
-				current = next_copy;
-			}
-			return this;
+			iterator copy = *this;
+			current = current->next_node_;
+			return copy;
 		}
 		iterator operator--(int) override { 
-			if (current->prev_node_->prev_node_ != nullptr) {
-				node* prev_copy = current->prev_node_;
-				current->prev_node_ = next_copy->prev_node_;
-				current->next_node = this;
-				current = prev_copy;
-			}
-			if (current->prev_node_->prev_node_ == nullptr && current->prev_node_ != nullptr) {
-				node* prev_copy = current->prev_node_;
-				current->prev_node_ = nullptr;
-				current->next_node_ = this;
-				current = prev_copy;
-			}
-			return this;
+			iterator copy = *this;
+			current = current->prev_node_;
+			return copy; 
 		}
 		iterator& operator+=(const iterator::difference_type& n) override
 		{
 			for (auto it = 0; it < n; ++it) {
-				this++;
+				current = current->next_node_;
 			}
 			return *this;
 		}
 		iterator& operator-=(const iterator::difference_type& n) override
 		{
 			for (auto it = 0; it < n; ++it) {
-				this--;
+				current = current->prev_node_;
 			}
 			return *this;
 		}
 		iterator operator+(const iterator::difference_type& n) const override
 		{
-			for (auto it = 0; it < n; ++it) {
-				this++;
-			}
-			return this;
+			iterator copy = *this;
+			copy += n;
+			return copy;
 		}
 		iterator operator-(const iterator::difference_type& n) const override
 		{
-			for (auto it = 0; it < n; ++it) {
-				this--;
-			}
-			return *this;
+			iterator copy = *this;
+			copy -= n;
+			return copy;
 		}
 		iterator::reference operator*() const override
 		{
@@ -137,39 +93,47 @@ class list
 		iterator::difference_type operator-(
 			const iterator& other) const override
 		{
-			return 0;
+			auto count = 0;
+			iterator copy_other(other);
+			while (current != copy_other.current) {
+				++count;
+				current = copy_other.current->next_node_;
+			}
+			return count;
 		}
 	};
 	using const_iterator = iterator;
 
-	list() {}
+	list() : head_(new node()), tail_(new node()), size_(0) {
+		head_->next_node_ = tail;
+		tail_->prev_node_ = head;
+	}
 
 	template <typename it>
-	list(it begin, it end)
+	list(it begin, it end) : list()
 	{
-		for (auto iter = begin; iter != end; ++iter) {
-			size_++;
+		for (it iter = begin; iter != end; ++iter) {
+			push_back(*iter);
 		}
 	}
 
-	list(std::initializer_list<T> values) {
-		head = *values.begin();
-		tail = *values.begin();
-		for (auto it : values) {
-			tail = it->current;
+	list(std::initializer_list<T> values) 
+	{
+		for (auto it = values.begin(); it != values.end(); ++it) {
+			push_back(*it);
 		}
 	}
 
-	list(const list& other) {
-		head = other.head_
-		tail = other.tail_;
-		size_ = other.size_;
+	list(const list& other) 
+	{
+		for (auto it = other.begin(); it != other.end(); ++it) {
+			push_back(*it);
+		}
 	}
 
-	list(list&& other) {
-		head = std::move(other.head);
-		tail = std::move(other.tail_);
-		size_ = std::move(other.size_);
+	list(list&& other) 
+	{
+		swap(other);
 	}
 
 #pragma endregion
@@ -198,23 +162,35 @@ class list
 
 #pragma endregion
 
-	bool empty() const
-
-		noexcept
+	bool empty() const noexcept
 	{
 		return (size_ == 0u);
 	}
 
-	~list() {}
+	~list() {
+		clear();
+		delete head_;
+		delete tail_;
+	}
 
-	void clear() {}
+	void clear() {
+		if (!empty()) {
+			while (head_->next_node_ != tail_) {
+				node* next = head_->next_node_;
+				head_->next_node_ = next->next_node_;
+				delete next;
+			}
+			size_ = 0;
+		}
+	}
 
-	size_t size() const { return 0; }
+	size_t size() const { return size_; }
 
-	void swap(list& other)
-
-		noexcept
+	void swap(list& other) noexcept
 	{
+		std::swap(head_, other.head_);
+		std::swap(tail_, other.tail_);
+		std::swap(size_, other.size_);
 	}
 
 	friend void swap(list& l, list& r) { l.swap(r); }
@@ -265,7 +241,9 @@ class list
 
 #pragma endregion
 
-	T operator[](size_t pos) const {}
+	T operator[](size_t pos) const {
+		
+	}
 
 	T& operator[](size_t pos) {}
 
