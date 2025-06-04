@@ -242,19 +242,43 @@ class list
 #pragma endregion
 
 	T operator[](size_t pos) const {
+		return (begin() + pos);
+	}
+
+	T& operator[](size_t pos) {
+		return *(begin() + pos);
+	}
+
+	friend bool operator==(const list& l, const list& r) { 
+		if (l.size_ == r.size_) {
+			bool equal = true;
+			for (size_t it = 0; it < l.size_; ++it) {
+				if (l[it] != r[it]) {
+					equal = false;
+				}
+			}
+			return equal;
+		}
+		return false;
+	}
+
+	friend bool operator!=(const list& l, const list& r) { return !(l == r); }
+
+	friend auto operator<=>(const list& lhs, const list& rhs) 
+	{ 
+		if (lhs == rhs) {
+			return std::strong_order::equal;
+		}
 		
 	}
 
-	T& operator[](size_t pos) {}
-
-	friend bool operator==(const list& l, const list& r) { return true; }
-
-	friend bool operator!=(const list& l, const list& r) { return false; }
-
-	friend auto operator<=>(const list& lhs, const list& rhs) { return true; }
-
 	friend std::ostream& operator<<(std::ostream& os, const list& other)
 	{
+		os << "{";
+		for (size_t it = 0; it != other.size_; ++it) {
+			os << other[i] << ", ";
+		}
+		os << "}";
 		return os;
 	}
 
