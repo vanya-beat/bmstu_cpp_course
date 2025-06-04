@@ -13,7 +13,7 @@ class list
 		node() = default;
 
 		node(node* prev, const T& value, node* next)
-			: next_node_(nullptr), prev_node_(nullptr)
+			: next_node_(next), prev_node_(prev), value_(value)
 		{
 		}
 
@@ -116,7 +116,7 @@ class list
 		}
 	}
 
-	list(std::initializer_list<T> values) 
+	list(std::initializer_list<T> values) : list()
 	{
 		for (auto it = values.begin(); it != values.end(); ++it) {
 			push_back(*it);
@@ -266,6 +266,10 @@ class list
 	{
 		os << "{";
 		for (size_t it = 0; it != other.size_; ++it) {
+			if (it == other.size_ - 1) {
+				os << other[it];
+				break;
+			}
 			os << other[it] << ", ";
 		}
 		os << "}";
