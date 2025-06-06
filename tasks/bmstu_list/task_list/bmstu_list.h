@@ -280,7 +280,7 @@ class list
 	{
 		node* old_last_ = pos.current->prev_node_;
 		node* new_last_ = new node(pos.current->prev_node_, value, pos.current);
-		pos.current->next_node_ = new_last_;
+		pos.current->prev_node_ = new_last_;
 		old_last_->next_node_ = new_last_;
 		++size_;
 		return iterator{nullptr};
