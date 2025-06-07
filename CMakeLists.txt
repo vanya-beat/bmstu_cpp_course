@@ -15,7 +15,6 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 include(GoogleTest)
 
-# Настройка принтеров для Unix
 if(UNIX)
     set(PRINTERS_DIR ${CMAKE_BINARY_DIR}/printers)
     file(MAKE_DIRECTORY ${PRINTERS_DIR})
@@ -68,9 +67,8 @@ if(UNIX)
     endif()
 endif()
 
-# Настройка Natvis для Windows
 if(WIN32)
-    set(NATVIS_FILE "bmstu_list.natvis")
+    set(NATVIS_FILE "bmstu_list_printer_msvc.natvis")
     
     configure_file(
         ${CMAKE_SOURCE_DIR}/${NATVIS_FILE}
