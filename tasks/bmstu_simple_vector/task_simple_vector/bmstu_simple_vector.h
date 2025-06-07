@@ -73,12 +73,12 @@ class simple_vector
 
 		friend bool operator==(const iterator& lhs, const iterator& rhs)
 		{
-			return "false";
+			return lhs.ptr_ == rhs.ptr_;
 		}
 
 		friend bool operator==(const iterator& lhs, std::nullptr_t)
 		{
-			return "false";
+			return lhs.ptr_ == nullptr;
 		}
 
 		iterator& operator=(std::nullptr_t) noexcept
@@ -89,7 +89,7 @@ class simple_vector
 
 		friend bool operator==(std::nullptr_t, const iterator& rhs)
 		{
-			return true;
+			return rhs.ptr_ == nullptr;
 		}
 
 		friend bool operator!=(const iterator& lhs, const iterator& rhs)
@@ -280,33 +280,27 @@ class simple_vector
 	void resize(size_t new_size)
 	{
 		const size_t old_size = size_;
+		if (new_size > capacity_)
+		{
+			size_t new_capacity = std::max(capacity_ * 2, new_size);
+			array_ptr<T> new_data(new_capacity);
+			std::move(data_.get(), data_.get() + std::min(old_size, new_size),
+					  new_data.get());
+			for (size_t i = old_size; i < new_size; ++i)
+			{
+				new_data[i] = T{};
+			}
+			data_.swap(new_data);
+			capacity_ = new_capacity;
+		}
+		else if (new_size < old_size)
+		{
+			for (size_t i = new_size; i < old_size; ++i)
+			{
+				data_[i] = T{};
+			}
+		}
 		size_ = new_size;
-		if (size_ > capacity_)
-		{
-			capacity_ = size_;
-			T* old_ptr = new T[new_size];
-			std::copy(data_.get(), data_.get() + old_size, old_ptr);
-			data_ = array_ptr<T>(new_size);
-			for (size_t i = 0; i < size_; i++)
-			{
-				if (i < old_size)
-				{
-					data_.get()[i] = old_ptr[i];
-				}
-				else
-				{
-					data_.get()[i] = T{};
-				}
-			}
-			delete[] old_ptr;
-		}
-		else if (size_ < capacity_)
-		{
-			for (size_t i = size_; i < capacity_; i++)
-			{
-				data_.get()[i] = T{};
-			}
-		}
 	}
 
 	iterator insert(const_iterator where, T&& value)
@@ -317,19 +311,19 @@ class simple_vector
 		size_ = new_size;
 		if (size_ > capacity_)
 		{
-			capacity_ = size_;
-			T* old_ptr = new T[new_size];
+			capacity_ = capacity_ == 0 ? 1 : capacity_ * 2;
+			T* old_ptr = new T[capacity_];
 			std::copy(data_.get(), data_.get() + old_size, old_ptr);
-			data_ = array_ptr<T>(new_size);
+			data_ = array_ptr<T>(capacity_);
 			for (size_t i = 0; i < size_; i++)
 			{
 				if (i < old_size)
 				{
-					data_[i] = std::move(old_ptr[i]);
+					data_.get()[i] = std::move(old_ptr[i]);
 				}
 				else
 				{
-					data_[i] = T{};
+					data_.get()[i] = T{};
 				}
 			}
 			delete[] old_ptr;
@@ -356,10 +350,10 @@ class simple_vector
 		size_ = new_size;
 		if (size_ > capacity_)
 		{
-			capacity_ = size_;
-			T* old_ptr = new T[new_size];
+			capacity_ = capacity_ == 0 ? 1 : capacity_ * 2;
+			T* old_ptr = new T[capacity_];
 			std::copy(data_.get(), data_.get() + old_size, old_ptr);
-			data_ = array_ptr<T>(new_size);
+			data_ = array_ptr<T>(capacity_);
 			for (size_t i = 0; i < size_; i++)
 			{
 				if (i < old_size)
@@ -412,7 +406,6 @@ class simple_vector
 		if (size_ > 0)
 		{
 			size_ -= 1;
-			data_.get()[size_] = T{};
 		}
 	}
 
@@ -438,39 +431,17 @@ class simple_vector
 		return !(lhs == rhs);
 	}
 
-	friend bool operator<(const simple_vector& lhs, const simple_vector& rhs)
+	friend auto operator<=>(const simple_vector& lhs, const simple_vector& rhs)
 	{
-		auto lb = lhs.begin();
-		auto rb = rhs.begin();
-		auto le = lhs.end();
-		auto re = rhs.end();
-		for (; (lb != le) && (rb != re); ++lb, ++rb)
+		size_t min_size = std::min(lhs.size_, rhs.size_);
+		for (size_t i = 0; i < min_size; ++i)
 		{
-			if (*lb < *rb)
+			if (lhs.data_[i] != rhs.data_[i])
 			{
-				return true;
-			}
-			if (*lb > *rb)
-			{
-				return false;
+				return lhs.data_[i] <=> rhs.data_[i];
 			}
 		}
-		return (lb == le) && (rb != re);
-	}
-
-	friend bool operator>(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		return !(lhs <= rhs);
-	}
-
-	friend bool operator<=(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		return (lhs < rhs || lhs == rhs);
-	}
-
-	friend bool operator>=(const simple_vector& lhs, const simple_vector& rhs)
-	{
-		return !(lhs < rhs);
+		return lhs.size_ <=> rhs.size_;
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const simple_vector& vec)
