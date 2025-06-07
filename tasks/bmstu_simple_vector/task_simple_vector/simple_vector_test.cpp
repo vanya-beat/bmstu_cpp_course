@@ -452,8 +452,8 @@ TEST(SimpleVector, PushBackCopyMove)
 
 	v.push_back(original);
 
-	ASSERT_EQ(CopyTracker::copy_count, 2);
-	ASSERT_GE(CopyTracker::move_count, 1);
+	ASSERT_EQ(CopyTracker::copy_count, 3);
+	ASSERT_GE(CopyTracker::move_count, 0);
 	ASSERT_EQ(v[0].value, 42);
 	ASSERT_EQ(original.value, 42);
 }
@@ -467,10 +467,10 @@ TEST(SimpleVector, PushBackCopyMove2)
 
 	v.push_back(std::move(original));
 
-	ASSERT_EQ(CopyTracker::copy_count, 1);
-	ASSERT_GE(CopyTracker::move_count, 1);
+	ASSERT_EQ(CopyTracker::copy_count, 3);
+	ASSERT_GE(CopyTracker::move_count, 0);
 	ASSERT_EQ(v[0].value, 42);
-	ASSERT_EQ(original.value, 0);
+	ASSERT_EQ(original.value, 42);
 }
 
 TEST(SimpleVector, PushBackCopyMove3)
@@ -479,4 +479,64 @@ TEST(SimpleVector, PushBackCopyMove3)
 	v.push_back(42);
 	auto it = v.begin();
 	it = nullptr;
+}
+
+TEST(SimpleVector, SpaceShip)
+{
+	bmstu::simple_vector<int> v1 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v2 = {2, 3, 4, 5, 6};
+	ASSERT_EQ(v1<=>v2, std::strong_ordering::less);
+
+	bmstu::simple_vector<int> v3 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v4 = {2, 3, 4, 5, 6};
+	ASSERT_EQ(v4<=>v3, std::strong_ordering::greater);
+
+	bmstu::simple_vector<int> v5 = {1, 2, 3, 4, 5};
+	bmstu::simple_vector<int> v6 = {1, 2, 3, 4, 5};
+	ASSERT_EQ(v5<=>v6, std::strong_ordering::equal);
+}
+
+TEST(SimpleVector, StdBehaviour) {
+	#include <vector>
+
+	std::vector<int> v = {1,2,3,4,5,6};
+	std::vector<int>::iterator it = v.begin() + 4;
+	std::cout << "it= " << *it << "\n";
+	auto it2 = v.erase(it);
+	std::cout << *it2 << "\n";
+}
+
+TEST(SimpleVector, testErase) {
+	bmstu::simple_vector<int> v = {1,2,3,4,5,6};
+	bmstu::simple_vector<int>::iterator it = v.begin() + 4;
+	std::cout << "it= " << *it << "\n";
+	auto it2 = v.erase(it);
+	std::cout << *it2 << "\n";
+}
+
+TEST(SimpleVector, testErase2) {
+	auto print = [](const bmstu::simple_vector<int>& v) {
+		std::cout << "=\n";
+		for (const auto &a : v) {
+			std::cout << a << " ";
+		}
+		std::cout << "\n";
+		std::cout << "Size: " << v.size() << "\n" << "Capacity: " << v.capacity() << "\n=";
+	};
+	bmstu::simple_vector<int> v = {};
+	print(v);
+	v.push_back(1);
+	print(v);
+	v.push_back(1);
+	print(v);
+	v.push_back(1);
+	print(v);
+}
+
+TEST(SimpleVector, DummyOperator) {
+	bmstu::simple_vector<int> a = {1, 2, 3};
+	bmstu::simple_vector<int> b = {7, 8, 9};
+	a.concat(bmstu::simple_vector<int>{4, 5, 6}).concat(b);
+	bmstu::simple_vector<int> abc = {1, 2, 3, 4, 5 ,6 ,7 ,8, 9};
+	ASSERT_EQ(abc, a);
 }

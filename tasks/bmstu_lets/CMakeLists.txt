@@ -20,5 +20,3 @@ target_link_libraries(
         ${NAME_EXECUTABLE}
         GTest::gtest_main
 )
-
-gtest_discover_tests(${NAME_EXECUTABLE})

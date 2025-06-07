@@ -34,7 +34,7 @@ class array_ptr
 		if (size > 0)
 		{
 			raw_ptr_ = new T[size];
-			my_fill(raw_ptr_, size);
+			my_fill(raw_ptr_, size, T());
 		}
 		else
 		{
