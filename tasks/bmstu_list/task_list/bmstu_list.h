@@ -242,6 +242,7 @@ class list
 			for (size_t it = 0; it < l.size_; ++it) {
 				if (l[it] != r[it]) {
 					equal = false;
+					break;
 				}
 			}
 			return equal;
