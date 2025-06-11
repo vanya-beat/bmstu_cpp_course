@@ -12,21 +12,9 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 include(GoogleTest)
 
-configure_file(${CMAKE_SOURCE_DIR}/gdb_printer.py ${CMAKE_BINARY_DIR}/gdb_printer.py COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/bmstu_list_printer_gdb.py ${CMAKE_BINARY_DIR}/bmstu_list_printer_gdb.py COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/bmstu_list_printer_lldb.py ${CMAKE_BINARY_DIR}/bmstu_list_printer_lldb.py COPYONLY)
-
-configure_file(${CMAKE_SOURCE_DIR}/bmstu_list_printer_msvc.natvis ${CMAKE_BINARY_DIR}/bmstu_list_printer_msvc.natvis COPYONLY)
-
-file(WRITE ${CMAKE_BINARY_DIR}/.gdbinit
-    "source gdb_printer.py\n"
-    "source bmstu_list_printer_gdb.py\n"
-)
-
-file(WRITE ${CMAKE_BINARY_DIR}/.lldbinit
-    "command script import lldb_printer.py\n"
-    "command script import bmstu_list_printer_lldb.py\n"
-)
+file(WRITE ${CMAKE_SOURCE_DIR}/.gdbinit "source gdb_printer.py\n")
+file(WRITE ${CMAKE_SOURCE_DIR}/.gdbinit "source bmstu_list_printer_gdb.py\n")
+file(WRITE ${CMAKE_SOURCE_DIR}/.lldbinit "command script import lldb_printer.py\ncommand script import bmstu_list_printer_lldb.py\n")
 
 if(UNIX)
     set(HOME_DIR "$ENV{HOME}")
@@ -48,39 +36,17 @@ if(UNIX)
     endif()
 endif()
 
-install(FILES 
-    ${CMAKE_SOURCE_DIR}/gdb_printer.py
-    ${CMAKE_SOURCE_DIR}/bmstu_list_printer_gdb.py
-    DESTINATION share/gdb/python)
-    
-install(FILES 
-    ${CMAKE_SOURCE_DIR}/lldb_printer.py
-    ${CMAKE_SOURCE_DIR}/bmstu_list_printer_lldb.py
-    DESTINATION share/lldb)
+configure_file(${CMAKE_SOURCE_DIR}/gdb_printer.py ${CMAKE_BINARY_DIR}/gdb_printer.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/bmstu_list_printer_gdb.py ${CMAKE_BINARY_DIR}/bmstu_list_printer_gdb.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/bmstu_list_printer_lldb.py ${CMAKE_BINARY_DIR}/bmstu_list_printer_lldb.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/.gdbinit ${CMAKE_BINARY_DIR}/.gdbinit COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/.lldbinit ${CMAKE_BINARY_DIR}/.lldbinit COPYONLY)
 
-install(FILES ${CMAKE_BINARY_DIR}/.gdbinit DESTINATION share/gdb)
-install(FILES ${CMAKE_BINARY_DIR}/.lldbinit DESTINATION share/lldb)
+install(FILES ${CMAKE_SOURCE_DIR}/bmstu_list_printer_gdb.py DESTINATION share/gdb/python)
+install(FILES ${CMAKE_SOURCE_DIR}/gdb_printer.py DESTINATION share/gdb/python)
+install(FILES ${CMAKE_SOURCE_DIR}/bmstu_list_printer_lldb.py DESTINATION share/lldb)
+install(FILES ${CMAKE_SOURCE_DIR}/.gdbinit DESTINATION share/gdb)
+install(FILES ${CMAKE_SOURCE_DIR}/.lldbinit DESTINATION share/lldb)
 
-
-install(FILES 
-    ${CMAKE_SOURCE_DIR}/bmstu_list_printer_msvc.natvis
-    DESTINATION share/msvc/natvis)
-
-if(MSVC)
-    file(GLOB_RECURSE PROJECT_TARGETS "tasks/CMakeLists.txt")
-    
-    foreach(target_file ${PROJECT_TARGETS})
-        get_filename_component(target_dir ${target_file} DIRECTORY)
-        add_subdirectory(${target_dir})
-        
-        get_property(targets_in_dir DIRECTORY ${target_dir} PROPERTY BUILDSYSTEM_TARGETS)
-        
-        foreach(target ${targets_in_dir})
-            target_sources(${target} PRIVATE ${CMAKE_BINARY_DIR}/bmstu_list_printer_msvc.natvis)
-            set_source_files_properties(${CMAKE_BINARY_DIR}/bmstu_list_printer_msvc.natvis 
-                PROPERTIES VS_TOOL_OVERRIDE "natvis")
-        endforeach()
-    endforeach()
-else()
-    add_subdirectory(tasks)
-endif()
+add_subdirectory(tasks)
+set(CMAKE_BUILD_TYPE Debug)
