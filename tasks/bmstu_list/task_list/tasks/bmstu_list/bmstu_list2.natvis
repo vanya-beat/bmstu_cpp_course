@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="bmstu::list&lt;*&gt;">
+		<DisplayString>{{ BMSTU list of {size_} elements }}</DisplayString>
+		<Expand>
+			<Item Name="size = ">size_</Item>
+			<LinkedListItems>
+				<Size>size_</Size>
+				<HeadPointer>head_</HeadPointer>
+				<NextPointer>next_node_</NextPointer>
+				<ValueNode>this->next_node_->value_</ValueNode>
+			</LinkedListItems>
+		</Expand>
+	</Type>
+</AutoVisualizer>
