@@ -536,3 +536,14 @@ TEST(BidirectLinkedListTests, from_vector)
 										"string7"s, "end_string"s}),
 			  my_vec);
 }
+
+TEST(BidirectLinkedListTests, pop_back)
+{
+	using namespace std;
+	std::vector<std::string> my_vec = {"string1"s, "string3"s, "string4"s,
+									   "string5"s, "string6"s, "string7"s};
+	bmstu::list<std::string> my_list(my_vec.begin(), my_vec.end());
+	my_list.pop_back();
+	bmstu::list<std::string> exp{"string3"s, "string4"s, "string5"s, "string6"s, "string7"s};
+	ASSERT_EQ(my_list, exp);
+}
