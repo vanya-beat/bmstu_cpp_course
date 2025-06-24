@@ -1,4 +1,4 @@
-message(STATUS "Running tasks/basic_c/CMakeLists.txt")
+message(STATUS "Running tasks/basic_abstract_iterator/CMakeLists.txt")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 get_filename_component(NAME_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -20,5 +20,3 @@ target_link_libraries(
         ${NAME_EXECUTABLE}
         GTest::gtest_main
 )
-
-gtest_discover_tests(${NAME_EXECUTABLE})
