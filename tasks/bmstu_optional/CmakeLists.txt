@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(bmstu_optional) 
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
+add_executable(bmstu_optional  
+    bmstu_optional_tests.cpp
+)
+
+target_link_libraries(bmstu_optional  
+    # GTest::gtest 
+    GTest::gtest_main 
+    pthread
+)
+
+include(GoogleTest)
+gtest_discover_tests(bmstu_optional) 
