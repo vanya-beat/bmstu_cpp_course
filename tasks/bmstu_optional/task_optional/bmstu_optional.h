@@ -6,6 +6,7 @@
 #include <exception>
 #include <cstdint>
 
+
 namespace bmstu {
 struct nullopt_t {
     explicit constexpr nullopt_t(int) noexcept {}
