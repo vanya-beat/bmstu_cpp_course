@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <new>
 #include <cstddef>
-#include <iostream>  // для отладки
+#include <iostream>  
 
 namespace bmstu
 {
