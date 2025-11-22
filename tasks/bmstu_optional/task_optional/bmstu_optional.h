@@ -1,10 +1,8 @@
-#ifndef BMSTU_OPTIONAL_H
-#define BMSTU_OPTIONAL_H
-
 #include <cstdint>
 #include <utility>
 #include <exception>
 #include <cstdint>
+
 
 namespace bmstu {
 struct nullopt_t {
@@ -26,6 +24,7 @@ class optional {
     constexpr optional() noexcept = default;
 
     constexpr optional(nullopt_t) noexcept {}
+    //bmstu::optional<int> opt1 = bmstu::nullopt;
 
     optional(const T& value) : is_initialized_(true) {
         new (&data_) T(value);
@@ -134,6 +133,7 @@ class optional {
     T&& operator*() && {
         return std::move(value());
     }
+ 
 
     T* operator->() {
         return &value();
@@ -186,5 +186,3 @@ class optional {
 };
 
 } // namespace bmstu
-
-#endif // BMSTU_OPTIONAL_H

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 struct Tracker
 {
@@ -781,4 +782,88 @@ TEST(Optional, ExceptionWithTrackedObject)
 	}
 	ASSERT_EQ(Tracker::param_ctor, 1);
 	ASSERT_EQ(Tracker::dtor, 1);
+}
+
+
+bmstu::optional<std::string> findSpecificWord(const std::string &str, size_t size) {
+    std::vector<std::string> words;
+    std::string current = "";
+    for (const char c : str) {
+        if (c == ' ') {
+            if (current != "") {
+                words.push_back(current);
+                current = "";
+            }
+        } else {
+            current += c;
+        }
+    }
+    if (current != "") {
+        words.push_back(current);
+    }
+
+    for (auto w : words) {
+        if (w.length() == size) {
+			return bmstu::optional<std::string>(w);
+        }
+    }
+    return bmstu::nullopt;
+
+}
+
+TEST(Optional, String)
+{
+	std::string str = "abba 123 123 123 123 1234 boabab snelle pepe watafo";
+	auto opt = findSpecificWord(str, 4);
+	if (opt) {
+		if (opt.value() == "abba") {
+			std::cout << "Found abba" << std::endl;
+		} else {
+			std::cout << "Found something else" << std::endl;
+		}
+	}
+}
+
+std::vector<std::string> MySplit(const std::string& str, char separator = ' ') {
+    std::vector<std::string> words;
+    std::string current;
+    
+    for (char c : str) {
+        if (c == separator) {
+            if (!current.empty()) {
+                words.push_back(current);
+                current.clear();
+            }
+        } else {
+            current += c;
+        }
+    }
+	if (!current.empty()) {
+        words.push_back(current);
+    }
+    return words;
+}
+
+
+bmstu::optional<std::string> FindSpecificWord(const std::string &str, size_t size) {
+	std::vector<std::string> words = MySplit(str,  ' ');
+	for(auto w: words){
+		if (w.length() == size){
+			return bmstu::optional<std::string>(w);
+		}
+	}
+	return bmstu::nullopt;
+}
+
+TEST(Optional, MysplitWay)
+{
+	std::string str = "123 123 123 123 1234 boabab snelle pepe watafo";
+	auto opt = FindSpecificWord(str, 4);
+	if (opt) {
+		if (opt.value() == "1234") {
+			std::cout << "Found 1234" << std::endl;
+		} else {
+			std::cout << "Found something else" << std::endl;
+		}
+	}
 }
