@@ -1,13 +1,15 @@
-name: Clang Format Check
+name: C++ Style Check
 
 on:
   push:
+    branches: [main, hw]
     paths:
       - 'tasks/**/*.c'
       - 'tasks/**/*.cpp'
       - 'tasks/**/*.h'
       - 'tasks/**/*.hpp'
   pull_request:
+    branches: [main, hw]
     paths:
       - 'tasks/**/*.c'
       - 'tasks/**/*.cpp'
@@ -15,25 +17,40 @@ on:
       - 'tasks/**/*.hpp'
 
 jobs:
-  formatting-check:
-    name: Formatting Check
+  style-check:
+    name: Check Code Style
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
     - name: Install clang-format
-      run: sudo apt-get install -y clang-format
-    
-    - name: Check clang-format
       run: |
-        find tasks -iname '*.c' -o -iname '*.cpp' -o -iname '*.h' -o -iname '*.hpp' | while read -r file
-        do
-          if ! clang-format --dry-run --Werror "$file" >/dev/null 2>&1
-          then
-            echo "❌ Code style issues found in: $file"
-            clang-format --dry-run --Werror "$file"
-            exit 1
+        sudo apt-get update
+        sudo apt-get install -y clang-format
+    
+    - name: Check code formatting
+      run: |
+        echo "Checking code formatting with clang-format..."
+        
+        # Проверяем все файлы и собираем ошибки
+        has_errors=0
+        
+        while IFS= read -r file; do
+          echo "Checking: $file"
+          if ! clang-format --dry-run --Werror "$file" 2>&1; then
+            echo "❌ Style issues in: $file"
+            has_errors=1
           fi
-        done
+        done < <(find tasks -type f \( -iname '*.c' -o -iname '*.cpp' -o -iname '*.h' -o -iname '*.hpp' \))
+        
+        if [ $has_errors -eq 1 ]; then
+          echo ""
+          echo "❌ Code style check failed! Please run clang-format on the files above."
+          exit 1
+        fi
+        
+        echo ""
         echo "✅ All files are properly formatted"

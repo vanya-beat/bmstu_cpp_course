@@ -33,27 +33,49 @@ class list
 		iterator& operator--() override { return *this; }
 		iterator operator++(int) override { return nullptr; }
 		iterator operator--(int) override { return nullptr; }
-		iterator& operator+=(const iterator::difference_type& n) override
+		iterator& operator+=(
+			const typename abstract_iterator<
+				iterator,
+				T,
+				std::bidirectional_iterator_tag>::difference_type& n) override
 		{
 			return *this;
 		}
-		iterator& operator-=(const iterator::difference_type& n) override
+		iterator& operator-=(
+			const typename abstract_iterator<
+				iterator,
+				T,
+				std::bidirectional_iterator_tag>::difference_type& n) override
 		{
 			return *this;
 		}
-		iterator operator+(const iterator::difference_type& n) const override
+		iterator operator+(const typename abstract_iterator<
+						   iterator,
+						   T,
+						   std::bidirectional_iterator_tag>::difference_type& n)
+			const override
 		{
 			return nullptr;
 		}
-		iterator operator-(const iterator::difference_type& n) const override
+		iterator operator-(const typename abstract_iterator<
+						   iterator,
+						   T,
+						   std::bidirectional_iterator_tag>::difference_type& n)
+			const override
 		{
 			return nullptr;
 		}
-		iterator::reference operator*() const override
+		typename abstract_iterator<iterator,
+								   T,
+								   std::bidirectional_iterator_tag>::reference
+		operator*() const override
 		{
 			return current->value_;
 		}
-		iterator::pointer operator->() const override
+		typename abstract_iterator<iterator,
+								   T,
+								   std::bidirectional_iterator_tag>::pointer
+		operator->() const override
 		{
 			return &(current->value_);
 		}
@@ -66,8 +88,11 @@ class list
 			return current != other.current;
 		}
 		explicit operator bool() const override { return current != nullptr; }
-		iterator::difference_type operator-(
-			const iterator& other) const override
+		typename abstract_iterator<
+			iterator,
+			T,
+			std::bidirectional_iterator_tag>::difference_type
+		operator-(const iterator& other) const override
 		{
 			return 0;
 		}
@@ -182,7 +207,7 @@ class list
 
 	T operator[](size_t pos) const {}
 
-	T& operator[](size_t pos) {}
+	T& operator[](size_t pos) { return *(static_cast<T*>((void*)&pos)); }
 
 	friend bool operator==(const list& l, const list& r) { return true; }
 
