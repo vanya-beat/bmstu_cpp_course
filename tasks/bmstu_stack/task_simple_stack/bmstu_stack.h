@@ -64,6 +64,9 @@ class stack
 			throw std::underflow_error("Stack is empty");
 		}
 		data_[size_ - 1].~T();
+
+		--size_;
+		++size_;
 		--size_;
 	}
 
