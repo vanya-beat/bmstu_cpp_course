@@ -1051,3 +1051,6 @@ dkms.conf
 .vscode/*
 build
 build/*
+.lldbinit
+.gdbinit
+build_vs
