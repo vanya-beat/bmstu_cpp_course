@@ -25,21 +25,42 @@ class stack
 	template <typename... Args>
 	void emplace(Args&&... args)
 	{
-        if (size_ == capacity_)
-
+        if (size_ == capacity_) make_room();
+        new(data_ + size_) T(std::forward<Args>(args)...);
+        size_++;
 	}
 
-	void push(T&& value) {}
+	void push(T&& value) {
+        if (size_ == capacity_) make_room();
+        new(data_ + size_) T(std::move(value));
+        size_++;
+    }
 
-	void clear() noexcept {}
+	void clear() noexcept {size_ = 0;}
 
-	void push(const T& value) {}
+	void push(const T& value) {
+        if (size_ == capacity_) make_room();
+        new (data_ + size_) T(value);
+        size_++;
+    }
 
-	void pop() {}
+	void pop() {
+        if (empty())
+            throw std::underflow_error("в стеке ничо нет");
+        size_--;
+    }
 
-	T& top() { return data_[0]; }
+	T& top() {
+        if (empty())
+            throw std::underflow_error("в стеке ничо нет");
+        return data_[size_ - 1];
+    }
 
-	const T& top() const { return data_[0]; }
+	const T& top() const {
+        if (empty())
+            throw std::underflow_error("в стеке ничо нет");
+        return data_[size_ - 1];
+    }
 
    private:
     void make_room() {
