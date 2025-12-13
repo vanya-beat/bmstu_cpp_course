@@ -68,6 +68,8 @@ class stack
 		--size_;
 		++size_;
 		--size_;
+		++size_;
+		--size_;
 	}
 
 	T& top()
