@@ -28,6 +28,7 @@ class stack
         if (size_ == capacity_) make_room();
         new(data_ + size_) T(std::forward<Args>(args)...);
         size_++;
+
 	}
 
 	void push(T&& value) {
