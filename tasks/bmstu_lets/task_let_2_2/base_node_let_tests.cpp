@@ -4,22 +4,22 @@
 
 TEST(ForwardDummyList, CreateList)
 {
-    ForwardListNode<int>* head = nullptr;
-    std::vector<int> data = {1, 2, 3, 4, 5};
+	ForwardListNode<int>* head = nullptr;
+	std::vector<int> data = {1, 2, 3, 4, 5};
 
-    create_list(head, data);
+	create_list(head, data);
 
-    ForwardListNode<int>* current = head;
-    for (const auto& value : data)
-    {
-        ASSERT_NE(current, nullptr);
-        EXPECT_EQ(current->data, value);
-        current = current->next;
-    }
+	ForwardListNode<int>* current = head;
+	for (const auto& value : data)
+	{
+		ASSERT_NE(current, nullptr);
+		EXPECT_EQ(current->data, value);
+		current = current->next;
+	}
 
-    EXPECT_EQ(current, nullptr);
+	EXPECT_EQ(current, nullptr);
 
-    delete_list(head);
+	delete_list(head);
 }
 
 TEST(ForwardDummyList, PrintList)

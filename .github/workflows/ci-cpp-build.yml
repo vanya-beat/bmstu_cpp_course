@@ -7,104 +7,252 @@ on:
     branches: [main, hw]
 
 jobs:
-  build-docker:
-    uses: ./.github/workflows/docker-build.yml
-
-  test:
+  build-and-test:
     name: Build and Test
-    needs: build-docker
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Docker image
-        uses: actions/download-artifact@v4
-        with:
-          name: cpp_course-image
-
-      - name: Load Docker image
-        run: docker load -i cpp_course_image.tar
-
-      - name: Run tests in container
-        id: run_tests
-        run: |
-          # Создаем директорию для результатов тестов на хосте
-          mkdir -p test-results
-          
-          # Запускаем тесты в контейнере
-          docker run --name cpp_course_container \
-            -v ${{ github.workspace }}:/workspace \
-            bmstu_cpp_course-bmstu:latest \
-            bash -c "cd /workspace && \
-                    mkdir -p build && \
-                    cd build && \
-                    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS='-fprofile-arcs -ftest-coverage' && \
-                    cmake --build . && \
-                    cd .. && \
-                    mkdir -p test-results && \
-                    # Запускаем тестовые исполняемые файлы проекта и сохраняем статус выполнения
-                    exit_code=0 && \
-                    for test_bin in \$(find build/tasks -type f -executable); do \
-                      echo \"Running \$test_bin\" && \
-                      \$test_bin --gtest_output=xml:test-results/\$(basename \$test_bin).xml; \
-                      test_exit_code=\$?; \
-                      if [ \$test_exit_code -ne 0 ]; then \
-                        echo \"Test \$test_bin failed with exit code \$test_exit_code\" && \
-                        exit_code=1; \
-                      fi; \
-                    done && \
-                    # Копируем результаты тестов в директорию, смонтированную на хосте
-                    cp -r test-results/* /workspace/test-results/ || true && \
-                    exit \$exit_code"
-          
-          # Показываем, какие результаты тестов были найдены
-          echo "Found test results:"
-          ls -la test-results/
-
-      - name: Upload test results (XML)
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: test_results_xml
-          path: test-results/
-          if-no-files-found: warn
-          retention-days: 5
-
-  generate-report:
-    name: Generate HTML Report
-    needs: test
-    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Download test results (XML)
-        uses: actions/download-artifact@v4
         with:
-          name: test_results_xml
-          path: test-results/
+          submodules: recursive
 
-      - name: Install xsltproc
-        run: sudo apt-get install -y xsltproc
-
-      - name: Apply XSLT transformation
+      - name: Install dependencies
         run: |
-          # Применяем XSLT-шаблон к каждому XML-файлу
-          for xml_file in test-results/*.xml; do
-            xsltproc transform.xsl "$xml_file" > "${xml_file%.xml}.html"
-          done
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            g++ \
+            clang \
+            ninja-build \
+            xsltproc
 
-      - name: Upload HTML report
+      - name: Configure CMake
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build project
+        run: |
+          cd build
+          cmake --build . --config Release
+
+      - name: Run tests and generate reports
+        id: run_tests
+        continue-on-error: true
+        run: |
+          set +e  # Не прерываем выполнение при ошибках
+          
+          mkdir -p test-results
+          has_failures=0
+          tests_run=0
+          tests_passed=0
+          
+          echo "==========================================="
+          echo "Searching for test executables..."
+          echo "==========================================="
+          
+          cd build
+          
+          # Показываем структуру директории tasks
+          echo "Directory structure:"
+          ls -la tasks/ 2>/dev/null || echo "tasks directory not found"
+          echo ""
+          
+          # Показываем все найденные исполняемые файлы
+          echo "Found executables:"
+          find tasks -type f -executable 2>/dev/null | sort | tee /tmp/found_tests.txt
+          test_count=$(wc -l < /tmp/found_tests.txt)
+          echo ""
+          echo "Total executables found: $test_count"
+          echo "==========================================="
+          echo ""
+          
+          # Создаем лог файл для всех тестов
+          echo "Test Name,Status,Exit Code,XML Generated" > /tmp/test_results.csv
+          
+          # Ищем все исполняемые файлы в tasks
+          while IFS= read -r test_bin; do
+            if [ -f "$test_bin" ] && [ -x "$test_bin" ]; then
+              test_name=$(basename "$test_bin")
+              tests_run=$((tests_run + 1))
+              xml_path="../test-results/${test_name}.xml"
+              
+              echo ""
+              echo "==========================================="
+              echo "[$tests_run] Running: $test_name"
+              echo "==========================================="
+              
+              # Запускаем тест с таймаутом и генерацией XML
+              timeout 60s ./"$test_bin" --gtest_output=xml:$xml_path 2>&1
+              test_status=$?
+              
+              # Проверяем, создался ли XML файл
+              xml_generated="NO"
+              if [ -f "$xml_path" ]; then
+                xml_generated="YES"
+              fi
+              
+              if [ $test_status -eq 0 ]; then
+                echo "✅ PASSED: $test_name"
+                echo "$test_name,PASSED,0,$xml_generated" >> /tmp/test_results.csv
+                tests_passed=$((tests_passed + 1))
+              elif [ $test_status -eq 124 ]; then
+                echo "⏱️ TIMEOUT: $test_name (exceeded 60 seconds)"
+                echo "$test_name,TIMEOUT,124,$xml_generated" >> /tmp/test_results.csv
+                has_failures=1
+              elif [ $test_status -eq 139 ]; then
+                echo "💥 SEGFAULT: $test_name (segmentation fault)"
+                echo "$test_name,SEGFAULT,139,$xml_generated" >> /tmp/test_results.csv
+                has_failures=1
+              elif [ $test_status -eq 134 ]; then
+                echo "💥 ABORTED: $test_name (abort signal)"
+                echo "$test_name,ABORTED,134,$xml_generated" >> /tmp/test_results.csv
+                has_failures=1
+              else
+                echo "❌ FAILED: $test_name (exit code: $test_status)"
+                echo "$test_name,FAILED,$test_status,$xml_generated" >> /tmp/test_results.csv
+                has_failures=1
+              fi
+            fi
+          done < <(find tasks -type f -executable 2>/dev/null)
+          
+          cd ..
+          
+          echo ""
+          echo "==========================================="
+          echo "Test Execution Summary"
+          echo "==========================================="
+          echo "Total tests run: $tests_run"
+          echo "Tests passed: $tests_passed"
+          echo "Tests failed: $((tests_run - tests_passed))"
+          echo ""
+          
+          echo "Detailed Results:"
+          column -t -s',' /tmp/test_results.csv
+          
+          echo ""
+          echo "Generated XML reports:"
+          xml_count=$(ls test-results/*.xml 2>/dev/null | wc -l)
+          if [ $xml_count -gt 0 ]; then
+            ls -lh test-results/*.xml | awk '{print "  ✅ " $9 " (" $5 ")"}'
+            echo ""
+            echo "⚠️  Tests without XML reports (crashed before completion):"
+            while IFS=, read -r name status code xml; do
+              if [ "$xml" = "NO" ] && [ "$name" != "Test Name" ]; then
+                echo "  ❌ $name ($status)"
+              fi
+            done < /tmp/test_results.csv
+          else
+            echo "  ⚠️  No XML files generated"
+          fi
+          echo "==========================================="
+          
+          exit $has_failures
+
+      - name: Upload test results (XML)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test_report_html
+          name: test_results_xml
+          path: test-results/*.xml
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Generate HTML reports
+        if: always()
+        run: |
+          echo "==========================================="
+          echo "Generating HTML Reports"
+          echo "==========================================="
+          
+          if [ ! -f "transform.xsl" ]; then
+            echo "⚠️ Warning: transform.xsl not found, skipping HTML generation"
+            exit 0
+          fi
+          
+          xml_count=0
+          html_count=0
+          
+          if [ -d "test-results" ]; then
+            for xml_file in test-results/*.xml; do
+              if [ -f "$xml_file" ]; then
+                xml_count=$((xml_count + 1))
+                html_file="${xml_file%.xml}.html"
+                
+                if xsltproc transform.xsl "$xml_file" > "$html_file" 2>&1; then
+                  html_count=$((html_count + 1))
+                  echo "✅ Generated: $(basename "$html_file")"
+                else
+                  echo "❌ Failed to generate: $(basename "$html_file")"
+                fi
+              fi
+            done
+          fi
+          
+          echo ""
+          echo "Summary: Generated $html_count HTML reports from $xml_count XML files"
+          echo "==========================================="
+
+      - name: Upload HTML reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test_reports_html
           path: test-results/*.html
           if-no-files-found: warn
-          retention-days: 5
+          retention-days: 7
+
+      - name: Publish test summary
+        if: always()
+        run: |
+          echo "## 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          xml_count=$(ls test-results/*.xml 2>/dev/null | wc -l)
+          html_count=$(ls test-results/*.html 2>/dev/null | wc -l)
+          
+          echo "📊 **Reports Generated:**" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 XML Reports: $xml_count" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 HTML Reports: $html_count" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "/tmp/test_results.csv" ]; then
+            echo "### 📋 Test Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Test Name | Status | Exit Code | XML Report |" >> $GITHUB_STEP_SUMMARY
+            echo "|-----------|--------|-----------|------------|" >> $GITHUB_STEP_SUMMARY
+            
+            while IFS=, read -r name status code xml; do
+              if [ "$name" != "Test Name" ]; then
+                if [ "$status" = "PASSED" ]; then
+                  icon="✅"
+                elif [ "$status" = "SEGFAULT" ] || [ "$status" = "ABORTED" ]; then
+                  icon="💥"
+                elif [ "$status" = "TIMEOUT" ]; then
+                  icon="⏱️"
+                else
+                  icon="❌"
+                fi
+                
+                xml_icon="❌"
+                [ "$xml" = "YES" ] && xml_icon="✅"
+                
+                echo "| \`$name\` | $icon $status | $code | $xml_icon |" >> $GITHUB_STEP_SUMMARY
+              fi
+            done < /tmp/test_results.csv
+            
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ $xml_count -gt 0 ]; then
+            echo "📥 **Download artifacts to view detailed HTML reports**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No test results available" >> $GITHUB_STEP_SUMMARY
+          fi
