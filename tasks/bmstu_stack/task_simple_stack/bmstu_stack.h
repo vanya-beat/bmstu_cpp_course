@@ -136,4 +136,4 @@ class stack
 	T* data_;
 	size_t size_;
 };
-}  // namespace
+}  // namespa
