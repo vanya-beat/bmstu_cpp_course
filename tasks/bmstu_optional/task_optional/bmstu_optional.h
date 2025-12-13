@@ -33,13 +33,13 @@ class optional
 
 	optional(optional&& other) noexcept {}
 
-	optional& operator=(const T& value) {}
+	optional& operator=(const T& value) { return *this; }
 
-	optional& operator=(T&& value) {}
+	optional& operator=(T&& value) { return *this; }
 
-	optional& operator=(const optional& value) {}
+	optional& operator=(const optional& value) { return *this; }
 
-	optional& operator=(optional&& value) {}
+	optional& operator=(optional&& value) { return *this; }
 
 	T& operator*() &
 	{
