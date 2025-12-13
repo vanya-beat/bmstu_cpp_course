@@ -27,6 +27,7 @@ struct CountCopyMoveDefault
 		default_constructor_count = 0;
 		assignment_copy_count = 0;
 		assignment_move_count = 0;
+		destructor_count = 0;
 	}
 	CountCopyMoveDefault& operator=(const CountCopyMoveDefault&)
 	{
@@ -38,12 +39,17 @@ struct CountCopyMoveDefault
 		++assignment_move_count;
 		return *this;
 	}
-
+	
+	~CountCopyMoveDefault() {
+		++destructor_count;
+	}
+	
 	static int copy_constructor_count;
 	static int move_constructor_count;
 	static int default_constructor_count;
 	static int assignment_copy_count;
 	static int assignment_move_count;
+	static int destructor_count;
 };
 
 int CountCopyMoveDefault::copy_constructor_count = 0;
@@ -51,7 +57,7 @@ int CountCopyMoveDefault::move_constructor_count = 0;
 int CountCopyMoveDefault::default_constructor_count = 0;
 int CountCopyMoveDefault::assignment_copy_count = 0;
 int CountCopyMoveDefault::assignment_move_count = 0;
-
+int CountCopyMoveDefault::destructor_count = 0;
 TEST(StackTest, DefaultConstructor)
 {
 	bmstu::stack<int> s;
@@ -263,6 +269,17 @@ TEST(StackTest, StringStack)
 	ASSERT_EQ(s.top(), "Hello");
 }
 
+TEST(StackTest, OptimizationDestructor)
+{
+	{
+	bmstu::stack<CountCopyMoveDefault> s;
+	CountCopyMoveDefault::reset_counters();
+	s.emplace(1, 2, 100);
+	s.push(CountCopyMoveDefault(1, 2, 3));
+	}
+
+	ASSERT_EQ(CountCopyMoveDefault::destructor_count, 2);
+}
 TEST(StackTest, OptimizationCheck)
 {
 	bmstu::stack<CountCopyMoveDefault> s;
