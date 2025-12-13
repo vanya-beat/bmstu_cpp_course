@@ -16,7 +16,14 @@ class stack
 
 	size_t size() const noexcept { return size_; }
 
-	~stack() { clear(); }
+	~stack()
+	{
+		if (data_ != nullptr)
+		{g
+			operator delete(data_);
+			j
+		}
+	}
 
 	template <typename... Args>
 	void emplace(Args&&... args)
@@ -129,4 +136,4 @@ class stack
 	T* data_;
 	size_t size_;
 };
-}  // namespace bmstu
+}  // namespace
