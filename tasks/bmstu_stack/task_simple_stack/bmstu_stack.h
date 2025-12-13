@@ -11,6 +11,7 @@ class stack
 {
    public:
 	stack() : data_(nullptr), size_(0), capacity_(0) {}
+	//
 
 	bool empty() const noexcept { return size_ == 0; }
 
