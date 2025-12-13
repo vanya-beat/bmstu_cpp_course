@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <exception>
-#include <type_traits>
 #include <new>
+#include <type_traits>
 #include <utility>
 
 namespace bmstu
@@ -27,53 +27,67 @@ class optional
    public:
 	optional() = default;
 
-	optional(const T& value) {
+	optional(const T& value)
+	{
 		new (get_ptr()) T(value);
 		is_initialized_ = true;
 	}
 
-	optional(T&& value) {
+	optional(T&& value)
+	{
 		new (get_ptr()) T(std::move(value));
 		is_initialized_ = true;
 	}
 
-	optional(const optional& other) {
-		if (other.is_initialized_) {
+	optional(const optional& other)
+	{
+		if (other.is_initialized_)
+		{
 			new (get_ptr()) T(*other.get_ptr());
 			is_initialized_ = true;
 		}
 	}
 
-	optional(optional&& other) noexcept {
-		if (other.is_initialized_) {
+	optional(optional&& other) noexcept
+	{
+		if (other.is_initialized_)
+		{
 			new (get_ptr()) T(std::move(*other.get_ptr()));
 			is_initialized_ = true;
 		}
 	}
 
-	optional& operator=(const T& value) { 
-		if (is_initialized_) {
+	optional& operator=(const T& value)
+	{
+		if (is_initialized_)
+		{
 			*get_ptr() = value;
-		} else {
+		}
+		else
+		{
 			new (get_ptr()) T(value);
 			is_initialized_ = true;
 		}
-		return *this; 
+		return *this;
 	}
 
-	optional& operator=(T&& value) { 
-		if (is_initialized_) {
+	optional& operator=(T&& value)
+	{
+		if (is_initialized_)
+		{
 			*get_ptr() = std::move(value);
-		} else {
+		}
+		else
+		{
 			new (get_ptr()) T(std::move(value));
 			is_initialized_ = true;
 		}
-		
-		
-		return *this; 
+
+		return *this;
 	}
 
-	optional& operator=(const optional& other) { 
+	optional& operator=(const optional& other)
+	{
 		if (this == &other)
 		{
 			return *this;
@@ -115,29 +129,21 @@ class optional
 		}
 		return *this;
 	}
-	
-	T& operator*() &
-	{
-		return *get_ptr();
-	}
 
-	const T& operator*() const&
-	{
-		return *get_ptr();
-	}
+	T& operator*() & { return *get_ptr(); }
+
+	const T& operator*() const& { return *get_ptr(); }
 
 	T* operator->() { return get_ptr(); }
 
 	const T* operator->() const { return get_ptr(); }
 
-	T&& operator*() &&
-	{
-		return std::move(*get_ptr());
-	}
+	T&& operator*() && { return std::move(*get_ptr()); }
 
 	T& value() &
 	{
-		if (!is_initialized_) {
+		if (!is_initialized_)
+		{
 			throw bad_optional_access();
 		}
 		return *get_ptr();
@@ -145,7 +151,8 @@ class optional
 
 	const T& value() const&
 	{
-		if (!is_initialized_) {
+		if (!is_initialized_)
+		{
 			throw bad_optional_access();
 		}
 		return *get_ptr();
@@ -159,26 +166,22 @@ class optional
 		is_initialized_ = true;
 	}
 
-	void reset() {
-		if (is_initialized_) {
+	void reset()
+	{
+		if (is_initialized_)
+		{
 			get_ptr()->~T();
 			is_initialized_ = false;
 		}
 	}
 
-	~optional() {
-		reset();
-	}
+	~optional() { reset(); }
 
 	bool has_value() const { return is_initialized_; };
 
    private:
-    T* get_ptr() {
-		return reinterpret_cast<T*>(data_); 
-	}
-	const T* get_ptr() const {
-		return reinterpret_cast<const T*>(data_);
-	}
+	T* get_ptr() { return reinterpret_cast<T*>(data_); }
+	const T* get_ptr() const { return reinterpret_cast<const T*>(data_); }
 	alignas(T) uint8_t data_[sizeof(T)];
 	bool is_initialized_ = false;
 };
