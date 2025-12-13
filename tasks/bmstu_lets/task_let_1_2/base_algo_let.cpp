@@ -1,6 +1,6 @@
+#include "base_algo_let.h"
 #include <algorithm>
 #include <numeric>
-#include "base_algo_let.h"
 
 // Используем алгоритм copy_if для фильтрации положительных чисел
 std::vector<int> positive_numbers(const std::vector<int>& v)
