@@ -46,7 +46,6 @@ class optional
 			new (data_) T(std::move(*other));
 		}
 	}
-
 	optional& operator=(const T& value)
 	{
 		if (is_initialized_)
