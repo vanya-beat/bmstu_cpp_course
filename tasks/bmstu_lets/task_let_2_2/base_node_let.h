@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 template <typename T>
 struct ForwardListNode
