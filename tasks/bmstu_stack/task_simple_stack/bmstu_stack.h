@@ -66,10 +66,6 @@ class stack
 		data_[size_ - 1].~T();
 
 		--size_;
-		++size_;
-		--size_;
-		++size_;
-		--size_;
 	}
 
 	T& top()
