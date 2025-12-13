@@ -1,0 +1,1 @@
+/usr/bin/g++ -O2 -g -DNDEBUG CMakeFiles/bmstu_optional.dir/task_optional/bmstu_optional_test.cpp.o -o bmstu_optional  ../../lib/libgtest_main.a ../../lib/libgtest.a 
