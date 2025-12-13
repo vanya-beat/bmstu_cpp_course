@@ -11,7 +11,7 @@ class stack
 {
    public:
 	stack() = default;
-	~stack() {clear();}
+	~stack() { clear(); }
 
 	bool empty() const noexcept { return size_ == 0u; }
 
@@ -29,9 +29,9 @@ class stack
 
 	void push(T&& value) { emplace(std::move(value)); }
 
-	void clear() noexcept 
+	void clear() noexcept
 	{
-		for (size_t i =0; i< size_; ++i)
+		for (size_t i = 0; i < size_; ++i)
 			data_[i].~T();
 		operator delete(data_);
 		data_ = nullptr;
@@ -40,36 +40,37 @@ class stack
 
 	void push(const T& value) { emplace(value); }
 
-	void pop() 
+	void pop()
 	{
 		if (empty())
 		{
 			throw std::underflow_error("stack is empty");
 		}
-		data_[size_-1].~T();
+		data_[size_ - 1].~T();
 		--size_;
-	}	
-
-	T& top()
-	{ if (empty())
-		{
-			throw std::underflow_error("stack is empty");
-		}
-		else
-		{
-			return data_[size_-1];
-		} 
 	}
 
-	const T& top() const 
-	{ 
+	T& top()
+	{
 		if (empty())
 		{
 			throw std::underflow_error("stack is empty");
 		}
 		else
 		{
-			return data_[size_-1];
+			return data_[size_ - 1];
+		}
+	}
+
+	const T& top() const
+	{
+		if (empty())
+		{
+			throw std::underflow_error("stack is empty");
+		}
+		else
+		{
+			return data_[size_ - 1];
 		}
 	}
 
@@ -80,7 +81,7 @@ class stack
 	T* get_new()
 	{
 		T* new_data = (T*)(operator new(sizeof(T) * (size_ + 1)));
-		for (size_t i = 0; i<size_; i++)
+		for (size_t i = 0; i < size_; i++)
 		{
 			new (&new_data[i]) T(std::move(data_[i]));
 			data_[i].~T();
@@ -89,3 +90,4 @@ class stack
 	}
 };
 }  // namespace bmstu
+// change
