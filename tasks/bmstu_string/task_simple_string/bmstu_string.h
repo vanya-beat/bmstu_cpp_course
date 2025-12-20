@@ -42,7 +42,7 @@ class simple_basic_string
 	/// Геттер на си-строку
 	const T* c_str() const { return ptr_; }
 
-	size_t size() const { return 0; }
+	size_t size() const { return size_; }
 
 	/// Оператор копирующего присваивания
 	simple_basic_string& operator=(simple_basic_string&& other)
