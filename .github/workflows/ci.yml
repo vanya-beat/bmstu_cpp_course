@@ -26,7 +26,7 @@ jobs:
 
     - name: Build tests
       run: |
-        g++ -std=c++17 simple_stack_test.cpp -lgtest -lgtest_main -pthread -o run_tests
+        g++ -std=c++17 task_simple_stack/simple_stack_test.cpp -lgtest -lgtest_main -pthread -o run_tests
 
     - name: Run tests
       run: ./run_tests
