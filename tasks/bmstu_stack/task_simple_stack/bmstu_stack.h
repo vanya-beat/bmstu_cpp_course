@@ -24,7 +24,7 @@ class stack
 	void emplace(Args&&... args)
 	{
 		T* new_data = static_cast<T*>(operator new((size_ + 1) * sizeof(T)));
-		for (size_t i = 0; i < size_; ++i)
+		for (size_t i = 0; i < size_; i++)
 		{
 			new (new_data + i) T(std::move(data_[i]));
 			data_[i].~T();
