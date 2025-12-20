@@ -8,7 +8,7 @@ namespace bmstu
 template <typename T>
 class stack
 {
-public:
+   public:
 	stack() : data_(nullptr), size_(0) {}
 
 	~stack()
@@ -30,20 +30,14 @@ public:
 			data_[i].~T();
 		}
 		new (new_data + size_) T(std::forward<Args>(args)...);
-		delete(data_);
+		delete (data_);
 		data_ = new_data;
 		size_++;
 	}
 
-	void push(const T& value)
-	{
-		emplace(value);
-	}
+	void push(const T& value) { emplace(value); }
 
-	void push(T&& value)
-	{
-		emplace(std::move(value));
-	}
+	void push(T&& value) { emplace(std::move(value)); }
 
 	void pop()
 	{
@@ -74,8 +68,8 @@ public:
 		return data_[size_ - 1];
 	}
 
-private:
+   private:
 	T* data_;
 	size_t size_;
 };
-} // namespace bmstu
+}  // namespace bmstu
