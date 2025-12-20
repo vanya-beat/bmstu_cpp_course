@@ -10,7 +10,7 @@ template <typename T>
 class stack
 {
    public:
-	stack() : data_(nullptr), size_(0){}
+	stack() : data_(nullptr), size_(0) {}
 	//
 
 	bool empty() const noexcept { return size_ == 0; }
@@ -85,4 +85,3 @@ class stack
 	size_t size_;
 };
 }  // namespace bmstu
-////
