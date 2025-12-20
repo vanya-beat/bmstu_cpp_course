@@ -23,14 +23,14 @@ class stack
 	template <typename... Args>
 	void emplace(Args&&... args)
 	{
-		T* new_data = static_cast<T*>(::operator new((size_ + 1) * sizeof(T)));
+		T* new_data = static_cast<T*>(new((size_ + 1) * sizeof(T)));
 		for (size_t i = 0; i < size_; i++)
 		{
 			new (new_data + i) T(std::move(data_[i]));
 			data_[i].~T();
 		}
 		new (new_data + size_) T(std::forward<Args>(args)...);
-		operator delete(data_);
+		delete(data_);
 		data_ = new_data;
 		size_++;
 	}
@@ -45,7 +45,7 @@ class stack
 			throw std::underflow_error("empty");
 		data_[size_ - 1].~T();
 		size_--;
-		// Можно не уменьшать массив — оставляем старую память для упрощения
+
 	}
 
 	void clear() noexcept
