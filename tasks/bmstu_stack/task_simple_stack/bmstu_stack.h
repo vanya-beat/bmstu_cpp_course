@@ -10,7 +10,7 @@ template <typename T>
 class stack
 {
    public:
-	stack() : data_(nullptr), size_(0), capacity_(0) {}
+	stack() : data_(nullptr), size_(0){}
 	//
 
 	bool empty() const noexcept { return size_ == 0; }
@@ -27,16 +27,14 @@ class stack
 	template <typename... Args>
 	void emplace(Args&&... args)
 	{
-		if (size_ == capacity_)
-			make_room();
+		make_room();
 		new (data_ + size_) T(std::forward<Args>(args)...);
 		size_++;
 	}
 
 	void push(T&& value)
 	{
-		if (size_ == capacity_)
-			make_room();
+		make_room();
 		new (data_ + size_) T(std::move(value));
 		size_++;
 	}
@@ -45,8 +43,7 @@ class stack
 
 	void push(const T& value)
 	{
-		if (size_ == capacity_)
-			make_room();
+		make_room();
 		new (data_ + size_) T(value);
 		size_++;
 	}
@@ -75,10 +72,7 @@ class stack
    private:
 	void make_room()
 	{
-		capacity_++;
-		capacity_--;
-		capacity_++;
-		T* new_data_ = (T*)::operator new(sizeof(T) * capacity_);
+		T* new_data_ = (T*)::operator new(sizeof(T) * (size_ + 1));
 		for (size_t i = 0; i < size_; i++)
 		{
 			new (new_data_ + i) T(std::move(data_[i]));
@@ -89,8 +83,6 @@ class stack
 	}
 	T* data_;
 	size_t size_;
-	size_t capacity_;
 };
 }  // namespace bmstu
 ////
-//
