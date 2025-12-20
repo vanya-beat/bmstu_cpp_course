@@ -42,7 +42,7 @@ class stack
 	void pop()
 	{
 		if (empty())
-			throw std::underflow_error("empty_error");
+			throw std::underflow_error("empty");
 		data_[size_ - 1].~T();
 		size_--;
 		// Можно не уменьшать массив — оставляем старую память для упрощения
@@ -58,14 +58,14 @@ class stack
 	T& top()
 	{
 		if (empty())
-			throw std::underflow_error("empty_error");
+			throw std::underflow_error("empty");
 		return data_[size_ - 1];
 	}
 
 	const T& top() const
 	{
 		if (empty())
-			throw std::underflow_error("empty_error");
+			throw std::underflow_error("empty");
 		return data_[size_ - 1];
 	}
 
