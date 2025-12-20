@@ -30,7 +30,7 @@ class stack
 			data_[i].~T();
 		}
 		new (new_data + size_) T(std::forward<Args>(args)...);
-		delete (data_);
+		operator delete (data_);
 		data_ = new_data;
 		size_++;
 	}
