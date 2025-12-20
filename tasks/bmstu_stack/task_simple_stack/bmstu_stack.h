@@ -42,7 +42,7 @@ class stack
 	void pop()
 	{
 		if (empty())
-			throw std::underflow_error("empty");
+			throw std::underflow_error("empty_error");
 		data_[size_ - 1].~T();
 		size_--;
 	}
@@ -57,14 +57,14 @@ class stack
 	T& top()
 	{
 		if (empty())
-			throw std::underflow_error("empty");
+			throw std::underflow_error("empty_error");
 		return data_[size_ - 1];
 	}
 
 	const T& top() const
 	{
 		if (empty())
-			throw std::underflow_error("empty");
+			throw std::underflow_error("empty_error");
 		return data_[size_ - 1];
 	}
 
