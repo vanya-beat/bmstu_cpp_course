@@ -90,4 +90,4 @@ class stack
 	size_t capacity_;
 };
 }  // namespace bmstu
-////
+/////
