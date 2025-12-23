@@ -189,9 +189,25 @@ class basic_string
 		}
 	}
 
-	basic_string(basic_string&& dying) noexcept {}
+	basic_string(basic_string&& dying) noexcept
+	{
+		is_long_ = dying.is_long_;
+		if (is_long())
+		{
+			data_.long_str = dying.data_.long_str;
+			dying.data_.long_str.ptr = nullptr;
+			dying.data_.long_str.size = 0;
+			dying.data_.long_str.capacity = 0;
+		}
+		else
+		{
+			data_.short_str = dying.data_.short_str;
+		}
+		dying.is_long_ = false;
+		dying.data_.short_str.size = 0;
+	}
 
-	~basic_string() {}
+	~basic_string() { clean_(); }
 
 	const T* c_str() const { return get_ptr(); }
 
@@ -236,7 +252,7 @@ class basic_string
 		if (len <= SSO_CAPACITY)
 		{
 			is_long_ = false;
-			for (size_t i = 0; i < len; i++)
+			for (size_t i = 0; i < len; ++i)
 			{
 				data_.short_str.buffer[i] = c_str[i];
 			}
@@ -249,7 +265,7 @@ class basic_string
 			data_.long_str.capacity = len + 1;
 			data_.long_str.size = len;
 			data_.long_str.ptr = new T[data_.long_str.capacity];
-			for (size_t i = 0; i <= len; i++)
+			for (size_t i = 0; i <= len; ++i)
 			{
 				data_.long_str.ptr[i] = c_str[i];
 			}
