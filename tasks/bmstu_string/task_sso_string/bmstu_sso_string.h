@@ -42,18 +42,42 @@ class basic_string
 	Data data_;
 	bool is_long_;
 
-	bool is_long() const { return false; }
+	bool is_long() const { return is_long_; }
 
-	T* get_ptr() { return nullptr; }
+	T* get_ptr()
+	{
+		if (is_long_)
+			return data_.long_str.ptr;
+		return data_.short_str.buffer;
+	}
 
-	const T* get_ptr() const { return nullptr; }
+	const T* get_ptr() const
+	{
+		if (is_long_)
+			return data_.long_str.ptr;
+		return data_.short_str.buffer;
+	}
 
-	size_t get_size() const { return 0; }
+	size_t get_size() const
+	{
+		if (is_long_)
+			return data_.long_str.size;
+		return data_.short_str.size;
+	}
 
-	size_t get_capacity() const { return 0; }
+	size_t get_capacity() const
+	{
+		if (is_long_)
+			return data_.long_str.capacity;
+		return SSO_CAPACITY;
+	}
 
    public:
-	basic_string() {}
+	basic_string()
+	{
+		data_.short_str.size = 0;
+		data_.short_str.buffer[0] = T();
+	}
 
 	basic_string(size_t size) {}
 
@@ -67,7 +91,7 @@ class basic_string
 
 	~basic_string() {}
 
-	const T* c_str() const { return nullptr; }
+	const T* c_str() const { return get_ptr(); }
 
 	size_t size() const { return 0; }
 
