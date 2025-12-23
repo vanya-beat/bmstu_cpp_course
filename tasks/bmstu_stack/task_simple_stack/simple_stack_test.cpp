@@ -326,7 +326,6 @@ TEST(StackTest, CheckBraceSequence)
 	ASSERT_FALSE(checkBraceSequence(")("));
 }
 
-
 TEST(StackTest, Clear2)
 {
 	bmstu::stack<int> s1;

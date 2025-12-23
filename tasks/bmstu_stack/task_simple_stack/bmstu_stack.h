@@ -23,7 +23,7 @@ class stack
 	template <typename... Args>
 	void emplace(Args&&... args)
 	{
-		T* new_data =(T*)(operator new((size_ + 1) * sizeof(T)));
+		T* new_data = (T*)(operator new((size_ + 1) * sizeof(T)));
 		for (size_t i = 0; i < size_; i++)
 		{
 			new (new_data + i) T(std::move(data_[i]));
@@ -59,7 +59,6 @@ class stack
 		{
 			data_[i].~T();
 			std::cout << data_[i] << " ";
-
 		}
 		size_ = 0;
 	}
@@ -72,7 +71,6 @@ class stack
 		}
 		size_ = 0;
 	}
-
 
 	T& top()
 	{
