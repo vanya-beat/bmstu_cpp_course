@@ -304,7 +304,9 @@ class basic_string
 	friend basic_string<T> operator+(const basic_string<T>& left,
 									 const basic_string<T>& right)
 	{
-		return {};
+		basic_string<T> result = left;
+		result += right;
+		return result;
 	}
 
 	template <typename S>
@@ -319,10 +321,84 @@ class basic_string
 		return is;
 	}
 
-	basic_string& operator+=(const basic_string& other) { return *this; }
+	basic_string& operator+=(const basic_string& other)
+	{
+		size_t this_size = get_size();
+		size_t other_size = other.get_size();
+		size_t new_size = this_size + other_size;
+		if (new_size > get_capacity())
+		{
+			size_t new_cap = new_size + 1;
+			T* new_ptr = new T[new_cap];
+			for (size_t i = 0; i < this_size; i++)
+			{
+				new_ptr[i] = get_ptr()[i];
+			}
+			for (size_t i = 0; i < other_size; i++)
+			{
+				new_ptr[this_size + i] = other.get_ptr()[i];
+			}
+			new_ptr[new_size] = '\0';
+			clean_();
+			is_long_ = true;
+			data_.long_str.ptr = new_ptr;
+			data_.long_str.size = new_size;
+			data_.long_str.capacity = new_cap;
+		}
+		else
+		{
+			for (size_t i = 0; i < other_size; i++)
+			{
+				get_ptr()[this_size + i] = other.get_ptr()[i];
+			}
+			get_ptr()[new_size] = '\0';
+			if (is_long())
+			{
+				data_.long_str.size = new_size;
+			}
+			else
+			{
+				data_.short_str.size = new_size;
+			}
+		}
+		return *this;
+	}
 
-	basic_string& operator+=(T symbol) { return *this; }
-
+	basic_string& operator+=(T symbol)
+	{
+		size_t this_size = get_size();
+		size_t new_size = this_size + 1;
+		if (new_size > get_capacity())
+		{
+			size_t new_cap = new_size + 1;
+			T* new_ptr = new T[new_cap];
+			for (size_t i = 0; i < this_size; i++)
+			{
+				new_ptr[i] = get_ptr()[i];
+			}
+			new_ptr[this_size] = symbol;
+			new_ptr[new_size] = '\0';
+			clean_();
+			is_long_ = true;
+			data_.long_str.ptr = new_ptr;
+			data_.long_str.size = new_size;
+			data_.long_str.capacity = new_cap;
+		}
+		else
+		{
+			get_ptr()[this_size] = symbol;
+			get_ptr()[new_size] = '\0';
+			if (is_long())
+			{
+				data_.long_str.size = new_size;
+			}
+			else
+			{
+				data_.short_str.size = new_size;
+			}
+		}
+		return *this;
+	}
 	T& operator[](size_t index) noexcept { return get_ptr()[index]; }
 
 	T& at(size_t index) { throw std::out_of_range("Wrong index"); }
