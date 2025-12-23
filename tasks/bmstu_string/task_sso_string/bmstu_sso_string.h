@@ -139,7 +139,35 @@ class basic_string
 		}
 	}
 
-	basic_string(const T* c_str) {}
+	basic_string(const T* c_str)
+	{
+		size_t len = strlen_(c_str);
+
+		if (len <= SSO_CAPACITY)
+		{
+			is_long_ = false;
+			data_.short_str.size = len;
+
+			for (size_t i = 0; i < len; ++i)
+			{
+				data_.short_str.buffer[i] = c_str[i];
+			}
+			data_.short_str.buffer[len] = T(0);
+		}
+		else
+		{
+			is_long_ = true;
+			data_.long_str.size = len;
+			data_.long_str.capacity = len;
+			data_.long_str.ptr = new T[len + 1];
+
+			for (size_t i = 0; i < len; ++i)
+			{
+				data_.long_str.ptr[i] = c_str[i];
+			}
+			data_.long_str.ptr[len] = T(0);
+		}
+	}
 
 	basic_string(const basic_string& other) {}
 
