@@ -201,11 +201,89 @@ class basic_string
 
 	size_t capacity() const { return get_capacity(); }
 
-	basic_string& operator=(basic_string&& other) noexcept { return *this; }
+	basic_string& operator=(basic_string&& other) noexcept
+	{
+		if (this != &other)
+		{
+			clean_();
+			is_long_ = other.is_long_;
+			if (is_long())
+			{
+				data_.long_str = other.data_.long_str;
+				other.data_.long_str.ptr = nullptr;
+				other.data_.long_str.size = 0;
+				other.data_.long_str.capacity = 0;
+			}
+			else
+			{
+				data_.short_str = other.data_.short_str;
+			}
+			other.is_long_ = false;
+			other.data_.short_str.size = 0;
+			other.data_.short_str.buffer[0] = '\0';
+		}
+		return *this;
+	}
 
-	basic_string& operator=(const T* c_str) { return *this; }
+	basic_string& operator=(const T* c_str)
+	{
+		size_t len = strlen_(c_str);
+		if (is_long() && data_.long_str.ptr)
+		{
+			delete[] data_.long_str.ptr;
+		}
 
-	basic_string& operator=(const basic_string& other) { return *this; }
+		if (len <= SSO_CAPACITY)
+		{
+			is_long_ = false;
+			for (size_t i = 0; i < len; i++)
+			{
+				data_.short_str.buffer[i] = c_str[i];
+			}
+			data_.short_str.buffer[len] = '\0';
+			data_.short_str.size = len;
+		}
+		else
+		{
+			is_long_ = true;
+			data_.long_str.capacity = len + 1;
+			data_.long_str.size = len;
+			data_.long_str.ptr = new T[data_.long_str.capacity];
+			for (size_t i = 0; i <= len; i++)
+			{
+				data_.long_str.ptr[i] = c_str[i];
+			}
+		}
+		return *this;
+	}
+
+	basic_string& operator=(const basic_string& other)
+	{
+		if (this != &other)
+		{
+			if (is_long() && data_.long_str.ptr)
+			{
+				delete[] data_.long_str.ptr;
+			}
+			is_long_ = other.is_long_;
+			if (is_long())
+			{
+				size_t cap = other.data_.long_str.capacity;
+				data_.long_str.ptr = new T[cap];
+				data_.long_str.size = other.data_.long_str.size;
+				data_.long_str.capacity = cap;
+				for (size_t i = 0; i <= data_.long_str.size; i++)
+				{
+					data_.long_str.ptr[i] = other.data_.long_str.ptr[i];
+				}
+			}
+			else
+			{
+				data_.short_str = other.data_.short_str;
+			}
+		}
+		return *this;
+	}
 
 	friend basic_string<T> operator+(const basic_string<T>& left,
 									 const basic_string<T>& right)
@@ -246,6 +324,13 @@ class basic_string
 		return len;
 	}
 
-	void clean_() {}
+	void clean_()
+	{
+		if (is_long() && data_.long_str.ptr)
+		{
+			delete[] data_.long_str.ptr;
+			data_.long_str.ptr = nullptr;
+		}
+	}
 };
 }  // namespace bmstu
