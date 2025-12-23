@@ -169,7 +169,25 @@ class basic_string
 		}
 	}
 
-	basic_string(const basic_string& other) {}
+	basic_string(const basic_string& other)
+	{
+		is_long_ = other.is_long_;
+		if (is_long())
+		{
+			size_t othersize = other.data_.long_str.capacity;
+			data_.long_str.ptr = new T[othersize];
+			data_.long_str.size = other.data_.long_str.size;
+			data_.long_str.capacity = othersize;
+			for (size_t i = 0; i <= data_.long_str.size; ++i)
+			{
+				data_.long_str.ptr[i] = other.data_.long_str.ptr[i];
+			}
+		}
+		else
+		{
+			data_.short_str = other.data_.short_str;
+		}
+	}
 
 	basic_string(basic_string&& dying) noexcept {}
 
