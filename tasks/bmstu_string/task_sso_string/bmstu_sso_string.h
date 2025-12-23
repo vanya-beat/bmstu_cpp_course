@@ -114,8 +114,8 @@ class basic_string
 		{
 			is_long_ = false;
 			data_.short_str.size = ilsize;
-
 			size_t i = 0;
+
 			for (auto elem = il.begin(); elem != il.end(); ++elem)
 			{
 				data_.short_str.buffer[i] = *elem;
