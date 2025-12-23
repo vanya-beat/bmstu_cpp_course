@@ -75,13 +75,70 @@ class basic_string
    public:
 	basic_string()
 	{
+		is_long_ = false;
 		data_.short_str.size = 0;
 		data_.short_str.buffer[0] = T();
 	}
 
-	basic_string(size_t size) {}
+	basic_string(size_t size)
+	{
+		if (size >= SSO_CAPACITY)
+		{
+			is_long_ = false;
+			data_.short_str.size = size;
+			for (size_t i = 0; i < size; ++i)
+			{
+				data_.short_str.buffer[i] = T(' ');
+			}
+			data_.short_str.buffer[size] = T(0);
 
-	basic_string(std::initializer_list<T> il) {}
+		}
+		else
+		{
+			is_long_ = true;
+			data_.long_str.size = size;
+			data_.long_str.capacity = size;
+			data_.long_str.ptr = new T[size + 1];
+
+			for (size_t i = 0; i < size; i++)
+				data_.long_str.ptr[i] = T(' ');
+			data_.long_str.ptr[size] = T(0);
+		}
+	}
+
+	basic_string(std::initializer_list<T> il)
+	{
+		size_t ilsize = il.size();
+
+		if (ilsize <= SSO_CAPACITY)
+		{
+			is_long_ = false;
+			data_.short_str.size = ilsize;
+
+			size_t i = 0;
+			for (auto elem = il.begin(); elem != il.end(); ++elem)
+			{
+				data_.short_str.buffer[i] = *elem;
+				++i;
+			}
+			data_.short_str.buffer[ilsize] = T(0);
+		}
+		else
+		{
+			is_long_ = true;
+			data_.long_str.size = ilsize;
+			data_.long_str.capacity = ilsize;
+			data_.long_str.ptr = new T[ilsize + 1];
+
+			size_t i = 0;
+			for (auto elem = il.begin(); elem != il.end(); ++elem)
+			{
+				data_.long_str.ptr[i] = *elem;
+				++i;
+			}
+			data_.long_str.ptr[ilsize] = T(0);
+		}
+	}
 
 	basic_string(const T* c_str) {}
 
@@ -93,11 +150,11 @@ class basic_string
 
 	const T* c_str() const { return get_ptr(); }
 
-	size_t size() const { return 0; }
+	size_t size() const { return get_size(); }
 
-	bool is_using_sso() const { return false; }
+	bool is_using_sso() const { return !is_long(); }
 
-	size_t capacity() const { return 0; }
+	size_t capacity() const { return get_capacity(); }
 
 	basic_string& operator=(basic_string&& other) noexcept { return *this; }
 

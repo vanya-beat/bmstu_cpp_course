@@ -325,3 +325,21 @@ TEST(StackTest, CheckBraceSequence)
 	ASSERT_FALSE(checkBraceSequence("())"));
 	ASSERT_FALSE(checkBraceSequence(")("));
 }
+
+
+TEST(StackTest, Clear2)
+{
+	bmstu::stack<int> s1;
+	bmstu::stack<int> s2;
+
+	for (int i = 0; i < 10; i++)
+	{
+		s1.push(i);
+		s2.push(i);
+	}
+
+	s1.clear2();
+	std::cout << std::endl;
+	s2.clear1();
+
+}
