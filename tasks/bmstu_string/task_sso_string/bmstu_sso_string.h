@@ -312,12 +312,22 @@ class basic_string
 	template <typename S>
 	friend S& operator<<(S& os, const basic_string& obj)
 	{
+		os << obj.c_str();
 		return os;
 	}
 
 	template <typename S>
 	friend S& operator>>(S& is, basic_string& obj)
 	{
+		T ch;
+		basic_string temp;
+
+		while (is.get(ch))
+		{
+			temp += ch;
+		}
+
+		obj = std::move(temp);
 		return is;
 	}
 
@@ -330,11 +340,11 @@ class basic_string
 		{
 			size_t new_cap = new_size + 1;
 			T* new_ptr = new T[new_cap];
-			for (size_t i = 0; i < this_size; i++)
+			for (size_t i = 0; i < this_size; ++i)
 			{
 				new_ptr[i] = get_ptr()[i];
 			}
-			for (size_t i = 0; i < other_size; i++)
+			for (size_t i = 0; i < other_size; ++i)
 			{
 				new_ptr[this_size + i] = other.get_ptr()[i];
 			}
@@ -372,7 +382,7 @@ class basic_string
 		{
 			size_t new_cap = new_size + 1;
 			T* new_ptr = new T[new_cap];
-			for (size_t i = 0; i < this_size; i++)
+			for (size_t i = 0; i < this_size; ++i)
 			{
 				new_ptr[i] = get_ptr()[i];
 			}
