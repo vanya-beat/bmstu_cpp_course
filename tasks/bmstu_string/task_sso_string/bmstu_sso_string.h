@@ -82,7 +82,7 @@ class basic_string
 
 	basic_string(size_t size)
 	{
-		if (size >= SSO_CAPACITY)
+		if (size <= SSO_CAPACITY)
 		{
 			is_long_ = false;
 			data_.short_str.size = size;
@@ -91,7 +91,6 @@ class basic_string
 				data_.short_str.buffer[i] = T(' ');
 			}
 			data_.short_str.buffer[size] = T(0);
-
 		}
 		else
 		{
@@ -108,12 +107,12 @@ class basic_string
 
 	basic_string(std::initializer_list<T> il)
 	{
-		size_t ilsize = il.size();
+		size_t len = il.size();
 
-		if (ilsize <= SSO_CAPACITY)
+		if (len <= SSO_CAPACITY)
 		{
 			is_long_ = false;
-			data_.short_str.size = ilsize;
+			data_.short_str.size = len;
 			size_t i = 0;
 
 			for (auto elem = il.begin(); elem != il.end(); ++elem)
@@ -121,14 +120,14 @@ class basic_string
 				data_.short_str.buffer[i] = *elem;
 				++i;
 			}
-			data_.short_str.buffer[ilsize] = T(0);
+			data_.short_str.buffer[len] = T(0);
 		}
 		else
 		{
 			is_long_ = true;
-			data_.long_str.size = ilsize;
-			data_.long_str.capacity = ilsize;
-			data_.long_str.ptr = new T[ilsize + 1];
+			data_.long_str.size = len;
+			data_.long_str.capacity = len;
+			data_.long_str.ptr = new T[len + 1];
 
 			size_t i = 0;
 			for (auto elem = il.begin(); elem != il.end(); ++elem)
@@ -136,7 +135,7 @@ class basic_string
 				data_.long_str.ptr[i] = *elem;
 				++i;
 			}
-			data_.long_str.ptr[ilsize] = T(0);
+			data_.long_str.ptr[len] = T(0);
 		}
 	}
 
@@ -184,18 +183,22 @@ class basic_string
 
 	basic_string& operator+=(T symbol) { return *this; }
 
-	T& operator[](size_t index) noexcept
-	{
-		static T dummy;
-		return dummy;
-	}
+	T& operator[](size_t index) noexcept { return get_ptr()[index]; }
 
 	T& at(size_t index) { throw std::out_of_range("Wrong index"); }
 
-	T* data() { return nullptr; }
+	T* data() { return get_ptr(); }
 
    private:
-	static size_t strlen_(const T* str) { return 0; }
+	static size_t strlen_(const T* str)
+	{
+		size_t len = 0;
+		while (str[len] != T(0))
+		{
+			++len;
+		}
+		return len;
+	}
 
 	void clean_() {}
 };
