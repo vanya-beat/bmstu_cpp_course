@@ -1,0 +1,8 @@
+BasedOnStyle: Chromium
+---
+Language: Cpp
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+BreakBeforeBraces: Allman
+Standard: c++20

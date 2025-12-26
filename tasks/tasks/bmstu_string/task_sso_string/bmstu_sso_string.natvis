@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="bmstu::basic_string&lt;char&gt;">
+    <DisplayString Condition="is_long_">{data_.long_str.ptr,[data_.long_str.size]s}</DisplayString>
+    <DisplayString Condition="!is_long_">{data_.short_str.buffer,[data_.short_str.size]s}</DisplayString>
+    <StringView Condition="is_long_">data_.long_str.ptr,[data_.long_str.size]</StringView>
+    <StringView Condition="!is_long_">data_.short_str.buffer,[data_.short_str.size]</StringView>
+    <Expand>
+      <Item Name="[size]" Condition="is_long_">data_.long_str.size</Item>
+      <Item Name="[size]" Condition="!is_long_">data_.short_str.size</Item>
+      <Item Name="[capacity]" Condition="is_long_">data_.long_str.capacity</Item>
+      <Item Name="[is_long]">is_long_</Item>
+      <ArrayItems Condition="is_long_">
+        <Size>data_.long_str.size</Size>
+        <ValuePointer>data_.long_str.ptr</ValuePointer>
+      </ArrayItems>
+      <ArrayItems Condition="!is_long_">
+        <Size>data_.short_str.size</Size>
+        <ValuePointer>data_.short_str.buffer</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="bmstu::basic_string&lt;wchar_t&gt;">
+    <DisplayString Condition="is_long_">{data_.long_str.ptr,[data_.long_str.size]su}</DisplayString>
+    <DisplayString Condition="!is_long_">{data_.short_str.buffer,[data_.short_str.size]su}</DisplayString>
+    <StringView Condition="is_long_">data_.long_str.ptr,[data_.long_str.size]</StringView>
+    <StringView Condition="!is_long_">data_.short_str.buffer,[data_.short_str.size]</StringView>
+    <Expand>
+      <Item Name="[size]" Condition="is_long_">data_.long_str.size</Item>
+      <Item Name="[size]" Condition="!is_long_">data_.short_str.size</Item>
+      <Item Name="[capacity]" Condition="is_long_">data_.long_str.capacity</Item>
+      <Item Name="[is_long]">is_long_</Item>
+      <ArrayItems Condition="is_long_">
+        <Size>data_.long_str.size</Size>
+        <ValuePointer>data_.long_str.ptr</ValuePointer>
+      </ArrayItems>
+      <ArrayItems Condition="!is_long_">
+        <Size>data_.short_str.size</Size>
+        <ValuePointer>data_.short_str.buffer</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>
