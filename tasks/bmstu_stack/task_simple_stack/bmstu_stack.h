@@ -68,8 +68,7 @@ class stack
 		return data_[size_ - 1];
 	}
 
-	stack(const stack& other)
-		: data_(nullptr), size_(0)
+	stack(const stack& other) : data_(nullptr), size_(0)
 	{
 		data_ = (T*)operator new(sizeof(T) * other.size_);
 		size_ = other.size_;
@@ -95,8 +94,7 @@ class stack
 		return *this;
 	}
 
-	stack(stack&& other) noexcept
-		: data_(nullptr), size_(0)
+	stack(stack&& other) noexcept : data_(nullptr), size_(0)
 	{
 		data_ = other.data_;
 		size_ = other.size_;
@@ -104,8 +102,7 @@ class stack
 		other.size_ = 0;
 	}
 
-	stack& operator=(
-		stack&& other) noexcept
+	stack& operator=(stack&& other) noexcept
 	{
 		if (this != &other)
 		{
