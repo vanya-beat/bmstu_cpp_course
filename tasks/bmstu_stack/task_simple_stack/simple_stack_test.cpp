@@ -325,3 +325,95 @@ TEST(StackTest, CheckBraceSequence)
 	ASSERT_FALSE(checkBraceSequence("())"));
 	ASSERT_FALSE(checkBraceSequence(")("));
 }
+
+TEST(StackTest, SelfAssignmentCopy)
+{
+	bmstu::stack<int> s;
+	s.push(1);
+	s.push(2);
+	s.push(3);
+
+	s = s;
+
+	ASSERT_EQ(s.size(), 3u);
+	ASSERT_EQ(s.top(), 3);
+
+	s.pop();
+	ASSERT_EQ(s.top(), 2);
+}
+
+TEST(StackTest, SelfAssignmentMove)
+{
+	bmstu::stack<int> s;
+	s.push(1);
+	s.push(2);
+
+	s = std::move(s);
+
+	ASSERT_EQ(s.size(), 2u);
+	ASSERT_EQ(s.top(), 2);
+}
+
+TEST(StackTest, CopyConstructor)
+{
+	bmstu::stack<int> s;
+	s.push(1);
+	s.push(2);
+	s.push(3);
+
+	bmstu::stack<int> s1(s);
+	ASSERT_EQ(s1.size(), 3u);
+	ASSERT_EQ(s1.top(), 3);
+}
+
+TEST(StackTest, MoveConstructor)
+{
+	bmstu::stack<int> s;
+	s.push(1);
+	s.push(2);
+	s.push(3);
+
+	bmstu::stack<int> s1(std::move(s));
+	ASSERT_EQ(s1.size(), 3u);
+	ASSERT_EQ(s1.top(), 3);
+}
+
+TEST(StackTest, MoveAssignment)
+{
+	bmstu::stack<int> s;
+	s.push(1);
+	s.push(2);
+	s.push(3);
+	s.push(4);
+	s.push(100);
+	int* data = s.data();
+
+	bmstu::stack<int> s1;
+	s1.push(666);
+	s1.push(667);
+	s1 = std::move(s);
+	ASSERT_NE(s.data(), data);
+
+	ASSERT_EQ(s1.size(), 5u);
+	ASSERT_EQ(s1.top(), 100);
+}
+
+TEST(StackTest, CopyAssignment)
+{
+	bmstu::stack<int> s;
+	s.push(1);
+	s.push(2);
+	s.push(3);
+	s.push(4);
+	s.push(100);
+	int* data = s.data();
+
+	bmstu::stack<int> s1;
+	s1.push(666);
+	s1.push(667);
+	s1 = s;
+	ASSERT_EQ(s.data(), data);
+
+	ASSERT_EQ(s1.size(), 5u);
+	ASSERT_EQ(s1.top(), 100);
+}
