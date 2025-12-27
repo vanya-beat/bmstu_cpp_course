@@ -77,7 +77,7 @@ class stack
 		{
 			new (data_ + i) T(other.data_[i]);
 		}
-	}//конструктор копирования
+	}
 
 	stack& operator=(const stack& other)
 	{
@@ -93,7 +93,7 @@ class stack
 			}
 		}
 		return *this;
-	}//оператор копирующего присваивания
+	}
 
 	stack(stack&& other) noexcept
 		: data_(nullptr), size_(0)
@@ -102,7 +102,7 @@ class stack
 		size_ = other.size_;
 		other.data_ = nullptr;
 		other.size_ = 0;
-	}//конструктор перемещения
+	}
 
 	stack& operator=(
 		stack&& other) noexcept
@@ -117,7 +117,7 @@ class stack
 			other.size_ = 0;
 		}
 		return *this;
-	}//оператор перемещающего присваивания
+	}
 
 	T* data() const { return data_; }
 
