@@ -5,6 +5,7 @@
 #include <cstring>
 #include <algorithm>
 #include <memory>
+#include <string>
 
 namespace bmstu
 {
@@ -56,7 +57,8 @@ public:
     simple_basic_string(simple_basic_string&& dying)
         : ptr_(dying.ptr_), size_(dying.size_)
     {
-        dying.ptr_ = nullptr;
+        // Оставляем dying в валидном состоянии
+        dying.ptr_ = new T[1]{0};
         dying.size_ = 0;
     }
 
@@ -76,7 +78,9 @@ public:
             clean_();
             ptr_ = other.ptr_;
             size_ = other.size_;
-            other.ptr_ = nullptr;
+            
+            // Оставляем other в валидном состоянии
+            other.ptr_ = new T[1]{0};
             other.size_ = 0;
         }
         return *this;
@@ -138,10 +142,13 @@ public:
 
     template <typename S>
     friend S& operator>>(S& is, simple_basic_string& obj) {
-        // Считываем до символа новой строки или конца файла
-        T buffer[1024];
-        is.getline(buffer, 1024);
-        obj = simple_basic_string<T>(buffer);
+        // Читаем весь поток до конца
+        std::basic_string<T> tmp;
+        T ch;
+        while (is.get(ch)) {
+            tmp.push_back(ch);
+        }
+        obj = simple_basic_string<T>(tmp.c_str());
         return is;
     }
 

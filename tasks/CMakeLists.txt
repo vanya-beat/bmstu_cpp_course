@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-add_subdirectory(task_basic_c)
-add_subdirectory(bmstu_string)
-add_subdirectory(bmstu_lets)
-add_subdirectory(bmstu_stack)
-add_subdirectory(bmstu_simple_vector)
-add_subdirectory(bmstu_abstract_iterator)
-add_subdirectory(bmstu_list)
-add_subdirectory(bmstu_optional)
-add_subdirectory(bmstu_map)
-=======
 cmake_minimum_required(VERSION 3.28)
 project(bmstu_cpp_course)
 
@@ -55,4 +44,3 @@ install(FILES ${CMAKE_SOURCE_DIR}/.gdbinit DESTINATION share/gdb)
 install(FILES ${CMAKE_SOURCE_DIR}/.lldbinit DESTINATION share/lldb)
 
 add_subdirectory(tasks)
->>>>>>> 16c1abbf6b767830dc96cfb2fe94ba1f1c9d9093

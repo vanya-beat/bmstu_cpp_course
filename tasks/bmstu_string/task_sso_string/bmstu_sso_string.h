@@ -5,6 +5,7 @@
 #include <cstring>
 #include <memory>
 #include <algorithm>
+#include <iterator>
 
 namespace bmstu
 {
@@ -272,9 +273,13 @@ public:
 
     template <typename S>
     friend S& operator>>(S& is, basic_string& obj) {
-        T buffer[1024];
-        is.getline(buffer, 1024);
-        obj = basic_string(buffer);
+        // Читаем весь поток до конца
+        std::basic_string<T> tmp;
+        T ch;
+        while (is.get(ch)) {
+            tmp.push_back(ch);
+        }
+        obj = basic_string(tmp.c_str());
         return is;
     }
 
