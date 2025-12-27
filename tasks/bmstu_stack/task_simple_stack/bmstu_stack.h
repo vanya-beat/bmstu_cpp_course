@@ -118,9 +118,8 @@ class stack
 
 	T* data() const { return data_; }
 
-
    private:
 	T* data_;
 	size_t size_;
 };
-}  // namespace bmstu💀💀💀
+}  // namespace bmstu
