@@ -23,15 +23,14 @@ class simple_basic_string
 
 	simple_basic_string(size_t size) : ptr_(new T[size + 1]), size_(size)
 	{
-		T s = T(' ');
-		forn(i, size_) ptr_[i] = s;
+		forn(i, size_) ptr_[i] = T(' ');
 		ptr_[size_] = T(0);
 	}
 
 	simple_basic_string(std::initializer_list<T> il)
 		: ptr_(new T[il.size() + 1]), size_(il.size())
 	{
-		for (auto i = 0; i < il.size(); i++)
+		forn(i, il.size())
 		{
 			*(ptr_ + i) = *(il.begin() + i);
 		}
