@@ -13,7 +13,8 @@ enable_testing()
 include(GoogleTest)
 
 file(WRITE ${CMAKE_SOURCE_DIR}/.gdbinit "source gdb_printer.py\n")
-file(WRITE ${CMAKE_SOURCE_DIR}/.lldbinit "command script import lldb_printer.py\n")
+file(WRITE ${CMAKE_SOURCE_DIR}/.gdbinit "source bmstu_list_printer_gdb.py\n")
+file(WRITE ${CMAKE_SOURCE_DIR}/.lldbinit "command script import lldb_printer.py\ncommand script import bmstu_list_printer_lldb.py\n")
 
 if(UNIX)
     set(HOME_DIR "$ENV{HOME}")
@@ -36,11 +37,16 @@ if(UNIX)
 endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/gdb_printer.py ${CMAKE_BINARY_DIR}/gdb_printer.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/bmstu_list_printer_gdb.py ${CMAKE_BINARY_DIR}/bmstu_list_printer_gdb.py COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/bmstu_list_printer_lldb.py ${CMAKE_BINARY_DIR}/bmstu_list_printer_lldb.py COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/.gdbinit ${CMAKE_BINARY_DIR}/.gdbinit COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/.lldbinit ${CMAKE_BINARY_DIR}/.lldbinit COPYONLY)
 
+install(FILES ${CMAKE_SOURCE_DIR}/bmstu_list_printer_gdb.py DESTINATION share/gdb/python)
 install(FILES ${CMAKE_SOURCE_DIR}/gdb_printer.py DESTINATION share/gdb/python)
+install(FILES ${CMAKE_SOURCE_DIR}/bmstu_list_printer_lldb.py DESTINATION share/lldb)
 install(FILES ${CMAKE_SOURCE_DIR}/.gdbinit DESTINATION share/gdb)
 install(FILES ${CMAKE_SOURCE_DIR}/.lldbinit DESTINATION share/lldb)
 
 add_subdirectory(tasks)
+set(CMAKE_BUILD_TYPE Debug)
