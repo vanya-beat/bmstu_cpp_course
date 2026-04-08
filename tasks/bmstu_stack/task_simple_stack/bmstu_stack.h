@@ -9,7 +9,7 @@ namespace bmstu
 template <typename T>
 class stack
 {
-public:
+   public:
 	stack() noexcept : data_(nullptr), size_(0u) {}
 
 	~stack() { clear(); }
@@ -113,16 +113,13 @@ public:
 		return data_[size_ - 1u];
 	}
 
-private:
+   private:
 	static T* allocate_raw(size_t n)
 	{
 		return static_cast<T*>(::operator new(sizeof(T) * n));
 	}
 
-	static void deallocate_raw(T* ptr) noexcept
-	{
-		::operator delete(ptr);
-	}
+	static void deallocate_raw(T* ptr) noexcept { ::operator delete(ptr); }
 
 	void destroy_all() noexcept
 	{
