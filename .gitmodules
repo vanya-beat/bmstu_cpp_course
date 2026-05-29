@@ -1,0 +1,3 @@
+[submodule "fast-streebog"]
+	path = fast-streebog
+	url = https://github.com/vanyabeat/fast-streebog
