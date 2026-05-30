@@ -21,6 +21,25 @@ namespace bmstu
 namespace detail
 {
 
+template <typename Buffer, typename = void>
+struct is_byte_buffer_impl : std::false_type
+{
+};
+
+template <typename Buffer>
+struct is_byte_buffer_impl<
+	Buffer,
+	std::void_t<decltype(std::declval<const Buffer&>().data()),
+				decltype(std::declval<const Buffer&>().size())>>
+	: std::bool_constant<
+		  std::is_same_v<std::remove_cv_t<std::remove_pointer_t<
+							 decltype(std::declval<const Buffer&>().data())>>,
+						 uint8_t> &&
+		  std::is_convertible_v<decltype(std::declval<const Buffer&>().size()),
+								std::size_t>>
+{
+};
+
 template <typename T, typename = void>
 struct has_raw_bytes_impl : std::false_type
 {
@@ -30,8 +49,7 @@ template <typename T>
 struct has_raw_bytes_impl<
 	T,
 	std::void_t<decltype(std::declval<const T&>().rawBytes())>>
-	: std::is_convertible<decltype(std::declval<const T&>().rawBytes()),
-						  std::span<const uint8_t>>
+	: is_byte_buffer_impl<decltype(std::declval<const T&>().rawBytes())>
 {
 };
 
@@ -73,7 +91,9 @@ struct streebog_hash
 {
 	static_assert(has_raw_bytes_v<K> || std::is_trivially_copyable_v<K>,
 				  "bmstu::streebog_hash: key type must be trivially-copyable "
-				  "or provide `std::span<const uint8_t> rawBytes() const`.");
+				  "or provide `rawBytes() const` returning a byte buffer with "
+				  "`data()`/`size()` (e.g. std::span<const uint8_t> or "
+				  "std::vector<uint8_t>). ");
 
 	std::size_t operator()(const K& key) const noexcept
 	{
