@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <exception>
 #include <type_traits>
+#include <utility>
 
 namespace bmstu
 {
@@ -14,77 +15,161 @@ inline constexpr nullopt_t nullopt{0};
 class bad_optional_access : public std::exception
 {
    public:
-	using exception::exception;
-
-	const char* what() const noexcept override { return "WRONG TEXT"; }
+	const char* what() const noexcept override { return "Bad optional access"; }
 };
 
 template <typename T>
 class optional
 {
    public:
-	optional() = default;
+	optional() noexcept : is_initialized_(false) {}
 
-	optional(const T& value) {}
+	optional(const T& value) : is_initialized_(true) { new (data_) T(value); }
 
-	optional(T&& value) {}
-
-	optional(const optional& other) {}
-
-	optional(optional&& other) noexcept {}
-
-	optional& operator=(const T& value) { return *this; }
-
-	optional& operator=(T&& value) { return *this; }
-
-	optional& operator=(const optional& value) { return *this; }
-
-	optional& operator=(optional&& value) { return *this; }
-
-	T& operator*() &
+	optional(T&& value) noexcept : is_initialized_(true)
 	{
-		T* ptr = nullptr;
-		return *ptr;
+		new (data_) T(std::move(value));
 	}
 
-	const T& operator*() const&
+	optional(const optional& other) : is_initialized_(other.is_initialized_)
 	{
-		T* ptr = nullptr;
-		return *ptr;
+		if (other.is_initialized_)
+		{
+			new (data_) T(*other);
+		}
 	}
 
-	T* operator->() { return nullptr; }
-
-	const T* operator->() const { return nullptr; }
-
-	T&& operator*() &&
+	optional(optional&& other) noexcept : is_initialized_(other.is_initialized_)
 	{
-		T* ptr = nullptr;
-		return std::move(*ptr);
+		if (other.is_initialized_)
+		{
+			new (data_) T(std::move(*other));
+		}
 	}
+	optional& operator=(const T& value)
+	{
+		if (is_initialized_)
+		{
+			**this = value;
+		}
+		else
+		{
+			new (data_) T(value);
+			is_initialized_ = true;
+		}
+		return *this;
+	}
+
+	optional& operator=(T&& value)
+	{
+		if (is_initialized_)
+		{
+			**this = std::move(value);
+		}
+		else
+		{
+			new (data_) T(std::move(value));
+			is_initialized_ = true;
+		}
+		return *this;
+	}
+
+	optional& operator=(const optional& other)
+	{
+		if (this != &other)
+		{
+			if (other.is_initialized_)
+			{
+				if (is_initialized_)
+				{
+					**this = *other;
+				}
+				else
+				{
+					new (data_) T(*other);
+					is_initialized_ = true;
+				}
+			}
+			else
+			{
+				reset();
+			}
+		}
+		return *this;
+	}
+
+	optional& operator=(optional&& other) noexcept
+	{
+		if (this != &other)
+		{
+			if (other.is_initialized_)
+			{
+				if (is_initialized_)
+				{
+					**this = std::move(*other);
+				}
+				else
+				{
+					new (data_) T(std::move(*other));
+					is_initialized_ = true;
+				}
+			}
+			else
+			{
+				reset();
+			}
+		}
+		return *this;
+	}
+
+	T& operator*() & { return *reinterpret_cast<T*>(data_); }
+
+	const T& operator*() const& { return *reinterpret_cast<const T*>(data_); }
+
+	T* operator->() { return reinterpret_cast<T*>(data_); }
+
+	const T* operator->() const { return reinterpret_cast<const T*>(data_); }
+
+	T&& operator*() && { return std::move(*reinterpret_cast<T*>(data_)); }
 
 	T& value() &
 	{
-		T* ptr = nullptr;
-		return *ptr;
+		if (!is_initialized_)
+		{
+			throw bad_optional_access();
+		}
+		return **this;
 	}
 
 	const T& value() const&
 	{
-		T* ptr = nullptr;
-		return *ptr;
+		if (!is_initialized_)
+		{
+			throw bad_optional_access();
+		}
+		return **this;
 	}
 
 	template <typename... Args>
 	void emplace(Args&&... args)
 	{
+		reset();
+		new (data_) T(std::forward<Args>(args)...);
+		is_initialized_ = true;
 	}
 
-	void reset() {}
+	void reset()
+	{
+		if (is_initialized_)
+		{
+			reinterpret_cast<T*>(data_)->~T();
+			is_initialized_ = false;
+		}
+	}
 
-	~optional() {}
+	~optional() { reset(); }
 
-	bool has_value() const { return false; };
+	bool has_value() const noexcept { return is_initialized_; }
 
    private:
 	alignas(T) uint8_t data_[sizeof(T)];
